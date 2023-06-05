@@ -318,7 +318,9 @@
         :label="daysFilterSelected"
         @remove="
           (isDaysFilterActive = false),
-            ((daysFilterSelected = ''), (daysFilterValue = '')),
+            ((daysFilterSelected = ''),
+            (daysFilterValue = ''),
+            (daysFilterValue = '')),
             getInvoiceList()
         "
       />
@@ -329,11 +331,7 @@
         removable
         text-color="white"
         :label="dateRange.fromDate + ' - ' + dateRange.thruDate"
-        @remove="
-          (dateRange = ''),
-            (isDateFilterActiveForChip = false),
-            getInvoiceList()
-        "
+        @remove="removeFilter('DataFilter')"
       />
       <q-chip
         v-model="isVendorFilterActiveForChip"
@@ -386,6 +384,8 @@
               {{ props.row.organizationName }}
             </q-td>
 
+            <q-td key="Email"> Email not reseaved from server </q-td>
+
             <q-td key="Amount">
               {{
                 props.row.invoiceTotal.toLocaleString("en-US", {
@@ -426,8 +426,7 @@
     </div>
   </div>
 </template>
-ly exposes this module, try adding a new declaration (.d.ts) file containing
-`declare module 'pdfvuer';`ts
+
 <script>
 import { onMounted, ref } from "vue";
 import { useQuasar } from "quasar";
@@ -514,6 +513,12 @@ export default {
         align: "center",
       },
       {
+        name: "Email",
+        field: "Email",
+        label: "Email Address",
+        align: "center",
+      },
+      {
         name: "Amount",
         field: " Amount",
         label: "Amount",
@@ -557,12 +562,15 @@ export default {
       }
 
       if (daysFilterValue.value.enumId == "DATE_RANGE") {
-        params["dateFilterId"] = daysFilterValue.value.enumId;
+        params["dateFilterId"] = "DATE_RANGE";
       } else if (daysFilterValue.value.enumId !== undefined) {
         params["dateFilterId"] = daysFilterValue.value.enumId;
       }
 
-      if (correctDateRange.value.fromDate && correctDateRange.value.thruDate) {
+      if (
+        correctDateRange.value.fromDate !== "" &&
+        correctDateRange.value.thruDate !== ""
+      ) {
         params["fromDate"] = correctDateRange.value.fromDate;
         params["thruDate"] = correctDateRange.value.thruDate;
       }
@@ -639,8 +647,6 @@ export default {
             headers: useAuth.authKey,
           }).then((res) => {
             searchOptions.value = [];
-
-            console.log(res.data.documentList);
 
             res.data.documentList.map((data) => {
               searchOptions.value.push(data);
@@ -831,6 +837,19 @@ export default {
       }
     };
 
+    function removeFilter(type) {
+      if ((type = "DataFilter")) {
+        correctDateRange.value.fromDate = "";
+        correctDateRange.value.toDate = "";
+        dateRange.value.fromDate = "";
+        dateRange.value.toDate = "";
+        isDateFilterActiveForChip.value = false;
+        daysFilterValue.value = "";
+        isDateRangeFilterActive.value = false;
+        getInvoiceList();
+      }
+    }
+
     onMounted(() => {
       getInvoiceList();
       getTabEnumList();
@@ -874,6 +893,7 @@ export default {
       applyDaysFilter,
       daysFilterValue,
       isDateRangeFilterActive,
+      removeFilter,
 
       // days
       isDaysFilterActive,
