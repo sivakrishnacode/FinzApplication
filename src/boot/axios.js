@@ -1,4 +1,3 @@
-import { boot } from "quasar/wrappers";
 import axios from "axios";
 
 // Be careful when using SSR for cross-request state pollution
@@ -12,17 +11,5 @@ const api = axios.create({
 });
 // my ip 192.168.0.177
 // arun 192.168.0.229
-
-export default boot(({ app }) => {
-  // for use inside Vue files (Options API) through this.$axios and this.$api
-
-  app.config.globalProperties.$axios = axios;
-  // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)
-  //       so you won't necessarily have to import axios in each vue file
-
-  app.config.globalProperties.$api = api;
-  // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
-  //       so you can easily perform requests against your app's API
-});
 
 export { api };
