@@ -1,0 +1,1141 @@
+<template>
+  <div class="row no-wrap">
+    <!-- Side list -->
+    <div
+      class="q-gutter-y-sm q-pa-lg"
+      style="width: 450px"
+      v-if="!$q.screen.lt.md"
+    >
+      <!-- Search bar -->
+
+      <q-input
+        rounded
+        outlined
+        label="Search"
+        dense
+        @update:model-value="searchVendor(val)"
+      >
+        <template #append>
+          <q-icon name="search" />
+        </template>
+      </q-input>
+
+      <!-- add vendor btn -->
+      <q-btn
+        rounded
+        class="full-width"
+        color="primary"
+        label="Add Vendors"
+        icon="add"
+        @click="(addVendor_dialogBox = !addVendor_dialogBox), addCountryList()"
+        no-wrap
+        style="height: 20px"
+      />
+
+      <q-scroll-area class="fit full-height">
+        <!-- List -->
+        <q-list class="q-gutter-sm">
+          <q-item
+            v-for="data in rows"
+            :key="data"
+            @click="vendorInfo(data.partyId), (tab = 'userDetails')"
+            :active="$route.params.vendorId === data.partyId ? true : false"
+            active-class="bg-blue"
+            clickable
+            v-ripple
+            class="bg-secondary text-primary"
+            style="border-radius: 5px"
+          >
+            <!-- avator -->
+            <q-item-section avatar>
+              <q-avatar text-color="yellow">
+                <q-icon name="star" />
+              </q-avatar>
+            </q-item-section>
+
+            <!-- name -->
+            <q-item-section>
+              <q-item-label>
+                {{ data.organizationName }}
+              </q-item-label>
+              <q-item-label class="text-white text-caption" caption>
+                {{ data.contactMechs[0].infoString }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-scroll-area>
+
+      <!-- Add vendor Dialog Box -->
+      <q-dialog v-model="addVendor_dialogBox">
+        <q-card style="width: 600px; border-radius: 12px">
+          <q-card-section>
+            <q-form @submit="addVendor" class="q-gutter-y-sm">
+              <div
+                style="border-radius: 15px"
+                class="text-primary text-center text-bold"
+              >
+                ADD VENDOR
+              </div>
+              <q-input
+                dense
+                type="text"
+                label="Vendor Name"
+                v-model="newVendorDetails.vendorName"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'First Name Required',
+                  (val) => (val && val.length > 2) || 'Enter minimun 2 letters',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                class="contact_num_input"
+                type="number"
+                label="Contact Number"
+                v-model="newVendorDetails.contactNumber"
+                prefix="+91"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'Number Required',
+                  (val) => (val && val.length >= 10) || 'Enter Full number',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Email"
+                v-model="newVendorDetails.emailAddress"
+                :rules="[
+                  (val) =>
+                    (val && val.length > 0) || 'Please Enter a Email address',
+                  (val) =>
+                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+                      val
+                    ) || 'Please enter a valid email address',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Adderss 1"
+                v-model="newVendorDetails.address1"
+                :rules="[
+                  (val) => (val && val.length > 3) || 'Please Enter Address',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Address 2"
+                v-model="newVendorDetails.address2"
+                hint="optional"
+                rules="[]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="City"
+                v-model="newVendorDetails.city"
+                :rules="[(val) => (val && val.length > 2) || 'Enter a City']"
+              ></q-input>
+              <q-select
+                v-model="newVendorDetails.countryGeoId"
+                dense
+                type="text"
+                label="Country"
+                option-label="geoName"
+                option-value="geoId"
+                @update:model-value="
+                  getStateList(newVendorDetails.countryGeoId.geoId)
+                "
+                :options="countryList"
+                :rules="[(val) => val || 'select  the country']"
+              ></q-select>
+              <q-select
+                :disable="isCountryValid"
+                dense
+                option-label="geoName"
+                option-value="geoId"
+                type="text"
+                label="State"
+                :options="stateList"
+                v-model="newVendorDetails.stateProvinceGeoId"
+                :rules="[(val) => val || 'Select the State']"
+              ></q-select>
+              <q-input
+                dense
+                type="text"
+                label="Postal Code"
+                v-model="newVendorDetails.postalCode"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'Enter a Postalcode',
+                ]"
+              ></q-input>
+
+              <div class="row justify-evenly q-py-md">
+                <q-btn rounded label="Cancel" color="red" v-close-popup></q-btn>
+                <q-btn
+                  rounded
+                  label="Submit"
+                  color="primary"
+                  type="submit"
+                ></q-btn>
+              </div>
+            </q-form>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+    </div>
+
+    <!-- Vendor Info side -->
+    <div class="q-gutter-y-md row justify-center full-width">
+      <!-- title -->
+      <div class="row justify-center full-width">
+        <div
+          class="bg-secondary text-center"
+          style="border-radius: 0 0 70px 70px; height: 80px; width: 600px"
+        >
+          <div class="q-mt-md text-primary text-h6">
+            {{ vendorInfoData.organizationName }}
+          </div>
+          <div class="text-blue-grey-1">
+            {{ vendorInfoData.emailAddress }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav bar btn -->
+      <div class="full-width">
+        <q-tabs no-caps content-class="row justify-evenly">
+          <q-btn
+            label="Invoices"
+            to="/invoice"
+            icon="receipt_long"
+            class="bg-primary text-white q-pa-md"
+            style="border-radius: 30px; width: 160px"
+          />
+          <q-btn
+            label="Payments"
+            to="/payment"
+            icon="payments"
+            class="bg-primary text-white q-pa-md"
+            style="border-radius: 30px; width: 160px"
+          />
+
+          <q-btn
+            label="Accounting"
+            to="/accounting"
+            icon="account_balance"
+            class="bg-primary text-white q-pa-md"
+            style="border-radius: 30px; width: 160px"
+          />
+        </q-tabs>
+      </div>
+
+      <!-- vendo info body -->
+      <div class="row justify-center full-width">
+        <q-tabs
+          v-model="tab"
+          class="row justify-center text-black q-pa-sm"
+          content-class="row justify-center "
+          active-color=" bg-secondary text-primary"
+          indicator-color="transparent"
+          style="
+            border: 2px solid silver;
+            border-radius: 50px;
+            width: 380px;
+            height: 70px;
+          "
+          @update:model-value="(val) => bankAccountDetails(val)"
+        >
+          <q-tab
+            name="userDetails"
+            label="Profile"
+            style="width: 100%; border-radius: 50px"
+          />
+          <q-tab
+            name="accountDetails"
+            label="Payments A/C"
+            style="width: 100%; border-radius: 50px"
+          />
+        </q-tabs>
+      </div>
+
+      <div class="row justify-center">
+        <!-- Two panels -->
+        <q-tab-panels v-model="tab">
+          <!-- profile Details -->
+          <q-tab-panel
+            name="userDetails"
+            class="bg-secondary q-pa-md"
+            style="border-radius: 10px"
+          >
+            <div
+              class="text-primary text-h6 row justify-center full-width q-pb-sm"
+            >
+              Profile Details
+            </div>
+
+            <q-separator spaced />
+
+            <div class="row q-gutter-y-xl">
+              <!-- first row -->
+              <div class="row full-width items-center justify-center">
+                <div class="col-5 q-gutter-x-xl">
+                  <div>Vendor Name:</div>
+                  <div class="text-primary text-h6">
+                    {{ vendorInfoData.organizationName }}
+                  </div>
+                </div>
+
+                <div class="col-5 q-gutter-x-xl">
+                  <div>User ID:</div>
+                  <div class="text-primary text-h6">
+                    {{ vendorInfoData.emailAddress }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- second row -->
+              <div class="row full-width items-center justify-center">
+                <div class="col-5 q-gutter-x-xl">
+                  <div>Contect No:</div>
+                  <div class="text-primary text-h6">
+                    {{ vendorInfoData.contactNumber }}
+                  </div>
+                </div>
+
+                <div class="col-5 q-gutter-x-xl">
+                  <div>Contect No 2:</div>
+                  <div class="text-primary text-h6">
+                    {{ vendorInfoData.contactNumber }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- third row -->
+              <div class="row full-width items-center justify-center">
+                <div class="col-5 q-gutter-x-xl">
+                  <div>Address Line 1:</div>
+                  <div class="text-primary text-h6">
+                    {{ vendorInfoData.address?.address1 }}
+                  </div>
+                </div>
+
+                <div class="col-5 q-gutter-x-xl">
+                  <div>Address Line 2:</div>
+                  <div class="text-primary text-h6">
+                    {{ vendorInfoData.address?.address2 }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- 4 row -->
+              <div class="row full-width items-center justify-center">
+                <div class="col-5 q-gutter-x-xl">
+                  <div>City:</div>
+                  <div class="text-primary text-h6">
+                    {{ vendorInfoData.address?.city }}
+                  </div>
+                </div>
+
+                <div class="col-5 q-gutter-x-xl">
+                  <div>Country:</div>
+                  <div class="text-primary text-h6">
+                    {{ vendorInfoData.address?.countryName }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- 5th row -->
+              <div class="row full-width items-center justify-center">
+                <div class="col-5 q-gutter-x-xl">
+                  <div>State:</div>
+                  <div class="text-primary text-h6">
+                    {{ vendorInfoData.address?.stateName }}
+                  </div>
+                </div>
+
+                <div class="col-5 q-gutter-x-xl">
+                  <div>Pincode:</div>
+                  <div class="text-primary text-h6">
+                    {{ vendorInfoData.address?.postalCode }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </q-tab-panel>
+
+          <!-- bank details -->
+          <q-tab-panel
+            name="accountDetails"
+            class="bg-white row justify-evenly q-gutter-y-md"
+          >
+            <!-- Head -->
+            <div
+              class="row justify-center full-width q-gutter-x-lg"
+              v-if="!isBankAccountDetailsEmpty"
+            >
+              <q-toggle
+                v-model="isShowActiveBankAccount"
+                :label="
+                  isShowActiveBankAccount
+                    ? 'Hide In Active Accounts'
+                    : 'Show In Active Accounts'
+                "
+              />
+
+              <q-btn
+                color="primary"
+                icon="add"
+                label="Add Bank Account"
+                @click="addBank_dialogBox = !addBank_dialogBox"
+              />
+            </div>
+
+            <!-- illustration -->
+            <div v-if="isBankAccountDetailsEmpty">
+              <div class="column items-center q-py-md">
+                <q-img
+                  height="400px"
+                  width="400px"
+                  src="https://img.freepik.com/free-vector/open-banking-data-access-financial-services-mobile-payment-app-development-api-technology-web-developers-designing-banking-platforms_335657-2401.jpg?w=740&t=st=1685427226~exp=1685427826~hmac=7be939d13a2f6ca1d0f4829e5124e2a31a74df973d4a41ba513fe0a299ac445d"
+                />
+
+                <q-btn
+                  color="primary"
+                  icon="add"
+                  label="Add Bank Account"
+                  rounded
+                  @click="addBank_dialogBox = !addBank_dialogBox"
+                />
+              </div>
+            </div>
+
+            <!-- add bank account dailog box -->
+            <q-dialog v-model="addBank_dialogBox">
+              <q-card style="width: 600px; border-radius: 12px">
+                <q-card-section>
+                  <div
+                    style="border-radius: 15px"
+                    class="text-primary text-center text-bold q-pb-md"
+                  >
+                    Add Bank Account
+                  </div>
+                  <q-tabs
+                    v-model="addBankAccountTab"
+                    class="row justify-center full-width text-black q-pa-sm"
+                    content-class="row justify-center "
+                    active-color=" bg-primary text-white"
+                    indicator-color="transparent"
+                    style="
+                      border: 2px solid silver;
+                      border-radius: 50px;
+
+                      height: 70px;
+                    "
+                  >
+                    <q-tab
+                      name="upi"
+                      label="UPI"
+                      style="width: 100%; border-radius: 50px"
+                    />
+                    <q-tab
+                      name="bank"
+                      label="Bank Account"
+                      style="width: 100%; border-radius: 50px"
+                    />
+                  </q-tabs>
+
+                  <q-tab-panels v-model="addBankAccountTab">
+                    <!-- UPI -->
+                    <q-tab-panel name="upi">
+                      <q-form
+                        @submit="addBankAccount(vendorInfoData.partyId)"
+                        class="q-gutter-y-sm"
+                      >
+                        <q-input
+                          label="Beneficiary UPI ID"
+                          v-model="newBankAccountDetails.upiId"
+                          :rules="[
+                            (val) =>
+                              (val && val.length > 0) ||
+                              'Please Enter a UPI Id',
+                          ]"
+                        />
+                        <div class="row justify-evenly q-py-md">
+                          <q-btn
+                            rounded
+                            label="Cancel"
+                            color="red"
+                            v-close-popup
+                            @click="newBankAccountDetails = {}"
+                          ></q-btn>
+                          <q-btn
+                            rounded
+                            label="Submit"
+                            color="primary"
+                            type="submit"
+                          ></q-btn>
+                        </div>
+                      </q-form>
+                    </q-tab-panel>
+
+                    <!-- Bank -->
+                    <q-tab-panel name="bank" class="q-gutter-y-md">
+                      <q-form
+                        @submit="addBankAccount(vendorInfoData.partyId)"
+                        class="q-gutter-y-sm"
+                      >
+                        <q-input
+                          dense
+                          type="text"
+                          label="Account Name"
+                          v-model="newBankAccountDetails.companyName"
+                          :rules="[
+                            (val) =>
+                              (val && val.length > 1) ||
+                              'Please Enter a Account name',
+                          ]"
+                        />
+                        <q-input
+                          dense
+                          label="Account No"
+                          v-model="newBankAccountDetails.accountNo"
+                          :rules="[
+                            (val) =>
+                              (val && val.length > 0) ||
+                              'Please Enter a Account no',
+                          ]"
+                          type="password"
+                        />
+                        <q-input
+                          dense
+                          label="Re Enter Account No"
+                          v-model="newBankAccountDetails.confirmAccountNo"
+                          :rules="[
+                            (val) =>
+                              (val && val.length > 0) ||
+                              'Please Re Enter a Account no',
+                            (val) =>
+                              (val &&
+                                val === newBankAccountDetails.accountNo) ||
+                              'Account No Does not match',
+                          ]"
+                          type="password"
+                        />
+                        <q-input
+                          dense
+                          label="IFSC Code"
+                          type="text"
+                          v-model="newBankAccountDetails.ifscCode"
+                          :rules="[
+                            (val) =>
+                              (val && val.length > 0) ||
+                              'Please Enter a IFSC code',
+                          ]"
+                        />
+                        <div class="row justify-evenly q-py-md">
+                          <q-btn
+                            rounded
+                            label="Cancel"
+                            color="red"
+                            v-close-popup
+                            @click="newBankAccountDetails = {}"
+                          ></q-btn>
+                          <q-btn
+                            rounded
+                            label="Submit"
+                            color="primary"
+                            type="submit"
+                          ></q-btn>
+                        </div>
+                      </q-form>
+                    </q-tab-panel>
+                  </q-tab-panels>
+                </q-card-section>
+              </q-card>
+            </q-dialog>
+
+            <!-- Active accounts details -->
+            <div
+              v-for="data in vendorsActiveBankDetails"
+              :key="data.paymentMethodId"
+            >
+              <!--Active bank -->
+
+              <q-item-section
+                v-if="data.paymentMethodTypeEnumId === 'PmtBankAccount'"
+                class="bg-secondary q-pa-lg"
+                style="border-radius: 12px; width: 280px; height: 300px"
+              >
+                <div class="row justify-between">
+                  <div class="row q-gutter-x-md">
+                    <q-icon
+                      name="account_balance"
+                      size="18px"
+                      color="primary"
+                    />
+                    <q-item-label class="text-primary"
+                      >Bank Account</q-item-label
+                    >
+                  </div>
+                  <q-badge color="positive" label="Active" />
+                </div>
+
+                <q-separator spaced />
+
+                <div class="row justify-between">
+                  <div class="col-5 text-grey-12 q-my-auto">
+                    Beneficiary Name
+                  </div>
+                  <div class="col-7 q-my-auto">
+                    {{ data.companyNameOnAccount }}
+                  </div>
+                </div>
+
+                <div class="row justify-between">
+                  <div class="col-5 text-grey-12 q-my-auto">Bank Name</div>
+                  <div class="col-7 q-my-auto">{{ data.bankName }}</div>
+                </div>
+
+                <div class="row justify-between">
+                  <div class="col-5 text-grey-12 q-my-auto">Account No</div>
+                  <div class="col-7 q-my-auto">{{ data.accountNumber }}</div>
+                </div>
+
+                <div class="row justify-between">
+                  <div class="col-4 text-grey-12 q-my-auto">IFSC Code</div>
+                  <div class="col-7 q-my-auto">{{ data.routingNumber }}</div>
+                </div>
+
+                <div class="row justify-end q-mt-sm">
+                  <q-btn
+                    label="Make Inactive"
+                    dense
+                    flat
+                    color="primary"
+                    no-caps
+                    @click="
+                      bankAccountStatus(data.paymentMethodId, data.status)
+                    "
+                  />
+                </div>
+              </q-item-section>
+
+              <!-- active upi -->
+              <q-item-section
+                v-else-if="data.paymentMethodTypeEnumId === 'PmtUPI'"
+                class="bg-secondary q-pa-lg"
+                style="border-radius: 12px; width: 280px; height: 300px"
+              >
+                <span class="q-gutter-md">
+                  <div class="row justify-between">
+                    <div class="row q-gutter-x-md">
+                      <q-icon
+                        name="currency_rupee"
+                        size="18px"
+                        color="primary"
+                      />
+                      <q-item-label class="text-primary"
+                        >UPI Account</q-item-label
+                      >
+                    </div>
+                    <q-badge color="positive" label="Active" />
+                  </div>
+
+                  <q-separator spaced />
+                  <div class="row justify-between">
+                    <div class="col-5 text-grey-12 q-my-auto">
+                      Beneficiary Name
+                    </div>
+                    <div class="col-7 q-my-auto">
+                      {{ data.upiPayment.userName }}
+                    </div>
+                  </div>
+
+                  <div class="row justify-between">
+                    <div class="col-5 text-grey-12 q-my-auto">UPI Id</div>
+                    <div class="col-7 q-my-auto">
+                      {{ data.upiPayment.upiAddress }}
+                    </div>
+                  </div>
+
+                  <div class="row justify-between">
+                    <div class="col-5 text-grey-12 q-my-auto">UPI Bank</div>
+                    <div class="col-7 q-my-auto">
+                      {{ data.upiPayment.handle }}
+                    </div>
+                  </div>
+
+                  <div class="row justify-end q-mt-sm">
+                    <q-btn
+                      label="Make Inactive"
+                      dense
+                      flat
+                      color="primary"
+                      no-caps
+                      @click="
+                        bankAccountStatus(data.paymentMethodId, data.status)
+                      "
+                    />
+                  </div>
+                </span>
+              </q-item-section>
+            </div>
+
+            <!-- In active accounts Details -->
+            <span v-if="isShowActiveBankAccount" class="row justify-start">
+              <div
+                v-for="data in vendorsInActiveBankDetails"
+                :key="data.paymentMethodId"
+              >
+                <!-- InActive bank -->
+                <q-item-section
+                  v-if="data.paymentMethodTypeEnumId === 'PmtBankAccount'"
+                  style="border-radius: 12px; width: 280px; height: 300px"
+                  class="bg-secondary q-pa-lg"
+                >
+                  <div class="row justify-between">
+                    <div class="row q-gutter-x-md">
+                      <q-icon
+                        name="account_balance"
+                        size="18px"
+                        color="primary"
+                      />
+                      <q-item-label class="text-primary"
+                        >Bank Account</q-item-label
+                      >
+                    </div>
+                    <q-badge color="red-9" label="InActive" />
+                  </div>
+
+                  <q-separator spaced />
+
+                  <div class="row justify-between">
+                    <div class="col-5 text-grey-12 q-my-auto">
+                      Beneficiary Name
+                    </div>
+                    <div class="col-7 q-my-auto">
+                      {{ data.companyNameOnAccount }}
+                    </div>
+                  </div>
+
+                  <div class="row justify-between">
+                    <div class="col-5 text-grey-12 q-my-auto">Bank Name</div>
+                    <div class="col-7 q-my-auto">{{ data.bankName }}</div>
+                  </div>
+
+                  <div class="row justify-between">
+                    <div class="col-5 text-grey-12 q-my-auto">Account No</div>
+                    <div class="col-7 q-my-auto">{{ data.accountNumber }}</div>
+                  </div>
+
+                  <div class="row justify-between">
+                    <div class="col-4 text-grey-12 q-my-auto">IFSC Code</div>
+                    <div class="col-7 q-my-auto">{{ data.routingNumber }}</div>
+                  </div>
+
+                  <div class="row justify-end q-pt-sm">
+                    <q-btn
+                      label="Make Active"
+                      dense
+                      flat
+                      color="primary"
+                      no-caps
+                      @click="
+                        bankAccountStatus(data.paymentMethodId, data.status)
+                      "
+                    />
+                  </div>
+                </q-item-section>
+
+                <!-- InActive upi -->
+                <q-item-section
+                  v-else-if="data.paymentMethodTypeEnumId === 'PmtUPI'"
+                  style="border-radius: 12px; width: 280px; height: 300px"
+                  class="bg-secondary q-pa-lg"
+                >
+                  <div class="row justify-between q-gutter-y-sm">
+                    <div class="row q-gutter-x-md">
+                      <q-icon
+                        name="currency_rupee"
+                        size="18px"
+                        color="primary"
+                      />
+                      <q-item-label class="text-primary q-my-auto"
+                        >UPI</q-item-label
+                      >
+                    </div>
+                    <q-badge color="red-9" label="InActive" />
+                  </div>
+
+                  <q-separator spaced />
+
+                  <div class="row justify-between">
+                    <div class="col-5 text-grey-12 q-my-auto">
+                      Beneficiary Name
+                    </div>
+                    <div class="col-7 q-my-auto">
+                      {{ data.upiPayment.userName }}
+                    </div>
+                  </div>
+
+                  <div class="row justify-between">
+                    <div class="col-5 text-grey-12 q-my-auto">UPI Id</div>
+                    <div class="col-7 q-my-auto">
+                      {{ data.upiPayment.upiAddress }}
+                    </div>
+                  </div>
+
+                  <div class="row justify-between">
+                    <div class="col-5 text-grey-12 q-my-auto">UPI Bank</div>
+                    <div class="col-7 q-my-auto">
+                      {{ data.upiPayment.handle }}
+                    </div>
+                  </div>
+
+                  <div class="row justify-end q-mt-sm">
+                    <q-btn
+                      label="Make active"
+                      dense
+                      flat
+                      color="primary"
+                      no-caps
+                      @click="
+                        bankAccountStatus(data.paymentMethodId, data.status)
+                      "
+                    />
+                  </div>
+                </q-item-section>
+              </div>
+            </span>
+          </q-tab-panel>
+        </q-tab-panels>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { onMounted, ref, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useQuasar } from "quasar";
+import { useAuthStore } from "src/stores/useAuthStore";
+import { api } from "src/boot/axios";
+
+export default {
+  name: "vendorInfo_page",
+  setup() {
+    const route = useRoute();
+    const router = useRouter();
+    const useAuth = useAuthStore();
+    const $q = useQuasar();
+
+    const isShowActiveBankAccount = ref(false);
+    const isBankAccountDetailsEmpty = ref(false);
+
+    // table
+    const rows = ref([]);
+    const columns = ref([]);
+
+    //new vendor info
+
+    const addVendor_dialogBox = ref(false);
+    const addBank_dialogBox = ref(false);
+    const newVendorDetails = ref([]);
+    const newBankAccountDetails = ref({});
+    const countryList = ref([]);
+    const stateList = ref([]);
+
+    // vendor info
+    const vendorInfoData = ref([]);
+    const vendorsActiveBankDetails = ref([]);
+    const vendorsInActiveBankDetails = ref([]);
+
+    const tab = ref("userDetails");
+    const addBankAccountTab = ref("upi");
+
+    // get vendor List
+    function getVendorList() {
+      api({
+        method: "GET",
+        url: "vendors",
+        headers: useAuth.authKey,
+      }).then((res) => {
+        res.data.documentList.map((data) => {
+          rows.value.push(data);
+        });
+      });
+    }
+
+    // get vendor info
+    function vendorInfo(id) {
+      router.push({ name: "vendorInfo_page", params: { vendorId: id } });
+      api({
+        method: "GET",
+        url: `vendors/${id}/contactInfo`,
+        headers: useAuth.authKey,
+      })
+        .then((res) => {
+          vendorInfoData.value = res.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    // Search vendor
+    function searchVendor(val) {
+      if (val === "") {
+        rows.value = [];
+
+        vendorInfo(route.params.vendorId);
+      } else {
+        rows.value = [];
+        api({
+          method: "GET",
+          url: "vendors",
+          params: {
+            anyField: val,
+          },
+          headers: useAuth.authKey,
+        }).then((res) => {
+          console.log(res.data);
+
+          // res.data.documentList.map((data) => {
+          //   rows.value.push({
+          //     organizationName: data.organizationName,
+          //     emailAddress: data.contactMechs[0].infoString
+          //       ? data.contactMechs[0].infoString
+          //       : "",
+          //     partyId: data.partyId,
+          //   });
+          // });
+        });
+      }
+    }
+
+    // Add bank account
+    function addBankAccount(id) {
+      console.log(id);
+      let tempUrl = "";
+      let data = {};
+      if (addBankAccountTab.value == "bank") {
+        tempUrl = "PaymentMethods/addBankAccount";
+        data = {
+          partyId: id,
+          companyName: newBankAccountDetails.value.companyName,
+          accountNo: newBankAccountDetails.value.accountNo,
+          ifscCode: newBankAccountDetails.value.ifscCode,
+        };
+      } else {
+        tempUrl = "PaymentMethods/addUPIAccount";
+        data = {
+          partyId: id,
+          upiId: newBankAccountDetails.value.upiId,
+        };
+      }
+
+      console.log(tempUrl);
+      console.log(data);
+
+      api({
+        method: "POST",
+        url: tempUrl,
+        headers: useAuth.authKey,
+        params: data,
+      })
+        .then((res) => {
+          newBankAccountDetails.value = {};
+          addBank_dialogBox.value = false;
+          console.log(res);
+          tab.value = "accountDetails";
+          bankAccountDetails(tab.value);
+
+          $q.notify({
+            position: "top-right",
+            message: "Account Saved Succesfully",
+            type: "positive",
+            icon: "done",
+          });
+        })
+        .catch((err) => {
+          $q.notify({
+            position: "top-right",
+            message: JSON.parse(err.response.data.errors.replace(/'/g, '"'))
+              .errorMsg,
+            type: "negative",
+            icon: "cancel",
+          });
+        });
+    }
+
+    // Bank details
+    function bankAccountDetails(id) {
+      if (id == "accountDetails") {
+        api({
+          method: "GET",
+          url: "PaymentMethods/bankAccountInfoList",
+          headers: useAuth.authKey,
+          params: {
+            partyId: route.params.vendorId,
+          },
+        }).then((res) => {
+          vendorsActiveBankDetails.value = [];
+          vendorsInActiveBankDetails.value = [];
+          isBankAccountDetailsEmpty.value = false;
+
+          if (res.data.methodInfoList.length == 0) {
+            isBankAccountDetailsEmpty.value = true;
+          }
+          res.data.methodInfoList.map((data) => {
+            if (data.status == "true") {
+              vendorsActiveBankDetails.value.push(data);
+            } else {
+              vendorsInActiveBankDetails.value.push(data);
+            }
+          });
+        });
+      }
+    }
+
+    // Active-InActive Bank Account
+    async function bankAccountStatus(id, status) {
+      let tempUrl = "";
+      if (status == "true") {
+        tempUrl = "PaymentMethods/fundAccountDeactivate";
+      } else if (status == "false") {
+        tempUrl = "PaymentMethods/fundAccountActivate";
+      }
+      await api({
+        method: "PATCH",
+        url: tempUrl,
+        headers: useAuth.authKey,
+        params: {
+          paymentMethodId: id,
+        },
+      }).then((res) => {
+        console.log(res);
+      });
+      bankAccountDetails((id = "accountDetails"));
+    }
+
+    // add vendor
+    function addVendor() {
+      addVendor_dialogBox.value = false;
+      api({
+        method: "POST",
+        url: "vendors/vendor",
+        headers: useAuth.authKey,
+        data: {
+          vendorName: newVendorDetails.value.vendorName,
+          contactNumber: newVendorDetails.value.contactNumber,
+          emailAddress: newVendorDetails.value.emailAddress,
+          address1: newVendorDetails.value.address1,
+          address2: newVendorDetails.value.address2,
+          city: newVendorDetails.value.city,
+          countryGeoId: newVendorDetails.value.countryGeoId.geoId,
+          stateProvinceGeoId: newVendorDetails.value.stateProvinceGeoId.geoId,
+          postalCode: newVendorDetails.value.postalCode,
+        },
+      })
+        .then((res) => {
+          addVendor_dialogBox.value = false;
+          newVendorDetails.value = {};
+          rows.value = [];
+          getVendorList();
+          $q.notify({
+            position: "top-right",
+            message: "Vendor added succesfully",
+            type: "positive",
+            icon: "done",
+          });
+        })
+        .catch((err) => {
+          addVendor_dialogBox.value = false;
+          console.log(err);
+        });
+    }
+
+    // add all countryList to vendor dialog box
+    function addCountryList() {
+      api({
+        method: "GET",
+        url: "geos",
+        headers: useAuth.authKey,
+      })
+        .then((res) => {
+          res.data.geoList.map((data) => {
+            countryList.value.push(data);
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    //add states to vendor dialog box
+    function getStateList(geoId) {
+      stateList.value = [];
+      // editInput.value.stateName = "";
+      api({
+        method: "GET",
+        url: `geos/${geoId}/regions`,
+        headers: useAuth.authKey,
+      }).then((res) => {
+        const data = res.data.resultList;
+
+        stateList.value.push(...data);
+      });
+    }
+
+    const isCountryValid = computed(() => {
+      if (
+        newVendorDetails.value.countryGeoId !== "" &&
+        newVendorDetails.value.countryGeoId !== null
+      ) {
+        return false;
+      } else {
+        // eslint-disable-next-line
+        newVendorDetails.value.stateProvinceGeoId = null;
+        return true;
+      }
+    });
+
+    onMounted(() => {
+      getVendorList();
+      vendorInfo(route.params.vendorId);
+
+      // remove this and change tab = userDatils
+      bankAccountDetails("userDatils");
+    });
+
+    return {
+      rows,
+      columns,
+      vendorInfo,
+      addVendor_dialogBox,
+      addBank_dialogBox,
+      tab,
+      vendorInfoData,
+      searchVendor,
+      bankAccountDetails,
+      vendorsActiveBankDetails,
+      vendorsInActiveBankDetails,
+      bankAccountStatus,
+      addVendor,
+      newVendorDetails,
+      addCountryList,
+      countryList,
+      getStateList,
+      isCountryValid,
+      stateList,
+      isShowActiveBankAccount,
+      addBankAccount,
+      newBankAccountDetails,
+      addBankAccountTab,
+      isBankAccountDetailsEmpty,
+    };
+  },
+};
+</script>

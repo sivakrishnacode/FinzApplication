@@ -1,0 +1,839 @@
+<template>
+  <div class="q-mx-sm q-my-md q-gutter-y-sm q-px-xl">
+    <!-- list -->
+    <div class="row justify-center q-gutter-x-md no-wrap items-center">
+      <q-select
+        outlined
+        rounded
+        v-model="model"
+        clearable
+        use-input
+        hide-selected
+        fill-input
+        input-debounce="0"
+        option-label="organizationName"
+        option-value="partyId"
+        :options="searchOptions"
+        @filter="searchFun"
+        :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
+      >
+        <template #append>
+          <q-icon name="search" />
+        </template>
+
+        <template v-slot:no-option>
+          <q-item class="text-center">
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template>
+
+        <template v-slot:option="scope">
+          <div
+            :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
+          >
+            <q-item
+              clickable
+              class="full-width q-pa-md text-center"
+              v-bind="scope.itemProps"
+            >
+              <q-item-section
+                class="full-width"
+                @click="vendorInfo(scope.opt.partyId)"
+              >
+                <q-item-label>{{ scope.opt.organizationName }}</q-item-label>
+                <q-item-label caption>{{ scope.opt.partyId }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </div>
+        </template>
+      </q-select>
+
+      <q-btn
+        size="14px"
+        no-wrap
+        :label="$q.screen.lt.sm ? '' : 'Add Vendor'"
+        icon="add"
+        @click="(addVendor_dialogBox = !addVendor_dialogBox), addCountryList()"
+        :round="$q.screen.lt.sm ? true : false"
+        color="primary"
+        rounded
+      >
+      </q-btn>
+    </div>
+
+    <q-separator />
+
+    <!-- table Container -->
+    <div class="table-container">
+      <q-table
+        ref="tableRef"
+        title="Vendors"
+        :rows="rows"
+        :columns="columns"
+        row-key="name"
+        v-model:pagination="pagination"
+        :loading="isLoading"
+        @request="(props) => getVendors(props)"
+        separator="horizontal"
+        style="border-radius: 12px"
+        class="q-py-md"
+        hide-bottom
+      >
+        <!-- top -->
+        <template v-slot:top>
+          <div class="full-width row justify-between">
+            <div class="text-weight-bold row content-center text-h6">
+              Vendors
+            </div>
+            <div class="row">
+              <div class="row content-center q-pr-md">Rows per page :</div>
+              <q-select
+                style="width: 50px"
+                @update:model-value="tableRef.requestServerInteraction()"
+                v-model="pagination.rowsPerPage"
+                filled
+                :options="[2, 4, 6, 10, 50, 20]"
+              />
+            </div>
+          </div>
+        </template>
+
+        <!-- header -->
+        <template v-slot:header="props">
+          <q-tr :props="props" class="text-weight-bold text-h5">
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+              {{ col.label }}
+            </q-th>
+          </q-tr>
+        </template>
+
+        <!-- body -->
+        <template #body="props">
+          <q-tr
+            :props="props"
+            class="text-center cursor-pointer"
+            @click="vendorInfo(props.row.partyId)"
+          >
+            <!-- profile -->
+            <q-td key="profile">
+              <q-avatar class="bg-primary text-white" size="lg">
+                <div>
+                  {{ firstLetters(props.row.organizationName).toUpperCase() }}
+                </div>
+              </q-avatar>
+            </q-td>
+
+            <!-- org name -->
+            <q-td key="organizationname">
+              <div class="text-bold">
+                {{ props.row.organizationName }}
+              </div>
+            </q-td>
+
+            <!-- email -->
+            <q-td key="email">
+              {{ props.row.contactMechs[0].infoString }}
+            </q-td>
+
+            <!-- contact num -->
+            <q-td key="contactNumber">
+              +91 {{ props.row.contactMechs[1].contactNumber }}
+            </q-td>
+
+            <!-- status -->
+            <q-td key="status">
+              <q-chip
+                :class="props.row.disabled === 'N' ? 'text-green' : 'text-red'"
+              >
+                <q-badge
+                  rounded
+                  :color="props.row.disabled === 'N' ? 'green' : 'red'"
+                  class="q-mr-sm"
+                />
+                {{ props.row.disabled === "N" ? "Active" : "In Active" }}
+              </q-chip>
+            </q-td>
+
+            <q-td key="more">
+              <q-btn
+                round
+                flat
+                class="text-dark"
+                icon="more_vert"
+                @click="
+                  (e) => {
+                    e.stopPropagation();
+                  }
+                "
+              >
+                <q-menu anchor="center left" self="center end">
+                  <q-item
+                    clickable
+                    v-ripple
+                    @click="vendorInfo(props.row.partyId)"
+                  >
+                    <q-item-section avatar>
+                      <q-icon name="visibility" />
+                    </q-item-section>
+
+                    <q-item-section>View Profile</q-item-section>
+                  </q-item>
+
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar>
+                      <q-icon name="receipt_long" />
+                    </q-item-section>
+
+                    <q-item-section>Invoice</q-item-section>
+                  </q-item>
+
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar>
+                      <q-icon name="account_balance" />
+                    </q-item-section>
+
+                    <q-item-section>Accounting</q-item-section>
+                  </q-item>
+
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar>
+                      <q-icon name="payments" />
+                    </q-item-section>
+
+                    <q-item-section>Payments</q-item-section>
+                  </q-item>
+                </q-menu>
+              </q-btn>
+            </q-td>
+          </q-tr>
+        </template>
+
+        <!-- bottom -->
+        <!-- <template v-slot:bottom>
+
+        </template> -->
+
+        <!-- no-data -->
+        <template v-slot:no-data>NO Data</template>
+
+        <!-- Loading Page -->
+        <template v-slot:loading>
+          <q-inner-loading showing color="primary" />
+        </template>
+      </q-table>
+      <div
+        class="row justify-center q-ma-md"
+        v-if="pagination.rowsNumber <= 0 ? false : true"
+      >
+        <q-pagination
+          v-model="pagination.page"
+          :max="Math.ceil(pagination.rowsNumber / pagination.rowsPerPage)"
+          max-pages="8"
+          direction-links
+          color="primary"
+          active-color="blue-8"
+          active-text-color="white"
+          :boundary-numbers="false"
+          @update:model-value="
+            (val) =>
+              getVendors({
+                pagination: { page: val, rowsPerPage: pagination.rowsPerPage },
+              })
+          "
+        />
+      </div>
+
+      <!-- Add vendor Dialog Box -->
+      <q-dialog v-model="addVendor_dialogBox">
+        <q-card style="width: 600px; border-radius: 12px">
+          <q-card-section>
+            <q-form @submit="addVendor" class="q-gutter-y-sm">
+              <div
+                style="border-radius: 15px"
+                class="text-primary text-center text-bold"
+              >
+                ADD VENDOR
+              </div>
+              <q-input
+                dense
+                type="text"
+                label="Vendor Name"
+                v-model="newVendorDetails.vendorName"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'First Name Required',
+                  (val) => (val && val.length > 2) || 'Enter minimun 2 letters',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                class="contact_num_input"
+                type="number"
+                label="Contact Number"
+                v-model="newVendorDetails.contactNumber"
+                prefix="+91"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'Number Required',
+                  (val) => (val && val.length >= 10) || 'Enter Full number',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Email"
+                v-model="newVendorDetails.emailAddress"
+                :rules="[
+                  (val) =>
+                    (val && val.length > 0) || 'Please Enter a Email address',
+                  (val) =>
+                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+                      val
+                    ) || 'Please enter a valid email address',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Adderss 1"
+                v-model="newVendorDetails.address1"
+                :rules="[
+                  (val) => (val && val.length > 3) || 'Please Enter Address',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Address 2"
+                v-model="newVendorDetails.address2"
+                hint="optional"
+                rules="[]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="City"
+                v-model="newVendorDetails.city"
+                :rules="[(val) => (val && val.length > 2) || 'Enter a City']"
+              ></q-input>
+              <q-select
+                v-model="newVendorDetails.countryGeoId"
+                dense
+                type="text"
+                label="Country"
+                option-label="geoName"
+                option-value="geoId"
+                @update:model-value="
+                  getStateList(newVendorDetails.countryGeoId.geoId)
+                "
+                :options="countryList"
+                :rules="[(val) => val || 'select  the country']"
+              ></q-select>
+              <q-select
+                :disable="isCountryValid"
+                dense
+                option-label="geoName"
+                option-value="geoId"
+                type="text"
+                label="State"
+                :options="stateList"
+                v-model="newVendorDetails.stateProvinceGeoId"
+                :rules="[(val) => val || 'Select the State']"
+              ></q-select>
+              <q-input
+                dense
+                type="text"
+                label="Postal Code"
+                v-model="newVendorDetails.postalCode"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'Enter a Postalcode',
+                ]"
+              ></q-input>
+
+              <div class="row justify-evenly q-py-md">
+                <q-btn rounded label="Cancel" color="red" v-close-popup></q-btn>
+                <q-btn
+                  rounded
+                  label="Submit"
+                  color="primary"
+                  type="submit"
+                ></q-btn>
+              </div>
+            </q-form>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
+      <!-- edit vendor Dialog box -->
+      <q-dialog v-model="editVendor_dialogBox">
+        <q-card style="width: 500px">
+          <q-card-section>
+            <q-form @submit="editVendorSubmit" class="q-gutter-y-sm">
+              <div
+                style="border-radius: 15px"
+                class="text-primary text-center text-bold q-pa-md"
+              >
+                EDIT VENDOR
+              </div>
+              <q-input
+                dense
+                type="text"
+                label="Vendor Name"
+                v-model="editInput.organizationName"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'First Name Required',
+                  (val) => (val && val.length > 1) || 'Enter minimun 2 letters',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Contact Number"
+                v-model="editInput.contactNumber"
+                prefix="+91"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'Number Required',
+                  (val) => (val && val.length >= 10) || 'Enter Full number',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Email"
+                v-model="editInput.emailAddress"
+                :rules="[
+                  (val) =>
+                    (val && val.length > 0) || 'Please Enter a Email address',
+                  (val) =>
+                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+                      val
+                    ) || 'Please enter a valid email address',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Adderss 1"
+                v-model="editInput.address1"
+                :rules="[
+                  (val) => (val && val.length > 3) || 'Please Enter Address',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Address 2"
+                v-model="editInput.address2"
+                rules="[]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="City"
+                v-model="editInput.city"
+                :rules="[(val) => (val && val.length > 2) || 'Enter a City']"
+              ></q-input>
+              <q-select
+                dense
+                type="text"
+                label="Country"
+                option-value="geoId"
+                option-label="geoName"
+                v-model="editInput.country"
+                @update:model-value="(val) => getStateList(val.geoId)"
+                :options="countryList"
+              ></q-select>
+              <q-select
+                dense
+                type="text"
+                label="State"
+                option-label="geoName"
+                option-value="geoId"
+                v-model="editInput.state"
+                :options="stateList"
+              ></q-select>
+              <q-input
+                dense
+                type="text"
+                label="Postal Code"
+                v-model="editInput.postalCode"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'Enter a Postalcode',
+                ]"
+              ></q-input>
+
+              <div class="row justify-evenly q-py-md">
+                <q-btn rounded label="Cancel" color="red" v-close-popup></q-btn>
+                <q-btn
+                  rounded
+                  label="Update"
+                  color="primary"
+                  type="submit"
+                ></q-btn>
+              </div>
+            </q-form>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+    </div>
+  </div>
+</template>
+
+<script>
+import { onMounted, ref, computed } from "vue";
+import { useQuasar } from "quasar";
+import { api } from "src/boot/axios";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "src/stores/useAuthStore";
+
+export default {
+  name: "vendorsList_page",
+  setup() {
+    const router = useRouter();
+    const useAuth = useAuthStore();
+
+    const tableRef = ref(null);
+    const isLoading = ref(false);
+
+    const $q = useQuasar();
+
+    const countryList = ref([]);
+    const stateList = ref([]);
+
+    const moreBtn = ref(false);
+    const editInput = ref({
+      organizationName: "",
+      emailAddress: "",
+      contactNumber: "",
+      status: "",
+      partyId: "id",
+    });
+
+    const addVendor_dialogBox = ref(false);
+    const editVendor_dialogBox = ref(false);
+
+    const rows = ref([]);
+    const columns = [
+      {
+        name: "profile",
+        required: true,
+        field: " ",
+        required: true,
+        label: "Profile",
+        align: "center",
+        style: "color: red",
+      },
+      {
+        name: "organizationName",
+        required: true,
+        field: " ",
+        required: true,
+        label: "Organization Name",
+        align: "center",
+      },
+      { name: "email", field: "emailAddress", align: "center", label: "Email" },
+      {
+        name: "number",
+        field: "contactNumber",
+        label: "Contact No",
+        align: "center",
+      },
+      {
+        name: "status",
+        field: "status",
+        label: "Status",
+        align: "center",
+      },
+      {
+        name: "more",
+        field: "more",
+        label: "More",
+        align: "center",
+      },
+    ];
+
+    const newVendorDetails = ref({
+      vendorName: "",
+      contactNumber: "",
+      emailAddress: "",
+      address1: "",
+      address2: "",
+      city: "",
+      countryGeoId: "",
+      stateProvinceGeoId: "",
+      postalCode: "",
+      partyId: "",
+    });
+
+    const searchOptions = ref([]);
+
+    const pagination = ref({
+      sortBy: "column",
+      descending: false,
+      page: 1,
+      rowsPerPage: 5,
+      rowsNumber: 0,
+    });
+
+    // get vendor
+    function getVendors(props) {
+      isLoading.value = true;
+      rows.value = [];
+
+      const { page, rowsPerPage } = props.pagination;
+
+      api({
+        method: "GET",
+        url: "vendors",
+        headers: useAuth.authKey,
+        params: {
+          pageIndex: page - 1,
+          pageSize: rowsPerPage,
+          pageNoLimit: false,
+        },
+      })
+        .then((res) => {
+          const vendorsList = res.data.documentList;
+          pagination.value.rowsNumber = res.data.documentListCount;
+
+          vendorsList.map((data) => {
+            rows.value.push(data);
+          });
+
+          pagination.value.page = page;
+          pagination.value.rowsPerPage = rowsPerPage;
+          isLoading.value = false;
+        })
+        .catch((err) => {
+          console.log(err);
+          isLoading.value = false;
+        });
+    }
+
+    // add vendor to server
+    function addVendor() {
+      addVendor_dialogBox.value = false;
+      api({
+        method: "POST",
+        url: "vendors/vendor",
+        headers: useAuth.authKey,
+        data: {
+          vendorName: newVendorDetails.value.vendorName,
+          contactNumber: newVendorDetails.value.contactNumber,
+          emailAddress: newVendorDetails.value.emailAddress,
+          address1: newVendorDetails.value.address1,
+          address2: newVendorDetails.value.address2,
+          city: newVendorDetails.value.city,
+          countryGeoId: newVendorDetails.value.countryGeoId.geoId,
+          stateProvinceGeoId: newVendorDetails.value.stateProvinceGeoId.geoId,
+          postalCode: newVendorDetails.value.postalCode,
+        },
+      })
+        .then((res) => {
+          addVendor_dialogBox.value = false;
+          rows.value = [];
+          pagination.value = {
+            sortBy: "column",
+            descending: false,
+            page: 1,
+            rowsPerPage: 5,
+            rowsNumber: 0,
+          };
+          getVendors(pagination.value);
+          $q.notify({
+            position: "top-right",
+            message: "Vendor added succesfully",
+            type: "positive",
+            icon: "done",
+          });
+        })
+        .catch((err) => {
+          addVendor_dialogBox.value = false;
+          console.log(err);
+        });
+    }
+
+    // add all countryList to vendor dialog box
+    function addCountryList() {
+      api({
+        method: "GET",
+        url: "geos",
+        headers: useAuth.authKey,
+      })
+        .then((res) => {
+          res.data.geoList.map((data) => {
+            countryList.value.push(data);
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    //add states to vendor dialog box
+    function getStateList(geoId) {
+      stateList.value = [];
+      editInput.value.stateName = "";
+      api({
+        method: "GET",
+        url: `geos/${geoId}/regions`,
+        headers: useAuth.authKey,
+      }).then((res) => {
+        const data = res.data.resultList;
+
+        stateList.value.push(...data);
+      });
+    }
+
+    //first letter of a world
+    function firstLetters(str) {
+      let words = str.split(" ");
+      let firstLetter1 = words[0].charAt(0).toUpperCase();
+      let firstLetter2 = words.length > 1 ? words[1].charAt(0) : "";
+      return firstLetter1 + firstLetter2;
+    }
+
+    // search vendor
+    async function searchFun(val, update) {
+      console.log(val);
+      isLoading.value = true;
+
+      await update(() => {
+        if (val != "") {
+          api({
+            method: "GET",
+            url: `vendors?anyField=${val}`,
+            headers: useAuth.authKey,
+          }).then((res) => {
+            searchOptions.value = [];
+
+            console.log(res.data.documentList);
+
+            res.data.documentList.map((data) => {
+              searchOptions.value.push(data);
+            });
+
+            isLoading.value = false;
+          });
+        } else {
+          searchOptions.value = [];
+          isLoading.value = false;
+        }
+      });
+    }
+
+    // edit vendor
+    function vendorInfo(id) {
+      router.push({
+        name: "vendorInfo_page",
+        params: {
+          vendorId: id,
+        },
+      });
+    }
+
+    //edit vendor submit
+    function editVendorSubmit() {
+      console.log(editInput.value);
+      api({
+        method: "PATCH",
+        url: "vendors/vendorContactInfo",
+        headers: useAuth.authKey,
+        data: {
+          partyId: editInput.value.partyId,
+          organizationName: editInput.value.organizationName,
+          contactNumber: editInput.value.contactNumber,
+          emailAddress: editInput.value.emailAddress,
+          address1: editInput.value.address1,
+          address2: editInput.value.address2,
+          city: editInput.value.city,
+          countryGeoId: editInput.value.country.geoId,
+          stateProvinceGeoId: editInput.value.state.geoId,
+          postalCode: editInput.value.postalCode,
+        },
+      })
+        .then((res) => {
+          rows.value = [];
+          getVendors();
+          $q.notify({
+            message: "succens",
+            type: "positive",
+            icon: "done",
+            position: "top-right",
+          });
+          editVendor_dialogBox.value = false;
+        })
+        .catch((err) => {
+          editVendor_dialogBox.value = false;
+
+          $q.notify({
+            message: "sorry, details not saved",
+            type: "warning",
+            icon: "error",
+          });
+        });
+    }
+
+    const isCountryValid = computed(() => {
+      if (
+        newVendorDetails.value.countryGeoId !== "" &&
+        newVendorDetails.value.countryGeoId !== null
+      ) {
+        return false;
+      } else {
+        // eslint-disable-next-line
+        newVendorDetails.value.stateProvinceGeoId = null;
+        return true;
+      }
+    });
+
+    onMounted(() => {
+      tableRef.value.requestServerInteraction();
+    });
+
+    return {
+      rows,
+      columns,
+      moreBtn,
+      addVendor_dialogBox,
+      editVendor_dialogBox,
+
+      firstLetters,
+      newVendorDetails,
+      pagination,
+      countryList,
+      stateList,
+
+      editInput,
+      getVendors,
+      addVendor,
+      addCountryList,
+      getStateList,
+
+      searchFun,
+      vendorInfo,
+      editVendorSubmit,
+      isCountryValid,
+      tableRef,
+      isLoading,
+      searchOptions,
+      model: ref(""),
+
+      // paginationMaxPages
+    };
+  },
+};
+</script>
+
+<style>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+.table-container {
+  width: 100%;
+}
+</style>
