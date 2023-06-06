@@ -3,6 +3,7 @@
     <!-- first row -->
     <div class="row justify-center q-py-md">
       <q-select
+        dense
         outlined
         rounded
         v-model="search"
@@ -574,7 +575,6 @@ export default {
         params["thruDate"] = correctDateRange.value.thruDate;
       }
 
-      params["pageSize"] = 100;
       console.log(params);
 
       api({
