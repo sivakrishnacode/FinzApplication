@@ -6,85 +6,90 @@
       style="width: 400px"
       v-if="!$q.screen.lt.md"
     >
-      <!-- Search bar -->
-
       <q-input rounded outlined label="Search" dense>
         <template #append>
           <q-icon name="search" />
         </template>
       </q-input>
 
-      <!-- add invoice btn -->
+      <!-- add vendor btn -->
       <q-btn
         rounded
         class="full-width"
         color="primary"
         label="Upload Invoice"
-        icon="add"
+        no-caps
+        icon="upload"
         no-wrap
         style="height: 20px"
       />
 
-      <q-tabs
-        v-model="invoiceListTab"
-        outside-arrows
-        mobile-arrows
-        class="bg-secondary text-white"
-        indicator-color="transparent"
-        active-class="text-weight-bold bg-red"
-        style="border-radius: 14px"
-        no-caps
-      >
-        <q-tab name="All" label="All" class="bg-secondary text-white" />
-        <q-tab name="UnPaid" label="UnPaid" class="bg-secondary text-white" />
-        <q-tab
-          name="PartialPaid"
-          label="PartialPaid"
-          class="bg-secondary text-white"
-        />
-        <q-tab name="Paid" label="Paid" class="bg-secondary text-white" />
-        <q-tab
-          name="Cancelled"
-          label="Cancelled"
-          class="bg-secondary text-white"
-        />
-      </q-tabs>
-
-      <!-- <q-scroll-area class="fit" visible="false"> -->
-      <!-- List -->
-      <q-list class="q-gutter-sm">
-        <q-item
-          v-for="data in 10"
-          :key="data"
-          active-class="bg-blue"
-          clickable
-          v-ripple
-          class="bg-secondary text-primary"
-          style="border-radius: 5px"
+      <!-- tabs -->
+      <div>
+        <q-tabs
+          v-model="currentTab"
+          active-color="white bg-primary"
+          class="q-mx-md bg-grey-2"
+          indicator-color="transparent"
+          no-caps
+          dense
+          style="border-radius: 12px"
         >
-          <!-- avator -->
-          <q-item-section avatar>
-            <q-avatar text-color="yellow">
-              <q-icon name="star" />
-            </q-avatar>
-          </q-item-section>
+          <q-tab
+            v-for="data in enumTabList"
+            :key="data"
+            :label="data.description"
+            :name="data.enumId"
+            @click="(currentTab = data.enumId), getInvoiceList()"
+          />
+        </q-tabs>
+      </div>
 
-          <!-- name -->
-          <q-item-section>
-            <q-item-label> data.organizationName </q-item-label>
-            <q-item-label class="text-white text-caption">
-              {{ data }}
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-      <!-- </q-scroll-area> -->
+      <q-scroll-area
+        class="q-pa-sm"
+        style="border: 1px solid gray; border-radius: 10px; height: 650px"
+      >
+        <!-- List -->
+        <q-list class="q-gutter-sm">
+          <q-item
+            v-for="data in invoiceList"
+            :key="data"
+            active-class="text-bold text-h6"
+            clickable
+            v-ripple
+            class="bg-secondary text-primary"
+            style="border-radius: 5px"
+          >
+            <!-- avator -->
+            <q-item-section class="">
+              <q-item-label class="text-bold">
+                {{ data.invoiceId }}
+              </q-item-label>
+              <q-item-label> {{ data.organizationName }} </q-item-label>
+              <q-item-label class="text-bold"> Vendor@mail.com </q-item-label>
+            </q-item-section>
+
+            <!-- name -->
+            <q-item-section avatar>
+              <q-item-label class="text-bold"
+                >Total: {{ data.invoiceTotal }}
+              </q-item-label>
+              <q-item-label>Unpaid: {{ data.unpaidTotal }} </q-item-label>
+              <q-item-label class="text-bold">
+                {{ data.statusId }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-scroll-area>
     </div>
 
-    <!-- Vendor Info side -->
-    <div class="q-gutter-y-md row justify-center full-width">
+    <!-- Invoice Info side -->
+    <div
+      class="q-gutter-y-md row justify-center full-width"
+      style="width: 700px"
+    >
       <!-- title -->
-
       <div class="row full-width justify-center">
         <div
           class="bg-secondary text-center"
@@ -93,17 +98,95 @@
           <div class="q-mt-md text-primary text-h6">Siva krishna {{ id }}</div>
           <div class="text-blue-grey-1">sivakrishnacoc@gmail.com</div>
         </div>
-        <!-- <div class="row justify-start content-center bg-red">
-          <q-btn icon="close" />
-        </div> -->
+      </div>
+
+      <!-- status -->
+      <div class="full-width row justify-center">
+        <div
+          class="row justify-between content-center q-pa-sm"
+          style="width: 700px; border-radius: 20px; border: 1px solid gray"
+        >
+          <div class="row content-center q-pl-md" style="font-size: 20px">
+            {{ invoiceDetail.statusId }}
+          </div>
+          <div class="row content-center q-gutter-x-sm">
+            <div v-for="data in toStatusFlow" :key="data">
+              <div v-if="data.description == 'Approved'">
+                <q-btn
+                  rounded
+                  label="Approve"
+                  color="primary"
+                  @click="changeInvoiceStatus(data)"
+                />
+              </div>
+
+              <div v-else-if="data.description == 'Cancelled'">
+                <q-btn
+                  rounded
+                  outline
+                  label="Cancel"
+                  color="primary"
+                  @click="changeInvoiceStatus(data)"
+                />
+              </div>
+
+              <div v-else-if="data.description == 'Payment Sent'">
+                <q-btn
+                  rounded
+                  label="Pay"
+                  color="primary"
+                  @click="changeInvoiceStatus(data)"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- body -->
-      <div class="row justify-center">
-        <div
-          class="item-center bg-secondary q-pa-lg"
-          style="border-radius: 17px; min-width: 700px; max-width: 900px"
-        >
+
+      <div
+        class="item-center bg-secondary q-pa-lg"
+        style="border-radius: 17px; min-width: 700px; max-width: 900px"
+      >
+        <!--  info -->
+        <div class="q-gutter-y-md">
+          <!-- vendor info -->
+          <q-item class="row justify-between text-primary">
+            <!-- left -->
+            <q-item-section>
+              <q-item-label class="text-primary text-weight-bold">
+                Sivakrishna
+              </q-item-label>
+              <q-item-label class="text-white text-caption">
+                sivakrishnacoc@gmail.com
+              </q-item-label>
+            </q-item-section>
+            <!-- right -->
+
+            <q-btn outline rounded color="primary" label="View"> </q-btn>
+          </q-item>
+
+          <!-- invoice file -->
+          <q-item class="row justify-between text-primary q-py-md">
+            <!-- left -->
+            <q-item-section>
+              <q-item-label class="text-primary text-weight-bold">
+                Invoice:
+              </q-item-label>
+              <q-item-label class="text-white text-caption">
+                Ragul.pdf
+              </q-item-label>
+            </q-item-section>
+            <!-- right -->
+
+            <q-btn outline rounded color="primary" label="View Invoice">
+            </q-btn>
+          </q-item>
+        </div>
+
+        <!-- list items -->
+        <div>
           <!-- columns -->
           <q-item class="row justify-between">
             <q-item-section class="col-1 text-weight-bold">
@@ -123,85 +206,66 @@
           <q-separator />
 
           <!-- rows -->
-          <q-list v-for="data in 6" :key="data">
+          <q-list
+            v-for="(data, index) in invoiceDetail.items"
+            :key="data.invoiceId"
+          >
             <q-item class="row justify-between text-primary">
-              <q-item-section class="col-1">{{ data }}</q-item-section>
-              <q-item-section class="col-4">Iphone 14</q-item-section>
-              <q-item-section class="col-2 row content-center"
-                >21</q-item-section
-              >
-              <q-item-section class="col-3 row content-center"
-                >$53456</q-item-section
-              >
+              <q-item-section class="col-1">{{ index + 1 }}</q-item-section>
+              <q-item-section class="col-4">{{
+                data.description
+              }}</q-item-section>
+              <q-item-section class="col-2 row content-center">
+                {{ data.quantity }}
+              </q-item-section>
+              <q-item-section class="col-3 row content-center">
+                {{ data.amount }}
+              </q-item-section>
             </q-item>
           </q-list>
 
           <q-separator />
 
-          <!-- total -->
-          <q-item class="row justify-end">
-            <q-item-section class="col-3 text-weight-bold text-primary text-h6">
-              Total:
-            </q-item-section>
-            <q-item-section class="col-3 text-weight-bold text-h5 text-primary">
-              $ 65376
-            </q-item-section>
-          </q-item>
+          <!-- totals -->
+
+          <div class="row justify-between q-pa-md">
+            <div class="text-weight-bold">Total</div>
+            <div>{{ invoiceDetail.invoiceTotal }}</div>
+          </div>
+
+          <div class="row justify-between q-pa-md">
+            <div class="text-weight-bold">Paid Amount:</div>
+            <div>
+              {{ invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal }}
+            </div>
+          </div>
+
+          <div class="row justify-between q-pa-md">
+            <div class="text-weight-bold">UnPaid Amount:</div>
+            <div>{{ invoiceDetail.unpaidTotal }}</div>
+          </div>
 
           <q-separator spaced />
+        </div>
 
-          <!-- Vendor Info -->
-          <q-item
-            class="row justify-between text-primary q-py-md"
-            style="border-radius: 5px"
+        <!-- invoice history -->
+        <div class="q-pa-md">
+          <div class="text-h6 text-primary">Invoice History:</div>
+          <div
+            class="row justify-between q-pa-md"
+            style="border: 1px solid gray"
           >
-            <q-item-section class="col-9">
-              <q-item-label class="text-primary text-weight-bold">
-                Sivakrishna
-              </q-item-label>
-              <q-item-label class="text-white text-caption">
-                sivakrishnacoc@gmail.com
-              </q-item-label>
-            </q-item-section>
-
-            <q-item-section class="col-3">
-              <q-btn
-                outline
-                rounded
-                color="primary"
-                icon="arrow_forward"
-                label="View Vendor"
-              >
-              </q-btn>
-            </q-item-section>
-          </q-item>
-
-          <!-- ststus -->
-          <!-- <q-item class="bg-blue">
-            <q-item-section>Invoice Status:</q-item-section>
-            <q-item-section> APPROVED </q-item-section>
-          </q-item> -->
-
-          <!-- note -->
-          <q-card
-            class="full-width no-shadow bg-orange-3 q-my-sm"
-            style="border: 2px solid orange"
-          >
-            <q-item>
-              <q-item-section>
-                <q-item-label overline>NOTE:</q-item-label>
-                <q-item-label>
-                  You can Pay the bill after the approval is complete !
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-card>
-
-          <!-- Submit btn -->
-          <q-item class="row justify-evenly">
-            <q-btn label="Cancel" rounded outline color="primary" />
-            <q-btn label="Approve" rounded color="primary" />
-          </q-item>
+            <div class="row content-center q-gutter-x-md">
+              <div class="text-h6">02-11-2022</div>
+              <div class="row content-center">06:45 AM</div>
+            </div>
+            <div class="">
+              <div class="text-white text-wight-bold" style="font-size: 20px">
+                Received
+              </div>
+              <div>by John Doe</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -210,22 +274,127 @@
 
 <script>
 import { useRoute } from "vue-router";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import { api } from "src/boot/axios";
+import { useAuthStore } from "src/stores/useAuthStore";
 
 export default {
   name: "invoiceInfo_page",
   setup() {
     const route = useRoute();
+    const useAuth = useAuthStore();
+
     const id = route.params.invoiceId;
 
-    const invoiceListTab = ref("All");
+    // side list items
+    const enumTabList = ref([]);
+    const currentTab = ref("allInvoice");
+    const invoiceList = ref([]);
+
+    // invoice info items
+    const invoiceDetail = ref("");
+    const toStatusFlow = ref([]);
+
+    function getTabEnumList() {
+      api({
+        method: "GET",
+        url: "enumeration",
+        headers: useAuth.authKey,
+        params: {
+          enumTypeId: "UIInvoiceStatus",
+        },
+      }).then(async (res) => {
+        res.data.enumerationList.map((data) => {
+          enumTabList.value.push(data);
+        });
+      });
+    }
+
+    function getInvoiceList() {
+      invoiceList.value = [];
+      api({
+        method: "GET",
+        headers: useAuth.authKey,
+        url: "invoices",
+        params: {
+          statusId: currentTab.value,
+        },
+      })
+        .then((res) => {
+          res.data.invoiceList.map((data) => {
+            invoiceList.value.push(data);
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    async function getInvoiceDetails(invoiseId) {
+      invoiceDetail.value = "";
+      await api({
+        method: "GET",
+        url: `invoices/${invoiseId}`,
+        headers: useAuth.authKey,
+      }).then((res) => {
+        invoiceDetail.value = res.data;
+      });
+      getToStatusFlow(invoiceDetail.value.statusId);
+    }
+
+    function getToStatusFlow(id) {
+      api({
+        method: "GET",
+        headers: useAuth.authKey,
+        url: "status/StatusFlowTransitionToDetail",
+        params: {
+          statusId: id,
+        },
+      }).then((data) => {
+        data.data.statusDetailList.map((d) => {
+          toStatusFlow.value.push(d);
+        });
+      });
+      console.log(toStatusFlow.value);
+    }
+
+    async function changeInvoiceStatus(statusIds) {
+      await api({
+        method: "POST",
+        headers: useAuth.authKey,
+        url: "invoices/invoiceStatusUpdate",
+        params: {
+          invoiceId: id,
+          vendorStatusId: statusIds.statusId,
+          toStatusId: statusIds.toStatusId,
+        },
+      }).then((data) => {
+        console.log(data);
+      });
+      getInvoiceDetails(route.params.invoiceId);
+    }
+
+    onMounted(() => {
+      getTabEnumList();
+      getInvoiceList();
+      getInvoiceDetails(route.params.invoiceId);
+    });
 
     return {
       id,
-      invoiceListTab,
+      // side list
+      invoiceList,
+      enumTabList,
+      getInvoiceList,
+      currentTab,
+
+      // invoice info side
+      invoiceDetail,
+      toStatusFlow,
+      changeInvoiceStatus,
     };
   },
 };
 </script>
 
-<style \></style>
+<style></style>
