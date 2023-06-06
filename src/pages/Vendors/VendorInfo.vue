@@ -25,14 +25,18 @@
         rounded
         class="full-width"
         color="primary"
-        label="Add Vendors"
+        label="Create Vendors"
+        no-caps
         icon="add"
-        @click="(addVendor_dialogBox = !addVendor_dialogBox), addCountryList()"
+        @click="(addVendor_dialogBox = true), addCountryList()"
         no-wrap
         style="height: 20px"
       />
 
-      <q-scroll-area class="fit full-height">
+      <q-scroll-area
+        class="q-pa-sm"
+        style="border: 1px solid gray; border-radius: 10px; height: 650px"
+      >
         <!-- List -->
         <q-list class="q-gutter-sm">
           <q-item
@@ -40,7 +44,7 @@
             :key="data"
             @click="vendorInfo(data.partyId), (tab = 'userDetails')"
             :active="$route.params.vendorId === data.partyId ? true : false"
-            active-class="bg-blue"
+            active-class="text-bold text-h6"
             clickable
             v-ripple
             class="bg-secondary text-primary"
@@ -187,9 +191,9 @@
     </div>
 
     <!-- Vendor Info side -->
-    <div class="q-gutter-y-md row justify-center full-width">
+    <div class="row justify-center full-width">
       <!-- title -->
-      <div class="row justify-center full-width">
+      <div class="row justify-center full-width bg-red">
         <div
           class="bg-secondary text-center"
           style="border-radius: 0 0 70px 70px; height: 80px; width: 600px"
@@ -204,7 +208,7 @@
       </div>
 
       <!-- Nav bar btn -->
-      <div class="full-width">
+      <div class="full-width bg-info">
         <q-tabs no-caps content-class="row justify-evenly">
           <q-btn
             label="Invoices"
@@ -238,7 +242,7 @@
       </div>
 
       <!-- vendo info body -->
-      <div class="row justify-center full-width">
+      <div class="row justify-center full-width bg-red">
         <q-tabs
           v-model="tab"
           dense
@@ -266,107 +270,115 @@
         </q-tabs>
       </div>
 
-      <div class="row justify-center">
+      <div class="row justify-center bg-green">
         <!-- Two panels -->
         <q-tab-panels v-model="tab">
           <!-- profile Details -->
-          <q-tab-panel
-            name="userDetails"
-            class="bg-secondary q-pa-md"
-            style="border-radius: 10px"
-          >
-            <div
-              class="text-primary text-h6 row justify-center full-width q-pb-sm"
-            >
-              Profile Details
-            </div>
+          <q-tab-panel name="userDetails">
+            <div class="q-pa-md bg-secondary" style="border-radius: 20px">
+              <!-- title -->
+              <div class="text-primary text-bold row justify-center full-width">
+                Profile Details
+              </div>
 
-            <q-separator spaced />
+              <q-separator spaced />
 
-            <div class="row q-gutter-y-xl">
-              <!-- first row -->
-              <div class="row full-width items-center justify-center">
-                <div class="col-5 q-gutter-x-xl">
-                  <div>Vendor Name:</div>
-                  <div class="text-primary text-h6">
-                    {{ vendorInfoData.organizationName }}
+              <div class="row q-gutter-y-lg">
+                <!-- first row -->
+                <div class="row full-width items-center justify-center">
+                  <div class="col-5 q-gutter-x-xl">
+                    <div>Vendor Name:</div>
+                    <div class="text-primary" style="font-size: 19px">
+                      {{ vendorInfoData.organizationName }}
+                    </div>
+                  </div>
+
+                  <div class="col-5 q-gutter-x-xl">
+                    <div>User ID:</div>
+                    <div class="text-primary" style="font-size: 19px">
+                      {{ vendorInfoData.emailAddress }}
+                    </div>
                   </div>
                 </div>
 
-                <div class="col-5 q-gutter-x-xl">
-                  <div>User ID:</div>
-                  <div class="text-primary text-h6">
-                    {{ vendorInfoData.emailAddress }}
+                <!-- second row -->
+                <div class="row full-width items-center justify-center">
+                  <div class="col-5 q-gutter-x-xl">
+                    <div>Contect No:</div>
+                    <div class="text-primary" style="font-size: 19px">
+                      {{ vendorInfoData.contactNumber }}
+                    </div>
+                  </div>
+
+                  <div class="col-5 q-gutter-x-xl">
+                    <div>Contect No 2:</div>
+                    <div class="text-primary" style="font-size: 19px">
+                      {{ vendorInfoData.contactNumber }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- third row -->
+                <div class="row full-width items-center justify-center">
+                  <div class="col-5 q-gutter-x-xl">
+                    <div>Address Line 1:</div>
+                    <div class="text-primary" style="font-size: 19px">
+                      {{ vendorInfoData.address?.address1 }}
+                    </div>
+                  </div>
+
+                  <div class="col-5 q-gutter-x-xl">
+                    <div>Address Line 2:</div>
+                    <div class="text-primary" style="font-size: 19px">
+                      {{ vendorInfoData.address?.address2 }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4 row -->
+                <div class="row full-width items-center justify-center">
+                  <div class="col-5 q-gutter-x-xl">
+                    <div>City:</div>
+                    <div class="text-primary" style="font-size: 19px">
+                      {{ vendorInfoData.address?.city }}
+                    </div>
+                  </div>
+
+                  <div class="col-5 q-gutter-x-xl">
+                    <div>Country:</div>
+                    <div class="text-primary" style="font-size: 19px">
+                      {{ vendorInfoData.address?.countryName }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 5th row -->
+                <div class="row full-width items-center justify-center">
+                  <div class="col-5 q-gutter-x-xl">
+                    <div>State:</div>
+                    <div class="text-primary" style="font-size: 19px">
+                      {{ vendorInfoData.address?.stateName }}
+                    </div>
+                  </div>
+
+                  <div class="col-5 q-gutter-x-xl">
+                    <div>Pincode:</div>
+                    <div class="text-primary" style="font-size: 19px">
+                      {{ vendorInfoData.address?.postalCode }}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <!-- second row -->
-              <div class="row full-width items-center justify-center">
-                <div class="col-5 q-gutter-x-xl">
-                  <div>Contect No:</div>
-                  <div class="text-primary text-h6">
-                    {{ vendorInfoData.contactNumber }}
-                  </div>
-                </div>
-
-                <div class="col-5 q-gutter-x-xl">
-                  <div>Contect No 2:</div>
-                  <div class="text-primary text-h6">
-                    {{ vendorInfoData.contactNumber }}
-                  </div>
-                </div>
-              </div>
-
-              <!-- third row -->
-              <div class="row full-width items-center justify-center">
-                <div class="col-5 q-gutter-x-xl">
-                  <div>Address Line 1:</div>
-                  <div class="text-primary text-h6">
-                    {{ vendorInfoData.address?.address1 }}
-                  </div>
-                </div>
-
-                <div class="col-5 q-gutter-x-xl">
-                  <div>Address Line 2:</div>
-                  <div class="text-primary text-h6">
-                    {{ vendorInfoData.address?.address2 }}
-                  </div>
-                </div>
-              </div>
-
-              <!-- 4 row -->
-              <div class="row full-width items-center justify-center">
-                <div class="col-5 q-gutter-x-xl">
-                  <div>City:</div>
-                  <div class="text-primary text-h6">
-                    {{ vendorInfoData.address?.city }}
-                  </div>
-                </div>
-
-                <div class="col-5 q-gutter-x-xl">
-                  <div>Country:</div>
-                  <div class="text-primary text-h6">
-                    {{ vendorInfoData.address?.countryName }}
-                  </div>
-                </div>
-              </div>
-
-              <!-- 5th row -->
-              <div class="row full-width items-center justify-center">
-                <div class="col-5 q-gutter-x-xl">
-                  <div>State:</div>
-                  <div class="text-primary text-h6">
-                    {{ vendorInfoData.address?.stateName }}
-                  </div>
-                </div>
-
-                <div class="col-5 q-gutter-x-xl">
-                  <div>Pincode:</div>
-                  <div class="text-primary text-h6">
-                    {{ vendorInfoData.address?.postalCode }}
-                  </div>
-                </div>
+              <div class="row justify-end">
+                <q-btn
+                  icon="edit"
+                  label="Edit Profile"
+                  size="15px"
+                  flat
+                  class="text-white bg-primary"
+                  rounded
+                />
               </div>
             </div>
           </q-tab-panel>
