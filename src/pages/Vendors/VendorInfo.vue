@@ -71,7 +71,7 @@
       </q-scroll-area>
 
       <!-- Add vendor Dialog Box -->
-      <q-dialog v-model="addVendor_dialogBox">
+      <!-- <q-dialog v-model="addVendor_dialogBox">
         <q-card style="width: 600px; border-radius: 12px">
           <q-card-section>
             <q-form @submit="addVendor" class="q-gutter-y-sm">
@@ -187,13 +187,180 @@
             </q-form>
           </q-card-section>
         </q-card>
+      </q-dialog> -->
+
+      <q-dialog v-model="addVendor_dialogBox" full-width>
+        <q-stepper
+          v-model="step"
+          ref="stepper"
+          animated
+          done-color="deep-orange"
+          active-color="purple"
+          inactive-color="secondary"
+          style="width: 100px"
+        >
+          <q-step
+            :name="1"
+            title="Profile Details"
+            icon="person"
+            :done="step > 1"
+          >
+            <q-form @submit="addVendor" class="q-gutter-y-sm">
+              <div
+                style="border-radius: 15px"
+                class="text-primary text-center text-bold"
+              >
+                ADD VENDOR
+              </div>
+              <q-input
+                dense
+                type="text"
+                label="Vendor Name"
+                v-model="newVendorDetails.vendorName"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'First Name Required',
+                  (val) => (val && val.length > 2) || 'Enter minimun 2 letters',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                class="contact_num_input"
+                type="number"
+                label="Contact Number"
+                v-model="newVendorDetails.contactNumber"
+                prefix="+91"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'Number Required',
+                  (val) => (val && val.length >= 10) || 'Enter Full number',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Email"
+                v-model="newVendorDetails.emailAddress"
+                :rules="[
+                  (val) =>
+                    (val && val.length > 0) || 'Please Enter a Email address',
+                  (val) =>
+                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+                      val
+                    ) || 'Please enter a valid email address',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Adderss 1"
+                v-model="newVendorDetails.address1"
+                :rules="[
+                  (val) => (val && val.length > 3) || 'Please Enter Address',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Address 2"
+                v-model="newVendorDetails.address2"
+                hint="optional"
+                rules="[]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="City"
+                v-model="newVendorDetails.city"
+                :rules="[(val) => (val && val.length > 2) || 'Enter a City']"
+              ></q-input>
+              <q-select
+                v-model="newVendorDetails.countryGeoId"
+                dense
+                type="text"
+                label="Country"
+                option-label="geoName"
+                option-value="geoId"
+                @update:model-value="
+                  getStateList(newVendorDetails.countryGeoId.geoId)
+                "
+                :options="countryList"
+                :rules="[(val) => val || 'select  the country']"
+              ></q-select>
+              <q-select
+                :disable="isCountryValid"
+                dense
+                option-label="geoName"
+                option-value="geoId"
+                type="text"
+                label="State"
+                :options="stateList"
+                v-model="newVendorDetails.stateProvinceGeoId"
+                :rules="[(val) => val || 'Select the State']"
+              ></q-select>
+              <q-input
+                dense
+                type="text"
+                label="Postal Code"
+                v-model="newVendorDetails.postalCode"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'Enter a Postalcode',
+                ]"
+              ></q-input>
+
+              <div class="row justify-evenly q-py-md">
+                <q-btn rounded label="Cancel" color="red" v-close-popup></q-btn>
+                <q-btn
+                  rounded
+                  label="Submit"
+                  color="primary"
+                  type="submit"
+                ></q-btn>
+              </div>
+            </q-form>
+          </q-step>
+
+          <q-step
+            :name="2"
+            title="Create an ad group"
+            caption="Optional"
+            icon="create_new_folder"
+            :done="step > 2"
+          >
+            An ad group contains one or more ads which target a shared set of
+            keywords.
+          </q-step>
+
+          <q-step :name="3" title="Create an ad" icon="add_comment">
+            Try out different ad text to see what brings in the most customers,
+            and learn how to enhance your ads using features like ad extensions.
+            If you run into any problems with your ads, find out how to tell if
+            they're running and how to resolve approval issues.
+          </q-step>
+
+          <template v-slot:navigation>
+            <q-stepper-navigation>
+              <q-btn
+                @click="$refs.stepper.next()"
+                color="deep-orange"
+                :label="step === 3 ? 'Finish' : 'Continue'"
+              />
+              <q-btn
+                v-if="step > 1"
+                flat
+                color="deep-orange"
+                @click="$refs.stepper.previous()"
+                label="Back"
+                class="q-ml-sm"
+              />
+            </q-stepper-navigation>
+          </template>
+        </q-stepper>
       </q-dialog>
     </div>
 
     <!-- Vendor Info side -->
-    <div class="row justify-center full-width">
+    <div class="row justify-center full-width full-height q-gutter-y-md">
       <!-- title -->
-      <div class="row justify-center full-width bg-red">
+      <div class="row justify-center full-width">
         <div
           class="bg-secondary text-center"
           style="border-radius: 0 0 70px 70px; height: 80px; width: 600px"
@@ -208,7 +375,7 @@
       </div>
 
       <!-- Nav bar btn -->
-      <div class="full-width bg-info">
+      <div class="full-width">
         <q-tabs no-caps content-class="row justify-evenly">
           <q-btn
             label="Invoices"
@@ -242,7 +409,7 @@
       </div>
 
       <!-- vendo info body -->
-      <div class="row justify-center full-width bg-red">
+      <div class="row justify-center full-width">
         <q-tabs
           v-model="tab"
           dense
@@ -270,7 +437,7 @@
         </q-tabs>
       </div>
 
-      <div class="row justify-center bg-green">
+      <div class="row justify-center">
         <!-- Two panels -->
         <q-tab-panels v-model="tab">
           <!-- profile Details -->
@@ -860,6 +1027,7 @@ export default {
 
     const addVendor_dialogBox = ref(false);
     const addBank_dialogBox = ref(false);
+    const step = ref(1);
     const newVendorDetails = ref([]);
     const newBankAccountDetails = ref({});
     const countryList = ref([]);
@@ -1134,6 +1302,7 @@ export default {
       vendorInfo,
       addVendor_dialogBox,
       addBank_dialogBox,
+      step,
       tab,
       vendorInfoData,
       searchVendor,

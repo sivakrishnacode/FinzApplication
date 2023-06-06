@@ -32,7 +32,7 @@ const routes = [
       {
         path: "accounting",
         name: "accounting_page",
-        component: () => import("pages/Accounting.vue"),
+        component: () => import("pages/Accounting/Accounting.vue"),
       },
       {
         path: "payment",

@@ -46,6 +46,7 @@
         </template>
       </q-select>
 
+      <!-- add vendor btn -->
       <q-btn
         flat
         no-wrap
@@ -58,6 +59,125 @@
         rounded
       >
       </q-btn>
+
+      <!-- Add vendor Dialog Box -->
+      <q-dialog v-model="addVendor_dialogBox">
+        <q-card style="width: 600px; border-radius: 12px">
+          <q-card-section>
+            <q-form @submit="addVendor" class="q-gutter-y-sm">
+              <div
+                style="border-radius: 15px"
+                class="text-primary text-center text-bold"
+              >
+                ADD VENDOR
+              </div>
+              <q-input
+                dense
+                type="text"
+                label="Vendor Name"
+                v-model="newVendorDetails.vendorName"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'First Name Required',
+                  (val) => (val && val.length > 2) || 'Enter minimun 2 letters',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                class="contact_num_input"
+                type="number"
+                label="Contact Number"
+                v-model="newVendorDetails.contactNumber"
+                prefix="+91"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'Number Required',
+                  (val) => (val && val.length >= 10) || 'Enter Full number',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Email"
+                v-model="newVendorDetails.emailAddress"
+                :rules="[
+                  (val) =>
+                    (val && val.length > 0) || 'Please Enter a Email address',
+                  (val) =>
+                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+                      val
+                    ) || 'Please enter a valid email address',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Adderss 1"
+                v-model="newVendorDetails.address1"
+                :rules="[
+                  (val) => (val && val.length > 3) || 'Please Enter Address',
+                ]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="Address 2"
+                v-model="newVendorDetails.address2"
+                hint="optional"
+                rules="[]"
+              ></q-input>
+              <q-input
+                dense
+                type="text"
+                label="City"
+                v-model="newVendorDetails.city"
+                :rules="[(val) => (val && val.length > 2) || 'Enter a City']"
+              ></q-input>
+              <q-select
+                v-model="newVendorDetails.countryGeoId"
+                dense
+                type="text"
+                label="Country"
+                option-label="geoName"
+                option-value="geoId"
+                @update:model-value="
+                  getStateList(newVendorDetails.countryGeoId.geoId)
+                "
+                :options="countryList"
+                :rules="[(val) => val || 'select  the country']"
+              ></q-select>
+              <q-select
+                :disable="isCountryValid"
+                dense
+                option-label="geoName"
+                option-value="geoId"
+                type="text"
+                label="State"
+                :options="stateList"
+                v-model="newVendorDetails.stateProvinceGeoId"
+                :rules="[(val) => val || 'Select the State']"
+              ></q-select>
+              <q-input
+                dense
+                type="text"
+                label="Postal Code"
+                v-model="newVendorDetails.postalCode"
+                :rules="[
+                  (val) => (val && val.length > 0) || 'Enter a Postalcode',
+                ]"
+              ></q-input>
+
+              <div class="row justify-evenly q-py-md">
+                <q-btn rounded label="Cancel" color="red" v-close-popup></q-btn>
+                <q-btn
+                  rounded
+                  label="Submit"
+                  color="primary"
+                  type="submit"
+                ></q-btn>
+              </div>
+            </q-form>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </div>
 
     <!-- <q-separator /> -->
@@ -79,7 +199,7 @@
         hide-bottom
       >
         <!-- top -->
-        <!-- <template v-slot:top>
+        <template v-slot:top>
           <div class="full-width row justify-end">
             <div class="row no-wrap">
               <div class="row content-center q-pr-md">Rows per page :</div>
@@ -93,7 +213,7 @@
               />
             </div>
           </div>
-        </template> -->
+        </template>
 
         <!-- header -->
         <template v-slot:header="props">
@@ -249,237 +369,6 @@
           "
         />
       </div>
-
-      <!-- Add vendor Dialog Box -->
-      <q-dialog v-model="addVendor_dialogBox">
-        <q-card style="width: 600px; border-radius: 12px">
-          <q-card-section>
-            <q-form @submit="addVendor" class="q-gutter-y-sm">
-              <div
-                style="border-radius: 15px"
-                class="text-primary text-center text-bold"
-              >
-                ADD VENDOR
-              </div>
-              <q-input
-                dense
-                type="text"
-                label="Vendor Name"
-                v-model="newVendorDetails.vendorName"
-                :rules="[
-                  (val) => (val && val.length > 0) || 'First Name Required',
-                  (val) => (val && val.length > 2) || 'Enter minimun 2 letters',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                class="contact_num_input"
-                type="number"
-                label="Contact Number"
-                v-model="newVendorDetails.contactNumber"
-                prefix="+91"
-                :rules="[
-                  (val) => (val && val.length > 0) || 'Number Required',
-                  (val) => (val && val.length >= 10) || 'Enter Full number',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Email"
-                v-model="newVendorDetails.emailAddress"
-                :rules="[
-                  (val) =>
-                    (val && val.length > 0) || 'Please Enter a Email address',
-                  (val) =>
-                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-                      val
-                    ) || 'Please enter a valid email address',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Adderss 1"
-                v-model="newVendorDetails.address1"
-                :rules="[
-                  (val) => (val && val.length > 3) || 'Please Enter Address',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Address 2"
-                v-model="newVendorDetails.address2"
-                hint="optional"
-                rules="[]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="City"
-                v-model="newVendorDetails.city"
-                :rules="[(val) => (val && val.length > 2) || 'Enter a City']"
-              ></q-input>
-              <q-select
-                v-model="newVendorDetails.countryGeoId"
-                dense
-                type="text"
-                label="Country"
-                option-label="geoName"
-                option-value="geoId"
-                @update:model-value="
-                  getStateList(newVendorDetails.countryGeoId.geoId)
-                "
-                :options="countryList"
-                :rules="[(val) => val || 'select  the country']"
-              ></q-select>
-              <q-select
-                :disable="isCountryValid"
-                dense
-                option-label="geoName"
-                option-value="geoId"
-                type="text"
-                label="State"
-                :options="stateList"
-                v-model="newVendorDetails.stateProvinceGeoId"
-                :rules="[(val) => val || 'Select the State']"
-              ></q-select>
-              <q-input
-                dense
-                type="text"
-                label="Postal Code"
-                v-model="newVendorDetails.postalCode"
-                :rules="[
-                  (val) => (val && val.length > 0) || 'Enter a Postalcode',
-                ]"
-              ></q-input>
-
-              <div class="row justify-evenly q-py-md">
-                <q-btn rounded label="Cancel" color="red" v-close-popup></q-btn>
-                <q-btn
-                  rounded
-                  label="Submit"
-                  color="primary"
-                  type="submit"
-                ></q-btn>
-              </div>
-            </q-form>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-
-      <!-- edit vendor Dialog box -->
-      <q-dialog v-model="editVendor_dialogBox">
-        <q-card style="width: 500px">
-          <q-card-section>
-            <q-form @submit="editVendorSubmit" class="q-gutter-y-sm">
-              <div
-                style="border-radius: 15px"
-                class="text-primary text-center text-bold q-pa-md"
-              >
-                EDIT VENDOR
-              </div>
-              <q-input
-                dense
-                type="text"
-                label="Vendor Name"
-                v-model="editInput.organizationName"
-                :rules="[
-                  (val) => (val && val.length > 0) || 'First Name Required',
-                  (val) => (val && val.length > 1) || 'Enter minimun 2 letters',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Contact Number"
-                v-model="editInput.contactNumber"
-                prefix="+91"
-                :rules="[
-                  (val) => (val && val.length > 0) || 'Number Required',
-                  (val) => (val && val.length >= 10) || 'Enter Full number',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Email"
-                v-model="editInput.emailAddress"
-                :rules="[
-                  (val) =>
-                    (val && val.length > 0) || 'Please Enter a Email address',
-                  (val) =>
-                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-                      val
-                    ) || 'Please enter a valid email address',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Adderss 1"
-                v-model="editInput.address1"
-                :rules="[
-                  (val) => (val && val.length > 3) || 'Please Enter Address',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Address 2"
-                v-model="editInput.address2"
-                rules="[]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="City"
-                v-model="editInput.city"
-                :rules="[(val) => (val && val.length > 2) || 'Enter a City']"
-              ></q-input>
-              <q-select
-                dense
-                type="text"
-                label="Country"
-                option-value="geoId"
-                option-label="geoName"
-                v-model="editInput.country"
-                @update:model-value="(val) => getStateList(val.geoId)"
-                :options="countryList"
-              ></q-select>
-              <q-select
-                dense
-                type="text"
-                label="State"
-                option-label="geoName"
-                option-value="geoId"
-                v-model="editInput.state"
-                :options="stateList"
-              ></q-select>
-              <q-input
-                dense
-                type="text"
-                label="Postal Code"
-                v-model="editInput.postalCode"
-                :rules="[
-                  (val) => (val && val.length > 0) || 'Enter a Postalcode',
-                ]"
-              ></q-input>
-
-              <div class="row justify-evenly q-py-md">
-                <q-btn rounded label="Cancel" color="red" v-close-popup></q-btn>
-                <q-btn
-                  rounded
-                  label="Update"
-                  color="primary"
-                  type="submit"
-                ></q-btn>
-              </div>
-            </q-form>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
     </div>
   </div>
 </template>
@@ -506,16 +395,8 @@ export default {
     const stateList = ref([]);
 
     const moreBtn = ref(false);
-    const editInput = ref({
-      organizationName: "",
-      emailAddress: "",
-      contactNumber: "",
-      status: "",
-      partyId: "id",
-    });
 
     const addVendor_dialogBox = ref(false);
-    const editVendor_dialogBox = ref(false);
 
     const rows = ref([]);
     const columns = [
@@ -743,48 +624,6 @@ export default {
       });
     }
 
-    //edit vendor submit
-    function editVendorSubmit() {
-      console.log(editInput.value);
-      api({
-        method: "PATCH",
-        url: "vendors/vendorContactInfo",
-        headers: useAuth.authKey,
-        data: {
-          partyId: editInput.value.partyId,
-          organizationName: editInput.value.organizationName,
-          contactNumber: editInput.value.contactNumber,
-          emailAddress: editInput.value.emailAddress,
-          address1: editInput.value.address1,
-          address2: editInput.value.address2,
-          city: editInput.value.city,
-          countryGeoId: editInput.value.country.geoId,
-          stateProvinceGeoId: editInput.value.state.geoId,
-          postalCode: editInput.value.postalCode,
-        },
-      })
-        .then((res) => {
-          rows.value = [];
-          getVendors();
-          $q.notify({
-            message: "succens",
-            type: "positive",
-            icon: "done",
-            position: "top-right",
-          });
-          editVendor_dialogBox.value = false;
-        })
-        .catch((err) => {
-          editVendor_dialogBox.value = false;
-
-          $q.notify({
-            message: "sorry, details not saved",
-            type: "warning",
-            icon: "error",
-          });
-        });
-    }
-
     const isCountryValid = computed(() => {
       if (
         newVendorDetails.value.countryGeoId !== "" &&
@@ -807,7 +646,6 @@ export default {
       columns,
       moreBtn,
       addVendor_dialogBox,
-      editVendor_dialogBox,
 
       firstLetters,
       newVendorDetails,
@@ -815,7 +653,6 @@ export default {
       countryList,
       stateList,
 
-      editInput,
       getVendors,
       addVendor,
       addCountryList,
@@ -823,7 +660,7 @@ export default {
 
       searchFun,
       vendorInfo,
-      editVendorSubmit,
+
       isCountryValid,
       tableRef,
       isLoading,
@@ -836,14 +673,4 @@ export default {
 };
 </script>
 
-<style>
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-</style>
+<style></style>
