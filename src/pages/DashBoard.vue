@@ -19,7 +19,7 @@
             </q-item-section>
           </q-item>
 
-          <q-input square outlined rounded v-model="text" style="width: 360px">
+          <q-input square outlined rounded style="width: 360px">
             <template v-slot:prepend>
               <q-icon name="search" />
             </template>

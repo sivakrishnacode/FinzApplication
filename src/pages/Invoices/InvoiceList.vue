@@ -353,7 +353,6 @@
         :rows="rows"
         :columns="columns"
         separator="horizontal"
-        style="border: 1px solid gray"
         class="q-py-md"
         flat
         hide-bottom
