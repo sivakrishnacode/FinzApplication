@@ -144,27 +144,31 @@
       </div>
 
       <!-- body -->
-
       <div
         class="item-center bg-secondary q-pa-lg"
         style="border-radius: 17px; min-width: 700px; max-width: 900px"
       >
-        <!--  info -->
         <div class="q-gutter-y-md">
           <!-- vendor info -->
           <q-item class="row justify-between text-primary">
             <!-- left -->
             <q-item-section>
               <q-item-label class="text-primary text-weight-bold">
-                Sivakrishna
+                {{ invoiceDetail.fromParty?.organization.organizationName }}
               </q-item-label>
               <q-item-label class="text-white text-caption">
-                sivakrishnacoc@gmail.com
+                email not Received
               </q-item-label>
             </q-item-section>
             <!-- right -->
 
-            <q-btn outline rounded color="primary" label="View"> </q-btn>
+            <q-btn
+              outline
+              rounded
+              color="primary"
+              label="View"
+              @click="vendoPage(invoiceDetail.fromParty?.partyId)"
+            />
           </q-item>
 
           <!-- invoice file -->
@@ -175,7 +179,7 @@
                 Invoice:
               </q-item-label>
               <q-item-label class="text-white text-caption">
-                Ragul.pdf
+                {{ invoiceDetail.externalId }}
               </q-item-label>
             </q-item-section>
             <!-- right -->
@@ -273,7 +277,7 @@
 </template>
 
 <script>
-import { useRoute } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
 import { api } from "src/boot/axios";
 import { useAuthStore } from "src/stores/useAuthStore";
@@ -281,6 +285,7 @@ import { useAuthStore } from "src/stores/useAuthStore";
 export default {
   name: "invoiceInfo_page",
   setup() {
+    const router = useRouter();
     const route = useRoute();
     const useAuth = useAuthStore();
 
@@ -339,6 +344,7 @@ export default {
       }).then((res) => {
         invoiceDetail.value = res.data;
       });
+      console.log(invoiceDetail.value);
       getToStatusFlow(invoiceDetail.value.statusId);
     }
 
@@ -356,7 +362,6 @@ export default {
           toStatusFlow.value.push(d);
         });
       });
-      console.log(toStatusFlow.value);
     }
 
     async function changeInvoiceStatus(statusIds) {
@@ -375,14 +380,25 @@ export default {
       getInvoiceDetails(route.params.invoiceId);
     }
 
+    function vendoPage(id) {
+      router.push({
+        name: "vendorInfo_page",
+        params: {
+          vendorId: id,
+        },
+      });
+    }
+
     onMounted(() => {
+      getInvoiceDetails(route.params.invoiceId);
       getTabEnumList();
       getInvoiceList();
-      getInvoiceDetails(route.params.invoiceId);
     });
 
     return {
       id,
+      vendoPage,
+
       // side list
       invoiceList,
       enumTabList,

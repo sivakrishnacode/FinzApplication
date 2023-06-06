@@ -573,6 +573,8 @@ export default {
         params["fromDate"] = correctDateRange.value.fromDate;
         params["thruDate"] = correctDateRange.value.thruDate;
       }
+
+      params["pageSize"] = 100;
       console.log(params);
 
       api({
