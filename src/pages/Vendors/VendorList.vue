@@ -1,21 +1,19 @@
 <template>
-  <div class="q-mx-sm q-my-md q-gutter-y-sm q-px-xl">
-    <!-- list -->
-    <div class="row justify-center q-gutter-x-md no-wrap items-center">
+  <div class="q-mx-sm q-my-md q-gutter-y-md q-px-xl">
+    <!-- search and add btn -->
+    <div class="row justify-center q-gutter-x-md no-wrap">
       <q-select
+        dense
         outlined
         rounded
         v-model="model"
-        clearable
         use-input
-        hide-selected
         fill-input
-        input-debounce="0"
         option-label="organizationName"
         option-value="partyId"
         :options="searchOptions"
         @filter="searchFun"
-        :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
+        :style="$q.screen.lt.sm ? { width: '350px' } : { width: '450px' }"
       >
         <template #append>
           <q-icon name="search" />
@@ -49,25 +47,25 @@
       </q-select>
 
       <q-btn
-        size="14px"
+        flat
         no-wrap
-        :label="$q.screen.lt.sm ? '' : 'Add Vendor'"
+        no-caps
+        :label="$q.screen.lt.sm ? '' : 'Create Vendor'"
         icon="add"
         @click="(addVendor_dialogBox = !addVendor_dialogBox), addCountryList()"
         :round="$q.screen.lt.sm ? true : false"
-        color="primary"
+        class="bg-primary text-white"
         rounded
       >
       </q-btn>
     </div>
 
-    <q-separator />
+    <!-- <q-separator /> -->
 
     <!-- table Container -->
     <div class="table-container">
       <q-table
         ref="tableRef"
-        title="Vendors"
         :rows="rows"
         :columns="columns"
         row-key="name"
@@ -77,32 +75,33 @@
         separator="horizontal"
         style="border-radius: 12px"
         class="q-py-md"
+        flat
         hide-bottom
       >
         <!-- top -->
-        <template v-slot:top>
-          <div class="full-width row justify-between">
-            <div class="text-weight-bold row content-center text-h6">
-              Vendors
-            </div>
-            <div class="row">
+        <!-- <template v-slot:top>
+          <div class="full-width row justify-end">
+            <div class="row no-wrap">
               <div class="row content-center q-pr-md">Rows per page :</div>
               <q-select
                 style="width: 50px"
                 @update:model-value="tableRef.requestServerInteraction()"
                 v-model="pagination.rowsPerPage"
+                outlined
                 filled
                 :options="[2, 4, 6, 10, 50, 20]"
               />
             </div>
           </div>
-        </template>
+        </template> -->
 
         <!-- header -->
         <template v-slot:header="props">
-          <q-tr :props="props" class="text-weight-bold text-h5">
+          <q-tr :props="props" class="text-weight-bold text-primary">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-              {{ col.label }}
+              <div style="font-size: larger">
+                {{ col.label }}
+              </div>
             </q-th>
           </q-tr>
         </template>
@@ -113,6 +112,7 @@
             :props="props"
             class="text-center cursor-pointer"
             @click="vendorInfo(props.row.partyId)"
+            style="border: 2px solid gray"
           >
             <!-- profile -->
             <q-td key="profile">
@@ -125,19 +125,29 @@
 
             <!-- org name -->
             <q-td key="organizationname">
-              <div class="text-bold">
+              <div style="font-size: 15px">
                 {{ props.row.organizationName }}
               </div>
             </q-td>
 
             <!-- email -->
             <q-td key="email">
-              {{ props.row.contactMechs[0].infoString }}
+              <div style="font-size: 15px">
+                {{ props.row.contactMechs[0].infoString }}
+              </div>
             </q-td>
 
             <!-- contact num -->
             <q-td key="contactNumber">
-              +91 {{ props.row.contactMechs[1].contactNumber }}
+              <div style="font-size: 15px">
+                +91 {{ props.row.contactMechs[1].contactNumber }}
+              </div>
+            </q-td>
+
+            <q-td key="location">
+              <div style="font-size: 15px">
+                {{ props.row.contactMechs[2].city }}
+              </div>
             </q-td>
 
             <!-- status -->
@@ -208,11 +218,6 @@
           </q-tr>
         </template>
 
-        <!-- bottom -->
-        <!-- <template v-slot:bottom>
-
-        </template> -->
-
         <!-- no-data -->
         <template v-slot:no-data>NO Data</template>
 
@@ -221,8 +226,10 @@
           <q-inner-loading showing color="primary" />
         </template>
       </q-table>
+
+      <!-- paginatio btn -->
       <div
-        class="row justify-center q-ma-md"
+        class="row justify-evenly q-ma-md"
         v-if="pagination.rowsNumber <= 0 ? false : true"
       >
         <q-pagination
@@ -537,6 +544,12 @@ export default {
         align: "center",
       },
       {
+        name: "location",
+        field: "location",
+        label: "Location",
+        align: "center",
+      },
+      {
         name: "status",
         field: "status",
         label: "Status",
@@ -832,8 +845,5 @@ input::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
-}
-.table-container {
-  width: 100%;
 }
 </style>

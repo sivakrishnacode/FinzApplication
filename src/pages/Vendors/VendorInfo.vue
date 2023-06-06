@@ -212,6 +212,8 @@
             icon="receipt_long"
             class="bg-primary text-white q-pa-md"
             style="border-radius: 30px; width: 160px"
+            no-caps
+            flat
           />
           <q-btn
             label="Payments"
@@ -219,6 +221,8 @@
             icon="payments"
             class="bg-primary text-white q-pa-md"
             style="border-radius: 30px; width: 160px"
+            no-caps
+            flat
           />
 
           <q-btn
@@ -227,6 +231,8 @@
             icon="account_balance"
             class="bg-primary text-white q-pa-md"
             style="border-radius: 30px; width: 160px"
+            no-caps
+            flat
           />
         </q-tabs>
       </div>
@@ -235,14 +241,14 @@
       <div class="row justify-center full-width">
         <q-tabs
           v-model="tab"
-          class="row justify-center text-black q-pa-sm"
-          content-class="row justify-center "
+          dense
+          class="text-black q-pa-sm"
           active-color=" bg-secondary text-primary"
           indicator-color="transparent"
           style="
             border: 2px solid silver;
             border-radius: 50px;
-            width: 380px;
+            width: 45%;
             height: 70px;
           "
           @update:model-value="(val) => bankAccountDetails(val)"
