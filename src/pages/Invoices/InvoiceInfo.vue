@@ -343,6 +343,7 @@ export default {
     }
 
     function getToStatusFlow(id) {
+      toStatusFlow.value = [];
       api({
         method: "GET",
         headers: useAuth.authKey,

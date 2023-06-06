@@ -1047,6 +1047,9 @@ export default {
         method: "GET",
         url: "vendors",
         headers: useAuth.authKey,
+        params: {
+          pageNoLimit: true,
+        },
       }).then((res) => {
         res.data.documentList.map((data) => {
           rows.value.push(data);
