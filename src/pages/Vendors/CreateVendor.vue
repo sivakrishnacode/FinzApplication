@@ -221,7 +221,9 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+/* ,,, */
+</style>
 
 <!-- <q-card style="width: 600px; border-radius: 12px">
   <q-card-section>
