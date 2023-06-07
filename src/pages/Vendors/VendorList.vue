@@ -60,125 +60,6 @@
       >
         <!-- @click="(addVendor_dialogBox = !addVendor_dialogBox), addCountryList()" -->
       </q-btn>
-
-      <!-- Add vendor Dialog Box -->
-      <q-dialog v-model="addVendor_dialogBox" full-height full-width>
-        <q-card style="width: 600px; border-radius: 12px">
-          <q-card-section>
-            <q-form @submit="addVendor" class="q-gutter-y-sm">
-              <div
-                style="border-radius: 15px"
-                class="text-primary text-center text-bold"
-              >
-                ADD VENDOR
-              </div>
-              <q-input
-                dense
-                type="text"
-                label="Vendor Name"
-                v-model="newVendorDetails.vendorName"
-                :rules="[
-                  (val) => (val && val.length > 0) || 'First Name Required',
-                  (val) => (val && val.length > 2) || 'Enter minimun 2 letters',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                class="contact_num_input"
-                type="number"
-                label="Contact Number"
-                v-model="newVendorDetails.contactNumber"
-                prefix="+91"
-                :rules="[
-                  (val) => (val && val.length > 0) || 'Number Required',
-                  (val) => (val && val.length >= 10) || 'Enter Full number',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Email"
-                v-model="newVendorDetails.emailAddress"
-                :rules="[
-                  (val) =>
-                    (val && val.length > 0) || 'Please Enter a Email address',
-                  (val) =>
-                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-                      val
-                    ) || 'Please enter a valid email address',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Adderss 1"
-                v-model="newVendorDetails.address1"
-                :rules="[
-                  (val) => (val && val.length > 3) || 'Please Enter Address',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Address 2"
-                v-model="newVendorDetails.address2"
-                hint="optional"
-                rules="[]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="City"
-                v-model="newVendorDetails.city"
-                :rules="[(val) => (val && val.length > 2) || 'Enter a City']"
-              ></q-input>
-              <q-select
-                v-model="newVendorDetails.countryGeoId"
-                dense
-                type="text"
-                label="Country"
-                option-label="geoName"
-                option-value="geoId"
-                @update:model-value="
-                  getStateList(newVendorDetails.countryGeoId.geoId)
-                "
-                :options="countryList"
-                :rules="[(val) => val || 'select  the country']"
-              ></q-select>
-              <q-select
-                :disable="isCountryValid"
-                dense
-                option-label="geoName"
-                option-value="geoId"
-                type="text"
-                label="State"
-                :options="stateList"
-                v-model="newVendorDetails.stateProvinceGeoId"
-                :rules="[(val) => val || 'Select the State']"
-              ></q-select>
-              <q-input
-                dense
-                type="text"
-                label="Postal Code"
-                v-model="newVendorDetails.postalCode"
-                :rules="[
-                  (val) => (val && val.length > 0) || 'Enter a Postalcode',
-                ]"
-              ></q-input>
-
-              <div class="row justify-evenly q-py-md">
-                <q-btn rounded label="Cancel" color="red" v-close-popup></q-btn>
-                <q-btn
-                  rounded
-                  label="Submit"
-                  color="primary"
-                  type="submit"
-                ></q-btn>
-              </div>
-            </q-form>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
     </div>
 
     <!-- <q-separator /> -->
@@ -200,7 +81,7 @@
         hide-bottom
       >
         <!-- top -->
-        <template v-slot:top>
+        <!-- <template v-slot:top>
           <div class="full-width row justify-end">
             <div class="row no-wrap">
               <div class="row content-center q-pr-md">Rows per page :</div>
@@ -214,7 +95,7 @@
               />
             </div>
           </div>
-        </template>
+        </template> -->
 
         <!-- header -->
         <template v-slot:header="props">
@@ -254,20 +135,33 @@
             <!-- email -->
             <q-td key="email">
               <div style="font-size: 15px">
-                {{ props.row.contactMechs[0].infoString }}
+                {{
+                  props.row.contactMechs.find(
+                    (val) => val.contactMechTypeEnumId == "CmtEmailAddress"
+                  ).infoString
+                }}
               </div>
             </q-td>
 
             <!-- contact num -->
             <q-td key="contactNumber">
               <div style="font-size: 15px">
-                +91 {{ props.row.contactMechs[1].contactNumber }}
+                +91
+                {{
+                  props.row.contactMechs.find(
+                    (val) => val.contactMechTypeEnumId == "CmtTelecomNumber"
+                  ).contactNumber
+                }}
               </div>
             </q-td>
 
             <q-td key="location">
               <div style="font-size: 15px">
-                {{ props.row.contactMechs[2].city }}
+                {{
+                  props.row.contactMechs.find(
+                    (val) => val.contactMechTypeEnumId == "CmtPostalAddress"
+                  ).city
+                }}
               </div>
             </q-td>
 
@@ -350,7 +244,7 @@
 
       <!-- paginatio btn -->
       <div
-        class="row justify-evenly q-ma-md"
+        class="row justify-center q-ma-md"
         v-if="pagination.rowsNumber <= 0 ? false : true"
       >
         <q-pagination
@@ -369,6 +263,19 @@
               })
           "
         />
+        <div class="row absolute" style="right: 56px">
+          <div class="row justify-center items-center q-pr-md">
+            Rows per page :
+          </div>
+          <q-select
+            dense
+            borderless
+            style="width: 50px"
+            @update:model-value="tableRef.requestServerInteraction()"
+            v-model="pagination.rowsPerPage"
+            :options="[5, 10, 20, 50, 100, 200, 500]"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -391,9 +298,6 @@ export default {
     const isLoading = ref(false);
 
     const $q = useQuasar();
-
-    const countryList = ref([]);
-    const stateList = ref([]);
 
     const moreBtn = ref(false);
 
@@ -503,81 +407,6 @@ export default {
         });
     }
 
-    // add vendor to server
-    function addVendor() {
-      addVendor_dialogBox.value = false;
-      api({
-        method: "POST",
-        url: "vendors/vendor",
-        headers: useAuth.authKey,
-        data: {
-          vendorName: newVendorDetails.value.vendorName,
-          contactNumber: newVendorDetails.value.contactNumber,
-          emailAddress: newVendorDetails.value.emailAddress,
-          address1: newVendorDetails.value.address1,
-          address2: newVendorDetails.value.address2,
-          city: newVendorDetails.value.city,
-          countryGeoId: newVendorDetails.value.countryGeoId.geoId,
-          stateProvinceGeoId: newVendorDetails.value.stateProvinceGeoId.geoId,
-          postalCode: newVendorDetails.value.postalCode,
-        },
-      })
-        .then((res) => {
-          addVendor_dialogBox.value = false;
-          rows.value = [];
-          pagination.value = {
-            sortBy: "column",
-            descending: false,
-            page: 1,
-            rowsPerPage: 5,
-            rowsNumber: 0,
-          };
-          getVendors(pagination.value);
-          $q.notify({
-            position: "top-right",
-            message: "Vendor added succesfully",
-            type: "positive",
-            icon: "done",
-          });
-        })
-        .catch((err) => {
-          addVendor_dialogBox.value = false;
-          console.log(err);
-        });
-    }
-
-    // add all countryList to vendor dialog box
-    function addCountryList() {
-      api({
-        method: "GET",
-        url: "geos",
-        headers: useAuth.authKey,
-      })
-        .then((res) => {
-          res.data.geoList.map((data) => {
-            countryList.value.push(data);
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-
-    //add states to vendor dialog box
-    function getStateList(geoId) {
-      stateList.value = [];
-      editInput.value.stateName = "";
-      api({
-        method: "GET",
-        url: `geos/${geoId}/regions`,
-        headers: useAuth.authKey,
-      }).then((res) => {
-        const data = res.data.resultList;
-
-        stateList.value.push(...data);
-      });
-    }
-
     //first letter of a world
     function firstLetters(str) {
       let words = str.split(" ");
@@ -625,19 +454,6 @@ export default {
       });
     }
 
-    const isCountryValid = computed(() => {
-      if (
-        newVendorDetails.value.countryGeoId !== "" &&
-        newVendorDetails.value.countryGeoId !== null
-      ) {
-        return false;
-      } else {
-        // eslint-disable-next-line
-        newVendorDetails.value.stateProvinceGeoId = null;
-        return true;
-      }
-    });
-
     onMounted(() => {
       tableRef.value.requestServerInteraction();
     });
@@ -646,23 +462,16 @@ export default {
       rows,
       columns,
       moreBtn,
-      addVendor_dialogBox,
 
       firstLetters,
       newVendorDetails,
       pagination,
-      countryList,
-      stateList,
 
       getVendors,
-      addVendor,
-      addCountryList,
-      getStateList,
 
       searchFun,
       vendorInfo,
 
-      isCountryValid,
       tableRef,
       isLoading,
       searchOptions,

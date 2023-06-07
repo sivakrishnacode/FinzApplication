@@ -1,6 +1,6 @@
 <template>
   <div class="row no-wrap">
-    <!-- Side list -->
+    <!-- left Side list -->
     <div
       class="q-gutter-y-sm q-pa-lg"
       style="width: 450px"
@@ -64,7 +64,11 @@
                 {{ data.organizationName }}
               </q-item-label>
               <q-item-label class="text-white text-caption" caption>
-                {{ data.contactMechs[0].infoString }}
+                {{
+                  data.contactMechs.find(
+                    (val) => val.contactMechTypeEnumId == "CmtEmailAddress"
+                  ).infoString
+                }}
               </q-item-label>
             </q-item-section>
           </q-item>
@@ -465,7 +469,7 @@
                   flat
                   class="text-white bg-primary"
                   rounded
-                  @click="isVendorEditable = false"
+                  @click="(isVendorEditable = false), addCountryList()"
                 />
               </div>
             </div>
@@ -948,7 +952,7 @@ export default {
 
     const addVendor_dialogBox = ref(false);
     const addBank_dialogBox = ref(false);
-    const step = ref(1);
+
     const newVendorDetails = ref([]);
     const newBankAccountDetails = ref({});
     const countryList = ref([]);
@@ -1001,7 +1005,6 @@ export default {
         headers: useAuth.authKey,
       })
         .then((res) => {
-          console.log(res.data);
           vendorInfoData.value = {
             partyId: res.data.partyId,
             organizationName: res.data.organizationName,
@@ -1032,8 +1035,12 @@ export default {
         address1: vendorInfoData.value.address1,
         address2: vendorInfoData.value.address2,
         city: vendorInfoData.value.city,
-        countryGeoId: vendorInfoData.value.countryGeoId.geoId,
-        stateProvinceGeoId: vendorInfoData.value.stateName.geoId,
+        countryGeoId:
+          vendorInfoData.value.countryGeoId.geoId ??
+          vendorInfoData.value.countryGeoId,
+        stateProvinceGeoId:
+          vendorInfoData.value.stateName.geoId ??
+          vendorInfoData.value.stateProvinceGeoId,
         postalCode: vendorInfoData.value.postalCode,
       };
 
@@ -1043,7 +1050,7 @@ export default {
         headers: useAuth.authKey,
         params: params,
       }).then((res) => {
-        console.log(res);
+        vendorInfo(route.params.vendorId);
       });
     }
 
@@ -1241,7 +1248,7 @@ export default {
     function getStateList(geoId) {
       console.log(geoId);
       stateList.value = [];
-      // editInput.value.stateName = "";
+
       api({
         method: "GET",
         url: `geos/${geoId}/regions`,
@@ -1269,7 +1276,6 @@ export default {
     onMounted(() => {
       getVendorList();
       vendorInfo(route.params.vendorId);
-      addCountryList();
 
       // remove this and change tab = userDatils
       bankAccountDetails("userDatils");
@@ -1281,7 +1287,7 @@ export default {
       vendorInfo,
       addVendor_dialogBox,
       addBank_dialogBox,
-      step,
+
       tab,
       vendorInfoData,
       editVendor,
