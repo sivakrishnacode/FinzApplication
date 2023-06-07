@@ -71,7 +71,7 @@
       </q-scroll-area>
 
       <!-- Add vendor Dialog Box -->
-      <!-- <q-dialog v-model="addVendor_dialogBox">
+      <q-dialog v-model="addVendor_dialogBox">
         <q-card style="width: 600px; border-radius: 12px">
           <q-card-section>
             <q-form @submit="addVendor" class="q-gutter-y-sm">
@@ -187,173 +187,6 @@
             </q-form>
           </q-card-section>
         </q-card>
-      </q-dialog> -->
-
-      <q-dialog v-model="addVendor_dialogBox" full-width>
-        <q-stepper
-          v-model="step"
-          ref="stepper"
-          animated
-          done-color="deep-orange"
-          active-color="purple"
-          inactive-color="secondary"
-          style="width: 100px"
-        >
-          <q-step
-            :name="1"
-            title="Profile Details"
-            icon="person"
-            :done="step > 1"
-          >
-            <q-form @submit="addVendor" class="q-gutter-y-sm">
-              <div
-                style="border-radius: 15px"
-                class="text-primary text-center text-bold"
-              >
-                ADD VENDOR
-              </div>
-              <q-input
-                dense
-                type="text"
-                label="Vendor Name"
-                v-model="newVendorDetails.vendorName"
-                :rules="[
-                  (val) => (val && val.length > 0) || 'First Name Required',
-                  (val) => (val && val.length > 2) || 'Enter minimun 2 letters',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                class="contact_num_input"
-                type="number"
-                label="Contact Number"
-                v-model="newVendorDetails.contactNumber"
-                prefix="+91"
-                :rules="[
-                  (val) => (val && val.length > 0) || 'Number Required',
-                  (val) => (val && val.length >= 10) || 'Enter Full number',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Email"
-                v-model="newVendorDetails.emailAddress"
-                :rules="[
-                  (val) =>
-                    (val && val.length > 0) || 'Please Enter a Email address',
-                  (val) =>
-                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-                      val
-                    ) || 'Please enter a valid email address',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Adderss 1"
-                v-model="newVendorDetails.address1"
-                :rules="[
-                  (val) => (val && val.length > 3) || 'Please Enter Address',
-                ]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="Address 2"
-                v-model="newVendorDetails.address2"
-                hint="optional"
-                rules="[]"
-              ></q-input>
-              <q-input
-                dense
-                type="text"
-                label="City"
-                v-model="newVendorDetails.city"
-                :rules="[(val) => (val && val.length > 2) || 'Enter a City']"
-              ></q-input>
-              <q-select
-                v-model="newVendorDetails.countryGeoId"
-                dense
-                type="text"
-                label="Country"
-                option-label="geoName"
-                option-value="geoId"
-                @update:model-value="
-                  getStateList(newVendorDetails.countryGeoId.geoId)
-                "
-                :options="countryList"
-                :rules="[(val) => val || 'select  the country']"
-              ></q-select>
-              <q-select
-                :disable="isCountryValid"
-                dense
-                option-label="geoName"
-                option-value="geoId"
-                type="text"
-                label="State"
-                :options="stateList"
-                v-model="newVendorDetails.stateProvinceGeoId"
-                :rules="[(val) => val || 'Select the State']"
-              ></q-select>
-              <q-input
-                dense
-                type="text"
-                label="Postal Code"
-                v-model="newVendorDetails.postalCode"
-                :rules="[
-                  (val) => (val && val.length > 0) || 'Enter a Postalcode',
-                ]"
-              ></q-input>
-
-              <div class="row justify-evenly q-py-md">
-                <q-btn rounded label="Cancel" color="red" v-close-popup></q-btn>
-                <q-btn
-                  rounded
-                  label="Submit"
-                  color="primary"
-                  type="submit"
-                ></q-btn>
-              </div>
-            </q-form>
-          </q-step>
-
-          <q-step
-            :name="2"
-            title="Create an ad group"
-            caption="Optional"
-            icon="create_new_folder"
-            :done="step > 2"
-          >
-            An ad group contains one or more ads which target a shared set of
-            keywords.
-          </q-step>
-
-          <q-step :name="3" title="Create an ad" icon="add_comment">
-            Try out different ad text to see what brings in the most customers,
-            and learn how to enhance your ads using features like ad extensions.
-            If you run into any problems with your ads, find out how to tell if
-            they're running and how to resolve approval issues.
-          </q-step>
-
-          <template v-slot:navigation>
-            <q-stepper-navigation>
-              <q-btn
-                @click="$refs.stepper.next()"
-                color="deep-orange"
-                :label="step === 3 ? 'Finish' : 'Continue'"
-              />
-              <q-btn
-                v-if="step > 1"
-                flat
-                color="deep-orange"
-                @click="$refs.stepper.previous()"
-                label="Back"
-                class="q-ml-sm"
-              />
-            </q-stepper-navigation>
-          </template>
-        </q-stepper>
       </q-dialog>
     </div>
 
@@ -454,16 +287,28 @@
                 <!-- first row -->
                 <div class="row full-width items-center justify-center">
                   <div class="col-5 q-gutter-x-xl">
-                    <div>Vendor Name:</div>
                     <div class="text-primary" style="font-size: 19px">
-                      {{ vendorInfoData.organizationName }}
+                      <q-input
+                        input-class="text-h6 text-primary"
+                        :filled="!isVendorEditable"
+                        :readonly="isVendorEditable"
+                        label="Vendor Name"
+                        borderless
+                        v-model="vendorInfoData.organizationName"
+                      />
                     </div>
                   </div>
 
                   <div class="col-5 q-gutter-x-xl">
-                    <div>User ID:</div>
                     <div class="text-primary" style="font-size: 19px">
-                      {{ vendorInfoData.emailAddress }}
+                      <q-input
+                        input-class="text-h6 text-primary"
+                        :filled="!isVendorEditable"
+                        :readonly="isVendorEditable"
+                        label="Email ID"
+                        borderless
+                        v-model="vendorInfoData.emailAddress"
+                      />
                     </div>
                   </div>
                 </div>
@@ -471,16 +316,28 @@
                 <!-- second row -->
                 <div class="row full-width items-center justify-center">
                   <div class="col-5 q-gutter-x-xl">
-                    <div>Contect No:</div>
                     <div class="text-primary" style="font-size: 19px">
-                      {{ vendorInfoData.contactNumber }}
+                      <q-input
+                        input-class="text-h6 text-primary"
+                        :filled="!isVendorEditable"
+                        :readonly="isVendorEditable"
+                        label="Contact Number"
+                        borderless
+                        v-model="vendorInfoData.contactNumber"
+                      />
                     </div>
                   </div>
 
                   <div class="col-5 q-gutter-x-xl">
-                    <div>Contect No 2:</div>
                     <div class="text-primary" style="font-size: 19px">
-                      {{ vendorInfoData.contactNumber }}
+                      <q-input
+                        input-class="text-h6 text-primary"
+                        :filled="!isVendorEditable"
+                        :readonly="isVendorEditable"
+                        label="Address 1"
+                        borderless
+                        v-model="vendorInfoData.address1"
+                      />
                     </div>
                   </div>
                 </div>
@@ -488,16 +345,28 @@
                 <!-- third row -->
                 <div class="row full-width items-center justify-center">
                   <div class="col-5 q-gutter-x-xl">
-                    <div>Address Line 1:</div>
                     <div class="text-primary" style="font-size: 19px">
-                      {{ vendorInfoData.address?.address1 }}
+                      <q-input
+                        input-class="text-h6 text-primary"
+                        :filled="!isVendorEditable"
+                        :readonly="isVendorEditable"
+                        label="Address 2"
+                        borderless
+                        v-model="vendorInfoData.address2"
+                      />
                     </div>
                   </div>
 
                   <div class="col-5 q-gutter-x-xl">
-                    <div>Address Line 2:</div>
                     <div class="text-primary" style="font-size: 19px">
-                      {{ vendorInfoData.address?.address2 }}
+                      <q-input
+                        input-class="text-h6 text-primary"
+                        :filled="!isVendorEditable"
+                        :readonly="isVendorEditable"
+                        label="City"
+                        borderless
+                        v-model="vendorInfoData.city"
+                      />
                     </div>
                   </div>
                 </div>
@@ -505,16 +374,45 @@
                 <!-- 4 row -->
                 <div class="row full-width items-center justify-center">
                   <div class="col-5 q-gutter-x-xl">
-                    <div>City:</div>
                     <div class="text-primary" style="font-size: 19px">
-                      {{ vendorInfoData.address?.city }}
+                      <q-select
+                        v-model="vendorInfoData.countryGeoId"
+                        :filled="!isVendorEditable"
+                        :readonly="isVendorEditable"
+                        borderless
+                        type="text"
+                        label="Country"
+                        option-label="geoName"
+                        option-value="geoId"
+                        @update:model-value="
+                          getStateList(vendorInfoData.countryGeoId.geoId)
+                        "
+                        :options="countryList"
+                      ></q-select>
                     </div>
                   </div>
 
                   <div class="col-5 q-gutter-x-xl">
-                    <div>Country:</div>
                     <div class="text-primary" style="font-size: 19px">
-                      {{ vendorInfoData.address?.countryName }}
+                      <q-select
+                        :filled="!isVendorEditable"
+                        :readonly="isVendorEditable"
+                        borderless
+                        option-label="geoName"
+                        option-value="geoId"
+                        type="text"
+                        label="State"
+                        :options="stateList"
+                        v-model="vendorInfoData.stateName"
+                      ></q-select>
+                      <!-- <q-input
+                        input-class="text-h6 text-primary"
+                        :filled="!isVendorEditable"
+                        :readonly="isVendorEditable"
+                        label="State"
+                        borderless
+                        v-model="vendorInfoData.stateName"
+                      /> -->
                     </div>
                   </div>
                 </div>
@@ -522,29 +420,51 @@
                 <!-- 5th row -->
                 <div class="row full-width items-center justify-center">
                   <div class="col-5 q-gutter-x-xl">
-                    <div>State:</div>
                     <div class="text-primary" style="font-size: 19px">
-                      {{ vendorInfoData.address?.stateName }}
+                      <q-input
+                        input-class="text-h6 text-primary"
+                        :filled="!isVendorEditable"
+                        :readonly="isVendorEditable"
+                        label="Pincode"
+                        borderless
+                        v-model="vendorInfoData.postalCode"
+                      />
                     </div>
                   </div>
 
-                  <div class="col-5 q-gutter-x-xl">
-                    <div>Pincode:</div>
-                    <div class="text-primary" style="font-size: 19px">
-                      {{ vendorInfoData.address?.postalCode }}
-                    </div>
-                  </div>
+                  <div class="col-5 q-gutter-x-xl"></div>
                 </div>
               </div>
 
-              <div class="row justify-end">
+              <div class="row justify-end q-gutter-x-sm">
                 <q-btn
+                  v-if="!isVendorEditable"
+                  icon="save"
+                  label="Save Changes"
+                  size="15px"
+                  flat
+                  class="text-white bg-primary"
+                  rounded
+                  @click="(isVendorEditable = true), editVendor()"
+                />
+                <q-btn
+                  v-if="!isVendorEditable"
+                  label="Cancel"
+                  size="15px"
+                  class="text-primary"
+                  flat
+                  outlined
+                  @click="isVendorEditable = true"
+                />
+                <q-btn
+                  v-if="isVendorEditable"
                   icon="edit"
                   label="Edit Profile"
                   size="15px"
                   flat
                   class="text-white bg-primary"
                   rounded
+                  @click="isVendorEditable = false"
                 />
               </div>
             </div>
@@ -1034,7 +954,21 @@ export default {
     const stateList = ref([]);
 
     // vendor info
-    const vendorInfoData = ref([]);
+    const vendorInfoData = ref({
+      partyId: "",
+      organizationName: "",
+      emailAddress: "",
+      contactNumber: "",
+      address1: "",
+      address2: "",
+      city: "",
+      countryName: "",
+      countryGeoId: "",
+      stateName: "",
+      stateProvinceGeoId: "",
+      postalCode: "",
+    });
+    const isVendorEditable = ref(true);
     const vendorsActiveBankDetails = ref([]);
     const vendorsInActiveBankDetails = ref([]);
 
@@ -1066,11 +1000,50 @@ export default {
         headers: useAuth.authKey,
       })
         .then((res) => {
-          vendorInfoData.value = res.data;
+          console.log(res.data);
+          vendorInfoData.value = {
+            partyId: res.data.partyId,
+            organizationName: res.data.organizationName,
+            emailAddress: res.data.emailAddress,
+            contactNumber: res.data.contactNumber,
+            address1: res.data.address.address1,
+            address2: res.data.address?.address2,
+            city: res.data.address.city,
+            countryName: res.data.address.countryName,
+            countryGeoId: res.data.address.countryGeoId,
+            stateName: res.data.address.stateName,
+            stateProvinceGeoId: res.data.address.stateProvinceGeoId,
+            postalCode: res.data.address.postalCode,
+          };
         })
         .catch((err) => {
           console.log(err);
         });
+    }
+
+    // edit vendor
+    function editVendor() {
+      const params = {
+        partyId: vendorInfoData.value.partyId,
+        organizationName: vendorInfoData.value.organizationName,
+        contactNumber: vendorInfoData.value.contactNumber,
+        emailAddress: vendorInfoData.value.emailAddress,
+        address1: vendorInfoData.value.address1,
+        address2: vendorInfoData.value.address2,
+        city: vendorInfoData.value.city,
+        countryGeoId: vendorInfoData.value.countryGeoId.geoId,
+        stateProvinceGeoId: vendorInfoData.value.stateName.geoId,
+        postalCode: vendorInfoData.value.postalCode,
+      };
+
+      api({
+        method: "PATCH",
+        url: "vendors/vendorContactInfo",
+        headers: useAuth.authKey,
+        params: params,
+      }).then((res) => {
+        console.log(res);
+      });
     }
 
     // Search vendor
@@ -1265,6 +1238,7 @@ export default {
 
     //add states to vendor dialog box
     function getStateList(geoId) {
+      console.log(geoId);
       stateList.value = [];
       // editInput.value.stateName = "";
       api({
@@ -1294,6 +1268,7 @@ export default {
     onMounted(() => {
       getVendorList();
       vendorInfo(route.params.vendorId);
+      addCountryList();
 
       // remove this and change tab = userDatils
       bankAccountDetails("userDatils");
@@ -1308,6 +1283,8 @@ export default {
       step,
       tab,
       vendorInfoData,
+      editVendor,
+      isVendorEditable,
       searchVendor,
       bankAccountDetails,
       vendorsActiveBankDetails,
