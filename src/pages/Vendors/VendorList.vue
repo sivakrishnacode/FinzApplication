@@ -53,15 +53,16 @@
         no-caps
         :label="$q.screen.lt.sm ? '' : 'Create Vendor'"
         icon="add"
-        @click="(addVendor_dialogBox = !addVendor_dialogBox), addCountryList()"
+        @click="$router.push({ name: 'createVendor_page' })"
         :round="$q.screen.lt.sm ? true : false"
         class="bg-primary text-white"
         rounded
       >
+        <!-- @click="(addVendor_dialogBox = !addVendor_dialogBox), addCountryList()" -->
       </q-btn>
 
       <!-- Add vendor Dialog Box -->
-      <q-dialog v-model="addVendor_dialogBox">
+      <q-dialog v-model="addVendor_dialogBox" full-height full-width>
         <q-card style="width: 600px; border-radius: 12px">
           <q-card-section>
             <q-form @submit="addVendor" class="q-gutter-y-sm">

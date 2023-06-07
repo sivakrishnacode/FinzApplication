@@ -28,10 +28,11 @@
         label="Create Vendors"
         no-caps
         icon="add"
-        @click="(addVendor_dialogBox = true), addCountryList()"
+        @click="$router.push({ name: 'createVendor_page' })"
         no-wrap
         style="height: 20px"
       />
+      <!-- @click="(addVendor_dialogBox = true), addCountryList()" -->
 
       <q-scroll-area
         class="q-pa-sm"

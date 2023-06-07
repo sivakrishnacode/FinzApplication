@@ -1,87 +1,58 @@
 <template>
   <div class="q-mx-sm q-px-xl">
-    <!-- first row -->
-    <div class="row justify-center q-py-md">
-      <q-select
-        dense
-        outlined
-        rounded
-        v-model="search"
-        class="q-pr-md"
-        clearable
-        use-input
-        hide-selected
-        fill-input
-        input-debounce="0"
-        option-label="organizationName"
-        option-value="partyId"
-        :options="searchOptions"
-        @filter="searchVendor"
-        :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
-      >
-        <template #append>
-          <q-icon name="search" />
-        </template>
+    <div class="column items-center q-pt-md">
+      <!-- search and days filter -->
+      <div class="row">
+        <q-select
+          dense
+          outlined
+          rounded
+          v-model="search"
+          class="q-pr-md"
+          clearable
+          use-input
+          hide-selected
+          fill-input
+          input-debounce="0"
+          option-label="organizationName"
+          option-value="partyId"
+          :options="searchOptions"
+          @filter="searchVendor"
+          :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
+        >
+          <template #append>
+            <q-icon name="search" />
+          </template>
 
-        <template v-slot:no-option>
-          <q-item class="text-center">
-            <q-item-section class="text-grey"> No results </q-item-section>
-          </q-item>
-        </template>
-
-        <template v-slot:option="scope">
-          <div
-            :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
-          >
-            <q-item
-              clickable
-              class="full-width q-pa-md text-center"
-              v-bind="scope.itemProps"
-            >
-              <q-item-section
-                class="full-width"
-                @click="
-                  selectVendor(scope.opt.partyId, scope.opt.organizationName),
-                    (search = '')
-                "
-              >
-                <q-item-label>{{ scope.opt.organizationName }}</q-item-label>
-                <q-item-label caption>{{ scope.opt.partyId }}</q-item-label>
-              </q-item-section>
+          <template v-slot:no-option>
+            <q-item class="text-center">
+              <q-item-section class="text-grey"> No results </q-item-section>
             </q-item>
-          </div>
-        </template>
-      </q-select>
-    </div>
+          </template>
 
-    <div class="row wrap justify-between items-center">
-      <!-- left -->
-      <div class="row no-wrap content-center">
-        <div class="row content-center text-weight-bold q-pl-md">
-          Quick Filter:
-        </div>
-
-        <div>
-          <q-tabs
-            v-model="currentTab"
-            active-color="white bg-primary"
-            class="q-mx-md bg-grey-2"
-            indicator-color="transparent"
-            no-caps
-            dense
-            style="border-radius: 12px"
-            @update:model-value="getInvoiceList(daysFilterValue.enumId)"
-          >
-            <q-tab
-              v-for="data in enumTabList"
-              :key="data"
-              :label="data.description"
-              :name="data.enumId"
-            />
-          </q-tabs>
-        </div>
-
-        <!-- filter btn -->
+          <template v-slot:option="scope">
+            <div
+              :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
+            >
+              <q-item
+                clickable
+                class="full-width q-pa-md text-center"
+                v-bind="scope.itemProps"
+              >
+                <q-item-section
+                  class="full-width"
+                  @click="
+                    selectVendor(scope.opt.partyId, scope.opt.organizationName),
+                      (search = '')
+                  "
+                >
+                  <q-item-label>{{ scope.opt.organizationName }}</q-item-label>
+                  <q-item-label caption>{{ scope.opt.partyId }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </div>
+          </template>
+        </q-select>
         <q-btn color="primary" icon="filter_alt" rounded>
           <q-menu
             style="border-radius: 8px"
@@ -193,47 +164,35 @@
             </q-list>
           </q-menu>
         </q-btn>
-      </div>
-
-      <!-- Right-->
-      <div class="row justify-end q-px-md">
-        <div class="q-pa-sm no-wrap">
-          <q-btn
-            icon="refresh"
-            class="text-primary q-mr-md"
-            flat
-            @click="getInvoiceList"
-          >
-            <q-tooltip> Reset Filter </q-tooltip>
-          </q-btn>
-          <q-btn icon="more_vert" class="text-primary q-mr-md" flat>
-            <q-tooltip> More </q-tooltip>
-          </q-btn>
-          <q-btn
-            color="primary"
-            icon="add"
-            label="Upload Invoice"
-            @click="selectFile"
-          />
-        </div>
-
-        <q-file
-          v-model="invoiceFile"
-          type="file"
+        <!-- <q-btn
+          color="primary"
+          icon="add"
           label="Upload Invoice"
-          ref="fileInputRef"
-          rounded
-          outlined
-          style="opacity: 0; position: absolute; max-width: 1px"
-          @update:model-value="invoiceFileUpload"
+          @click="selectFile"
+        /> -->
+      </div>
+      <!-- quick filter -->
+      <div class="q-pa-md">
+        <q-tabs
+          v-model="currentTab"
+          active-color="white bg-primary"
+          class="q-mx-md bg-grey-2 q-pa-sm"
+          indicator-color="transparent"
+          no-caps
+          dense
+          style="border-radius: 12px; border: 1px solid silver"
+          @update:model-value="getInvoiceList(daysFilterValue.enumId)"
         >
-          <template #append>
-            <q-icon name="backup" />
-          </template>
-        </q-file>
+          <q-tab
+            v-for="data in enumTabList"
+            :key="data"
+            :label="data.description"
+            :name="data.enumId"
+            style="border-radius: 20px"
+          />
+        </q-tabs>
       </div>
 
-      <!-- Preview box -->
       <q-dialog v-model="previewDialog">
         <!-- For Img -->
         <q-card v-if="isFileImage" :persistent="isUploading">
@@ -307,7 +266,7 @@
       </q-dialog>
     </div>
 
-    <!-- second row -->
+    <!-- Preview box -->
 
     <!-- filter preview chip -->
     <div class="row content-center">
@@ -856,6 +815,21 @@ export default {
       getTabEnumList();
       getDateFilterEnumList();
     });
+
+    // <q-file
+    //       v-model="invoiceFile"
+    //       type="file"
+    //       label="Upload Invoice"
+    //       ref="fileInputRef"
+    //       rounded
+    //       outlined
+    //       style="opacity: 0; position: absolute; max-width: 1px"
+    //       @update:model-value="invoiceFileUpload"
+    //     >
+    //       <template #append>
+    //         <q-icon name="backup" />
+    //       </template>
+    //     </q-file>
 
     return {
       getInvoiceList,
