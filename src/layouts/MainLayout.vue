@@ -10,7 +10,12 @@
           @click="drawer = !drawer"
           color="primary"
         />
-        <q-toolbar-title class="text-center text-primary">Finz</q-toolbar-title>
+        <q-toolbar-title
+          class="text-center text-primary text-bold"
+          style="font-size: 28px"
+        >
+          Finz</q-toolbar-title
+        >
         <div class="q-gutter-x-md no-wrap">
           <q-btn dense color="primary" round icon="notifications" flat>
             <q-badge color="red" floating>2</q-badge>

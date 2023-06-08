@@ -99,7 +99,10 @@
 
         <!-- header -->
         <template v-slot:header="props">
-          <q-tr :props="props" class="text-weight-bold text-primary">
+          <q-tr
+            :props="props"
+            class="text-weight-bold text-primary bg-secondary"
+          >
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
               <div style="font-size: larger">
                 {{ col.label }}

@@ -3,18 +3,20 @@
     <!--  -->
     <q-stepper
       v-model="step"
-      ref="stepper"
-      color="primary"
+      active-color="primary"
+      inactive-color="secondary"
+      header-nav
       animated
       keep-alive
       style="
-        width: 900px;
+        width: 1400px;
         height: 700px;
         box-shadow: rgba(71, 67, 67, 0.56) 0px 22px 70px 4px;
         border-radius: 12px;
       "
     >
-      <q-step :name="1" title="Create Vendor" icon="settings">
+      <!-- 1-->
+      <q-step :name="1" title="Create Vendor" icon="settings" :done="step > 1">
         <q-form @submit="addVendor" class="q-gutter-y-sm">
           <div
             class="text-primary text-center text-bold"
@@ -141,7 +143,7 @@
           <div class="row justify-evenly q-py-md">
             <q-btn
               rounded
-              label="Cancel"
+              label="Go Back"
               color="red"
               @click="router.back()"
             ></q-btn>
@@ -150,7 +152,13 @@
         </q-form>
       </q-step>
 
-      <q-step :name="2" title="Add Bank Account" icon="create_new_folder">
+      <!-- 2 -->
+      <q-step
+        :name="2"
+        title="Add Bank Account"
+        icon="account_balance"
+        :done="step > 2"
+      >
         <div class="q-gutter-y-md">
           <div
             class="column justify-center text-center text-primary text-bold text-h6"
@@ -185,13 +193,10 @@
           <q-tab-panels v-model="addBankAccountTab">
             <!-- UPI -->
             <q-tab-panel name="upi">
-              <q-form
-                @submit="addBankAccount(), (newBankAccountDetails.bank = '')"
-                class="q-gutter-y-sm"
-              >
+              <q-form @submit="bankSubmit('Upi')" class="q-gutter-y-sm">
                 <q-input
                   label="Beneficiary UPI ID"
-                  v-model="newBankAccountDetails.upi"
+                  v-model="upiId"
                   :rules="[
                     (val) => (val && val.length > 5) || 'Please Enter a UPI Id',
                   ]"
@@ -217,7 +222,7 @@
                     rounded
                     label="Skip"
                     color="primary"
-                    @click="skipBankDetails()"
+                    @click="(isBankAccountSkipped = true), (step = 3)"
                     type="submit"
                   ></q-btn>
                 </div>
@@ -226,15 +231,12 @@
 
             <!-- Bank -->
             <q-tab-panel name="bank" class="q-gutter-y-md">
-              <q-form
-                @submit="addBankAccount(), (newBankAccountDetails.upi = '')"
-                class="q-gutter-y-sm"
-              >
+              <q-form @submit="bankSubmit('Bank')" class="q-gutter-y-sm">
                 <q-input
                   dense
                   type="text"
                   label="Account Name"
-                  v-model="newBankAccountDetails.bank.companyName"
+                  v-model="bankDetails.companyName"
                   :rules="[
                     (val) =>
                       (val && val.length > 1) || 'Please Enter a Account name',
@@ -243,7 +245,7 @@
                 <q-input
                   dense
                   label="Account No"
-                  v-model="newBankAccountDetails.bank.accountNo"
+                  v-model="bankDetails.accountNo"
                   :rules="[
                     (val) =>
                       (val && val.length > 0) || 'Please Enter a Account no',
@@ -253,12 +255,12 @@
                 <q-input
                   dense
                   label="Re Enter Account No"
-                  v-model="newBankAccountDetails.bank.confirmAccountNo"
+                  v-model="bankDetails.confirmAccountNo"
                   :rules="[
                     (val) =>
                       (val && val.length > 0) || 'Please Re Enter a Account no',
                     (val) =>
-                      (val && val === newBankAccountDetails.bank.accountNo) ||
+                      (val && val === bankDetails.accountNo) ||
                       'Account No Does not match',
                   ]"
                   type="password"
@@ -267,7 +269,7 @@
                   dense
                   label="IFSC Code"
                   type="text"
-                  v-model="newBankAccountDetails.bank.ifscCode"
+                  v-model="bankDetails.ifscCode"
                   :rules="[
                     (val) =>
                       (val && val.length > 0) || 'Please Enter a IFSC code',
@@ -295,7 +297,7 @@
                     rounded
                     label="Skip"
                     color="primary"
-                    @click="skipBankDetails()"
+                    @click="(isBankAccountSkipped = true), (step = 3)"
                   ></q-btn>
                 </div>
               </q-form>
@@ -304,7 +306,11 @@
         </div>
       </q-step>
 
-      <q-step :name="3" title="Preview Screen" icon="add_comment">
+      <q-step :name="3" title="Create Vendor" icon="settings" :done="step > 1">
+      </q-step>
+
+      <!-- 3 -->
+      <q-step :name="4" title="Preview Screen" icon="visibility">
         <div class="q-gutter-y-lg">
           <!-- vendor details -->
           <div class="q-gutter-y-md">
@@ -317,83 +323,125 @@
             <q-item class="row no-wrap">
               <q-item-section>
                 <q-item-label overline>Vendor Name</q-item-label>
-                <q-item-label>{{ newVendorDetails.vendorName }}</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ newVendorDetails.vendorName }}
+                </q-item-label>
               </q-item-section>
               <q-item-section>
                 <q-item-label overline>Contact Number</q-item-label>
-                <q-item-label>{{
-                  newVendorDetails.contactNumber
-                }}</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ newVendorDetails.contactNumber }}
+                </q-item-label>
               </q-item-section>
               <q-item-section>
                 <q-item-label overline>Email Address</q-item-label>
-                <q-item-label>{{ newVendorDetails.emailAddress }}</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ newVendorDetails.emailAddress }}
+                </q-item-label>
               </q-item-section>
             </q-item>
 
             <q-item class="row no-wrap">
               <q-item-section>
                 <q-item-label overline>Address 1</q-item-label>
-                <q-item-label>{{ newVendorDetails.address1 }}</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ newVendorDetails.address1 }}
+                </q-item-label>
               </q-item-section>
               <q-item-section>
                 <q-item-label overline>Address 2</q-item-label>
-                <q-item-label>{{ newVendorDetails.address2 }}</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ newVendorDetails.address2 }}
+                </q-item-label>
               </q-item-section>
               <q-item-section>
                 <q-item-label overline>City</q-item-label>
-                <q-item-label>{{ newVendorDetails.city }}</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ newVendorDetails.city }}
+                </q-item-label>
               </q-item-section>
             </q-item>
 
             <q-item class="row no-wrap">
               <q-item-section>
                 <q-item-label overline>Country</q-item-label>
-                <q-item-label>{{ newVendorDetails.countryGeoId }}</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ newVendorDetails.countryGeoId }}
+                </q-item-label>
               </q-item-section>
               <q-item-section>
                 <q-item-label overline>State</q-item-label>
-                <q-item-label>{{
-                  newVendorDetails.stateProvinceGeoId.geoName
-                }}</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ newVendorDetails.stateProvinceGeoId.geoName }}
+                </q-item-label>
               </q-item-section>
               <q-item-section>
                 <q-item-label overline>PostalCode</q-item-label>
-                <q-item-label>{{ newVendorDetails.postalCode }}</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ newVendorDetails.postalCode }}
+                </q-item-label>
               </q-item-section>
             </q-item>
           </div>
 
           <q-separator spaced />
           <!-- bank details -->
-          <div class="q-gutter-y-md">
+          <div
+            class="q-gutter-y-md"
+            v-if="upiId !== '' || bankDetails.companyName !== ''"
+          >
             <div
               class="column justify-center text-center text-primary text-bold text-h6"
             >
               Bank Details
             </div>
 
-            <q-item class="row no-wrap">
-              <q-item-section>
+            <q-item v-if="upiId !== ''" class="row no-wrap">
+              <q-item-section class="full-width">
                 <q-item-label overline>Type</q-item-label>
-                <q-item-label>Bank</q-item-label>
+                <q-item-label class="text-primary text-h6">UPI</q-item-label>
               </q-item-section>
-              <q-item-section>
+              <q-item-section class="full-width">
+                <q-item-label overline>UPI ID</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ upiId }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item v-else class="row no-wrap">
+              <q-item-section class="full-width">
+                <q-item-label overline>Type</q-item-label>
+                <q-item-label class="text-primary text-h6">Bank</q-item-label>
+              </q-item-section>
+
+              <q-item-section class="full-width">
                 <q-item-label overline>Account Name</q-item-label>
-                <q-item-label>siva krishna</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ bankDetails.companyName }}
+                </q-item-label>
               </q-item-section>
-              <q-item-section>
+
+              <q-item-section class="full-width">
                 <q-item-label overline>Account Number</q-item-label>
-                <q-item-label>1811120000016</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ bankDetails.accountNo }}
+                </q-item-label>
               </q-item-section>
-              <q-item-section>
+
+              <q-item-section class="full-width">
                 <q-item-label overline>IFSC Code</q-item-label>
-                <q-item-label>CNRB0001618</q-item-label>
+                <q-item-label class="text-primary text-h6">
+                  {{ bankDetails.ifscCode }}
+                </q-item-label>
               </q-item-section>
             </q-item>
           </div>
 
-          <q-separator />
+          <q-separator
+            v-if="false"
+            class="row justify-center content-center q-mt-lg"
+          />
 
           <div v-if="false" class="row justify-center content-center q-mt-lg">
             <q-card style="width: 50%">
@@ -421,7 +469,12 @@
               v-close-popup
               @click="step = 2"
             ></q-btn>
-            <q-btn rounded label="Submit" color="primary"></q-btn>
+            <q-btn
+              rounded
+              label="Submit"
+              color="primary"
+              @click="submitDetails()"
+            />
           </div>
         </div>
       </q-step>
@@ -444,17 +497,17 @@ export default {
     const useAuth = useAuthStore();
     const router = useRouter();
 
-    const step = ref(3);
+    const step = ref(1);
     const addBankAccountTab = ref("upi");
 
-    const newBankAccountDetails = ref({
-      upi: "",
-      bank: {
-        companyName: "",
-        accountNo: "",
-        confirmAccountNo: "",
-        ifscCode: "",
-      },
+    const partyId = ref("");
+    const isBankAccountSkipped = ref(false);
+    const upiId = ref("");
+    const bankDetails = ref({
+      companyName: "",
+      accountNo: "",
+      confirmAccountNo: "",
+      ifscCode: "",
     });
 
     const newVendorDetails = ref({
@@ -474,28 +527,6 @@ export default {
     // add vendor
     function addVendor() {
       step.value = 2;
-      // api({
-      //   method: "POST",
-      //   url: "vendors/vendor",
-      //   headers: useAuth.authKey,
-      //   data: {
-      //     vendorName: newVendorDetails.value.vendorName,
-      //     contactNumber: newVendorDetails.value.contactNumber,
-      //     emailAddress: newVendorDetails.value.emailAddress,
-      //     address1: newVendorDetails.value.address1,
-      //     address2: newVendorDetails.value.address2,
-      //     city: newVendorDetails.value.city,
-      //     countryGeoId: newVendorDetails.value.countryGeoId,
-      //     stateProvinceGeoId: newVendorDetails.value.stateProvinceGeoId.geoId,
-      //     postalCode: newVendorDetails.value.postalCode,
-      //   },
-      // })
-      //   .then((res) => {
-      //     // router.back();
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
     }
 
     // add all countryList to vendor dialog box
@@ -531,14 +562,69 @@ export default {
       });
     }
 
-    function addBankAccount() {
-      step.value = 3;
+    function bankSubmit(type) {
+      if (type == "Bank") {
+        upiId.value = "";
+        step.value = 3;
+      } else {
+        bankDetails.value = {
+          companyName: "",
+          accountNo: "",
+          confirmAccountNo: "",
+          ifscCode: "",
+        };
+        step.value = 3;
+      }
     }
 
-    function skipBankDetails() {
-      console.log(newVendorDetails.value);
-      step.value = 3;
+    async function submitDetails() {
+      await api({
+        method: "POST",
+        url: "vendors/vendor",
+        headers: useAuth.authKey,
+        data: {
+          vendorName: newVendorDetails.value.vendorName,
+          contactNumber: newVendorDetails.value.contactNumber,
+          emailAddress: newVendorDetails.value.emailAddress,
+          address1: newVendorDetails.value.address1,
+          address2: newVendorDetails.value.address2,
+          city: newVendorDetails.value.city,
+          countryGeoId: newVendorDetails.value.countryGeoId,
+          stateProvinceGeoId: newVendorDetails.value.stateProvinceGeoId.geoId,
+          postalCode: newVendorDetails.value.postalCode,
+        },
+      })
+        .then((res) => {
+          partyId.value = res.data.partyId;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      const n1 = (n2 == n3) === n4;
+
+      if (!!partyId.value) {
+      }
+
+      // if (succes) {
+      //   let tempUrl = "";
+
+      //   await api({
+      //     method: "POST",
+      //     url: tempUrl,
+      //     headers: useAuth.authKey,
+      //     params: params,
+      //   })
+      //     .then((res) => {
+      //       console.log(res);
+      //     })
+      //     .catch((err) => {
+      //       console.log(err);
+      //     });
+      // }
     }
+
+    // computed props
 
     const isCountryValid = computed(() => {
       if (!!newVendorDetails.value.countryGeoId) {
@@ -549,22 +635,22 @@ export default {
     });
 
     const isUpiFormValid = computed(() => {
-      console.log("upi");
-      if (!!newBankAccountDetails.value.upi) {
+      if (!!upiId.value) {
         return true;
       } else {
         return false;
       }
     });
 
+    const tempBankFormField = {
+      companyName: "",
+      accountNo: "",
+      confirmAccountNo: "",
+      ifscCode: "",
+    };
+
     const isBankFormValid = computed(() => {
-      console.log("okkkkkkkkkk");
-      if (
-        !!newBankAccountDetails.value.bank.companyName ||
-        !!newBankAccountDetails.value.bank.accountNo ||
-        !!newBankAccountDetails.value.bank.confirmAccountNo ||
-        !!newBankAccountDetails.value.bank.ifscCode
-      ) {
+      if (bankDetails.value.companyName !== tempBankFormField.companyName) {
         return true;
       } else {
         return false;
@@ -582,19 +668,21 @@ export default {
       countryList,
       stateList,
       isCountryValid,
-      newBankAccountDetails,
+      upiId,
+      bankDetails,
       router,
 
       isUpiFormValid,
       isBankFormValid,
 
       // function
-      addBankAccount,
-      skipBankDetails,
+      submitDetails,
+      bankSubmit,
 
       // stepper items
       step,
       addBankAccountTab,
+      isBankAccountSkipped,
     };
   },
 };
