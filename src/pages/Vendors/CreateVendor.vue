@@ -1,107 +1,433 @@
 <template>
-  <div class="q-pa-xl">
+  <div class="q-pa-xl row justify-center bg-blue-grey-1">
+    <!--  -->
     <q-stepper
       v-model="step"
-      header-nav
       ref="stepper"
       color="primary"
       animated
-      class="full-width"
+      keep-alive
+      style="
+        width: 900px;
+        height: 700px;
+        box-shadow: rgba(71, 67, 67, 0.56) 0px 22px 70px 4px;
+        border-radius: 12px;
+      "
     >
-      <q-step :name="1" title="Select campaign settings" icon="settings">
-        For each ad campaign that you create, you can control how much you're
-        willing to spend on clicks and conversions, which networks and
-        geographical locations you want your ads to show on, and more.
+      <q-step :name="1" title="Create Vendor" icon="settings">
+        <q-form @submit="addVendor" class="q-gutter-y-sm">
+          <div
+            class="text-primary text-center text-bold"
+            style="font-size: 18px"
+          >
+            Create Vendor
+          </div>
+          <div class="row justify-center no-wrap">
+            <q-input
+              outlined
+              type="text"
+              label="Vendor Name"
+              class="full-width q-pa-md"
+              v-model="newVendorDetails.vendorName"
+              :rules="[
+                (val) => (val && val.length > 0) || 'First Name Required',
+                (val) => (val && val.length > 2) || 'Enter minimun 2 letters',
+              ]"
+            ></q-input>
+          </div>
 
-        <q-stepper-navigation>
-          <q-btn
-            @click="
-              () => {
-                step = 2;
-              }
-            "
-            color="primary"
-            label="Continue"
-          />
-        </q-stepper-navigation>
+          <div class="row justify-center no-wrap">
+            <q-input
+              outlined
+              class="full-width q-pa-md"
+              type="number"
+              label="Contact Number"
+              v-model="newVendorDetails.contactNumber"
+              prefix="+91"
+              :rules="[
+                (val) => (val && val.length > 0) || 'Number Required',
+                (val) => (val && val.length >= 10) || 'Enter Full number',
+              ]"
+            ></q-input>
+            <q-input
+              outlined
+              class="full-width q-pa-md"
+              type="text"
+              label="Email"
+              v-model="newVendorDetails.emailAddress"
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) || 'Please Enter a Email address',
+                (val) =>
+                  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+                    val
+                  ) || 'Please enter a valid email address',
+              ]"
+            ></q-input>
+          </div>
+
+          <div class="row justify-center no-wrap">
+            <q-input
+              outlined
+              class="full-width q-pa-md"
+              type="text"
+              label="Adderss 1"
+              v-model="newVendorDetails.address1"
+              :rules="[
+                (val) => (val && val.length > 3) || 'Please Enter Address',
+              ]"
+            ></q-input>
+            <q-input
+              outlined
+              class="full-width q-pa-md"
+              type="text"
+              label="Address 2"
+              v-model="newVendorDetails.address2"
+              hint="optional"
+              :rules="[]"
+            ></q-input>
+          </div>
+
+          <div class="row justify-center no-wrap">
+            <q-input
+              outlined
+              class="full-width q-pa-md"
+              type="text"
+              label="City"
+              v-model="newVendorDetails.city"
+              :rules="[(val) => (val && val.length > 2) || 'Enter a City']"
+            ></q-input>
+            <q-select
+              v-model="newVendorDetails.countryGeoId"
+              outlined
+              class="full-width q-pa-md"
+              type="text"
+              label="Country"
+              option-label="geoName"
+              option-value="geoId"
+              emit-value
+              map-options
+              @update:model-value="(val) => getStateList(val)"
+              :options="countryList"
+              :rules="[(val) => !!val || 'select  the country']"
+            ></q-select>
+          </div>
+
+          <div class="row justify-center no-wrap">
+            <q-select
+              :disable="!isCountryValid"
+              outlined
+              class="full-width q-pa-md"
+              option-label="geoName"
+              option-value="geoId"
+              type="text"
+              label="State"
+              :options="stateList"
+              v-model="newVendorDetails.stateProvinceGeoId"
+              :rules="[(val) => val || 'Select the State']"
+            ></q-select>
+            <q-input
+              outlined
+              class="full-width q-pa-md"
+              type="text"
+              label="Postal Code"
+              v-model="newVendorDetails.postalCode"
+              :rules="[
+                (val) => (val && val.length > 0) || 'Enter a Postalcode',
+              ]"
+            ></q-input>
+          </div>
+
+          <div class="row justify-evenly q-py-md">
+            <q-btn
+              rounded
+              label="Cancel"
+              color="red"
+              @click="router.back()"
+            ></q-btn>
+            <q-btn rounded label="Continue" color="primary" type="submit" />
+          </div>
+        </q-form>
       </q-step>
 
-      <q-step
-        :name="2"
-        title="Create an ad group"
-        caption="Optional"
-        icon="create_new_folder"
-      >
-        An ad group contains one or more ads which target a shared set of
-        keywords.
+      <q-step :name="2" title="Add Bank Account" icon="create_new_folder">
+        <div class="q-gutter-y-md">
+          <div
+            class="column justify-center text-center text-primary text-bold text-h6"
+          >
+            Vendor Details
+          </div>
+          <q-tabs
+            v-model="addBankAccountTab"
+            class="row justify-center full-width text-black q-pa-sm"
+            content-class="row justify-center "
+            active-color=" bg-primary text-white"
+            indicator-color="transparent"
+            style="
+              border: 2px solid silver;
+              border-radius: 50px;
 
-        <q-stepper-navigation>
-          <q-btn
-            @click="
-              () => {
-                step = 3;
-              }
+              height: 70px;
             "
-            color="primary"
-            label="Continue"
-          />
-          <q-btn
-            flat
-            @click="step = 1"
-            color="primary"
-            label="Back"
-            class="q-ml-sm"
-          />
-        </q-stepper-navigation>
+          >
+            <q-tab
+              name="upi"
+              label="UPI"
+              style="width: 100%; border-radius: 50px"
+            />
+            <q-tab
+              name="bank"
+              label="Bank Account"
+              style="width: 100%; border-radius: 50px"
+            />
+          </q-tabs>
+
+          <q-tab-panels v-model="addBankAccountTab">
+            <!-- UPI -->
+            <q-tab-panel name="upi">
+              <q-form
+                @submit="addBankAccount(), (newBankAccountDetails.bank = '')"
+                class="q-gutter-y-sm"
+              >
+                <q-input
+                  label="Beneficiary UPI ID"
+                  v-model="newBankAccountDetails.upi"
+                  :rules="[
+                    (val) => (val && val.length > 5) || 'Please Enter a UPI Id',
+                  ]"
+                />
+                <div class="row justify-evenly q-py-md">
+                  <q-btn
+                    rounded
+                    label="Back"
+                    color="red"
+                    v-close-popup
+                    @click="step = 1"
+                  ></q-btn>
+                  <div v-if="isUpiFormValid">
+                    <q-btn
+                      rounded
+                      label="Save & Continue"
+                      color="primary"
+                      type="submit"
+                    ></q-btn>
+                  </div>
+                  <q-btn
+                    v-else
+                    rounded
+                    label="Skip"
+                    color="primary"
+                    @click="skipBankDetails()"
+                    type="submit"
+                  ></q-btn>
+                </div>
+              </q-form>
+            </q-tab-panel>
+
+            <!-- Bank -->
+            <q-tab-panel name="bank" class="q-gutter-y-md">
+              <q-form
+                @submit="addBankAccount(), (newBankAccountDetails.upi = '')"
+                class="q-gutter-y-sm"
+              >
+                <q-input
+                  dense
+                  type="text"
+                  label="Account Name"
+                  v-model="newBankAccountDetails.bank.companyName"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 1) || 'Please Enter a Account name',
+                  ]"
+                />
+                <q-input
+                  dense
+                  label="Account No"
+                  v-model="newBankAccountDetails.bank.accountNo"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) || 'Please Enter a Account no',
+                  ]"
+                  type="password"
+                />
+                <q-input
+                  dense
+                  label="Re Enter Account No"
+                  v-model="newBankAccountDetails.bank.confirmAccountNo"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) || 'Please Re Enter a Account no',
+                    (val) =>
+                      (val && val === newBankAccountDetails.bank.accountNo) ||
+                      'Account No Does not match',
+                  ]"
+                  type="password"
+                />
+                <q-input
+                  dense
+                  label="IFSC Code"
+                  type="text"
+                  v-model="newBankAccountDetails.bank.ifscCode"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) || 'Please Enter a IFSC code',
+                  ]"
+                />
+                <div class="row justify-evenly q-py-md">
+                  <q-btn
+                    rounded
+                    label="Back"
+                    color="red"
+                    v-close-popup
+                    @click="step = 1"
+                  ></q-btn>
+
+                  <q-btn
+                    v-if="isBankFormValid"
+                    rounded
+                    label="Save & Continue"
+                    color="primary"
+                    type="submit"
+                  ></q-btn>
+
+                  <q-btn
+                    v-else
+                    rounded
+                    label="Skip"
+                    color="primary"
+                    @click="skipBankDetails()"
+                  ></q-btn>
+                </div>
+              </q-form>
+            </q-tab-panel>
+          </q-tab-panels>
+        </div>
       </q-step>
 
-      <q-step :name="3" title="Create an ad" icon="add_comment">
-        Try out different ad text to see what brings in the most customers, and
-        learn how to enhance your ads using features like ad extensions. If you
-        run into any problems with your ads, find out how to tell if they're
-        running and how to resolve approval issues.
+      <q-step :name="3" title="Preview Screen" icon="add_comment">
+        <div class="q-gutter-y-lg">
+          <!-- vendor details -->
+          <div class="q-gutter-y-md">
+            <div
+              class="column justify-center text-center text-primary text-bold text-h6"
+            >
+              Vendor Details
+            </div>
 
-        <q-stepper-navigation>
-          <q-btn color="primary" label="Finish" />
-          <q-btn
-            flat
-            @click="step = 2"
-            color="primary"
-            label="Back"
-            class="q-ml-sm"
-          />
-        </q-stepper-navigation>
+            <q-item class="row no-wrap">
+              <q-item-section>
+                <q-item-label overline>Vendor Name</q-item-label>
+                <q-item-label>{{ newVendorDetails.vendorName }}</q-item-label>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label overline>Contact Number</q-item-label>
+                <q-item-label>{{
+                  newVendorDetails.contactNumber
+                }}</q-item-label>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label overline>Email Address</q-item-label>
+                <q-item-label>{{ newVendorDetails.emailAddress }}</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item class="row no-wrap">
+              <q-item-section>
+                <q-item-label overline>Address 1</q-item-label>
+                <q-item-label>{{ newVendorDetails.address1 }}</q-item-label>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label overline>Address 2</q-item-label>
+                <q-item-label>{{ newVendorDetails.address2 }}</q-item-label>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label overline>City</q-item-label>
+                <q-item-label>{{ newVendorDetails.city }}</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item class="row no-wrap">
+              <q-item-section>
+                <q-item-label overline>Country</q-item-label>
+                <q-item-label>{{ newVendorDetails.countryGeoId }}</q-item-label>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label overline>State</q-item-label>
+                <q-item-label>{{
+                  newVendorDetails.stateProvinceGeoId.geoName
+                }}</q-item-label>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label overline>PostalCode</q-item-label>
+                <q-item-label>{{ newVendorDetails.postalCode }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </div>
+
+          <q-separator spaced />
+          <!-- bank details -->
+          <div class="q-gutter-y-md">
+            <div
+              class="column justify-center text-center text-primary text-bold text-h6"
+            >
+              Bank Details
+            </div>
+
+            <q-item class="row no-wrap">
+              <q-item-section>
+                <q-item-label overline>Type</q-item-label>
+                <q-item-label>Bank</q-item-label>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label overline>Account Name</q-item-label>
+                <q-item-label>siva krishna</q-item-label>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label overline>Account Number</q-item-label>
+                <q-item-label>1811120000016</q-item-label>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label overline>IFSC Code</q-item-label>
+                <q-item-label>CNRB0001618</q-item-label>
+              </q-item-section>
+            </q-item>
+          </div>
+
+          <q-separator />
+
+          <div v-if="false" class="row justify-center content-center q-mt-lg">
+            <q-card style="width: 50%">
+              <q-item clickable v-ripple>
+                <q-item-section>Vendor Details</q-item-section>
+                <q-item-section avatar>
+                  <q-icon color="primary" name="bluetooth" />
+                </q-item-section>
+              </q-item>
+
+              <q-item clickable v-ripple>
+                <q-item-section>Bank Details</q-item-section>
+                <q-item-section avatar>
+                  <q-icon color="primary" name="bluetooth" />
+                </q-item-section>
+              </q-item>
+            </q-card>
+          </div>
+
+          <div class="row justify-evenly">
+            <q-btn
+              rounded
+              label="Back"
+              color="red"
+              v-close-popup
+              @click="step = 2"
+            ></q-btn>
+            <q-btn rounded label="Submit" color="primary"></q-btn>
+          </div>
+        </div>
       </q-step>
     </q-stepper>
-    <div class="row justify-evenly content-center full-height">
-      <q-card
-        :style="{
-          height: step == 1 ? '400px' : '300px',
-          width: step == 1 ? '400px' : '300px',
-        }"
-        class="bg-green"
-      >
-        Create Vendor
-      </q-card>
-      <q-card
-        :style="{
-          height: step == 2 ? '400px' : '300px',
-          width: step == 2 ? '400px' : '300px',
-        }"
-        class="bg-red"
-      >
-        Add bank Methods
-      </q-card>
-      <q-card
-        :style="{
-          height: step == 3 ? '400px' : '300px',
-          width: step == 3 ? '400px' : '300px',
-        }"
-        class="bg-info"
-      >
-        Preview
-      </q-card>
-    </div>
+
+    <!-- stepper 3 -->
   </div>
 </template>
 
@@ -117,7 +443,20 @@ export default {
   setup() {
     const useAuth = useAuthStore();
     const router = useRouter();
-    const step = ref(1);
+
+    const step = ref(3);
+    const addBankAccountTab = ref("upi");
+
+    const newBankAccountDetails = ref({
+      upi: "",
+      bank: {
+        companyName: "",
+        accountNo: "",
+        confirmAccountNo: "",
+        ifscCode: "",
+      },
+    });
+
     const newVendorDetails = ref({
       vendorName: "",
       contactNumber: "",
@@ -134,28 +473,29 @@ export default {
 
     // add vendor
     function addVendor() {
-      api({
-        method: "POST",
-        url: "vendors/vendor",
-        headers: useAuth.authKey,
-        data: {
-          vendorName: newVendorDetails.value.vendorName,
-          contactNumber: newVendorDetails.value.contactNumber,
-          emailAddress: newVendorDetails.value.emailAddress,
-          address1: newVendorDetails.value.address1,
-          address2: newVendorDetails.value.address2,
-          city: newVendorDetails.value.city,
-          countryGeoId: newVendorDetails.value.countryGeoId,
-          stateProvinceGeoId: newVendorDetails.value.stateProvinceGeoId.geoId,
-          postalCode: newVendorDetails.value.postalCode,
-        },
-      })
-        .then((res) => {
-          router.back();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      step.value = 2;
+      // api({
+      //   method: "POST",
+      //   url: "vendors/vendor",
+      //   headers: useAuth.authKey,
+      //   data: {
+      //     vendorName: newVendorDetails.value.vendorName,
+      //     contactNumber: newVendorDetails.value.contactNumber,
+      //     emailAddress: newVendorDetails.value.emailAddress,
+      //     address1: newVendorDetails.value.address1,
+      //     address2: newVendorDetails.value.address2,
+      //     city: newVendorDetails.value.city,
+      //     countryGeoId: newVendorDetails.value.countryGeoId,
+      //     stateProvinceGeoId: newVendorDetails.value.stateProvinceGeoId.geoId,
+      //     postalCode: newVendorDetails.value.postalCode,
+      //   },
+      // })
+      //   .then((res) => {
+      //     // router.back();
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
     }
 
     // add all countryList to vendor dialog box
@@ -191,13 +531,42 @@ export default {
       });
     }
 
+    function addBankAccount() {
+      step.value = 3;
+    }
+
+    function skipBankDetails() {
+      console.log(newVendorDetails.value);
+      step.value = 3;
+    }
+
     const isCountryValid = computed(() => {
-      console.log("trigred");
       if (!!newVendorDetails.value.countryGeoId) {
         return true;
       } else {
-        // eslint-disable-next-line
+        return false;
+      }
+    });
 
+    const isUpiFormValid = computed(() => {
+      console.log("upi");
+      if (!!newBankAccountDetails.value.upi) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    const isBankFormValid = computed(() => {
+      console.log("okkkkkkkkkk");
+      if (
+        !!newBankAccountDetails.value.bank.companyName ||
+        !!newBankAccountDetails.value.bank.accountNo ||
+        !!newBankAccountDetails.value.bank.confirmAccountNo ||
+        !!newBankAccountDetails.value.bank.ifscCode
+      ) {
+        return true;
+      } else {
         return false;
       }
     });
@@ -213,120 +582,22 @@ export default {
       countryList,
       stateList,
       isCountryValid,
+      newBankAccountDetails,
+      router,
+
+      isUpiFormValid,
+      isBankFormValid,
+
+      // function
+      addBankAccount,
+      skipBankDetails,
 
       // stepper items
       step,
+      addBankAccountTab,
     };
   },
 };
 </script>
 
 <style></style>
-
-<!-- <q-card style="width: 600px; border-radius: 12px">
-  <q-card-section>
-    <q-form @submit="addVendor" class="q-gutter-y-sm">
-      <div
-        style="border-radius: 15px"
-        class="text-primary text-center text-bold"
-      >
-        ADD VENDOR
-      </div>
-      <q-input
-        dense
-        type="text"
-        label="Vendor Name"
-        v-model="newVendorDetails.vendorName"
-        :rules="[
-          (val) => (val && val.length > 0) || 'First Name Required',
-          (val) => (val && val.length > 2) || 'Enter minimun 2 letters',
-        ]"
-      ></q-input>
-      <q-input
-        dense
-        class="contact_num_input"
-        type="number"
-        label="Contact Number"
-        v-model="newVendorDetails.contactNumber"
-        prefix="+91"
-        :rules="[
-          (val) => (val && val.length > 0) || 'Number Required',
-          (val) => (val && val.length >= 10) || 'Enter Full number',
-        ]"
-      ></q-input>
-      <q-input
-        dense
-        type="text"
-        label="Email"
-        v-model="newVendorDetails.emailAddress"
-        :rules="[
-          (val) =>
-            (val && val.length > 0) || 'Please Enter a Email address',
-          (val) =>
-            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val) ||
-            'Please enter a valid email address',
-        ]"
-      ></q-input>
-      <q-input
-        dense
-        type="text"
-        label="Adderss 1"
-        v-model="newVendorDetails.address1"
-        :rules="[
-          (val) => (val && val.length > 3) || 'Please Enter Address',
-        ]"
-      ></q-input>
-      <q-input
-        dense
-        type="text"
-        label="Address 2"
-        v-model="newVendorDetails.address2"
-        hint="optional"
-        :rules="[]"
-      ></q-input>
-      <q-input
-        dense
-        type="text"
-        label="City"
-        v-model="newVendorDetails.city"
-        :rules="[(val) => (val && val.length > 2) || 'Enter a City']"
-      ></q-input>
-      <q-select
-        v-model="newVendorDetails.countryGeoId"
-        dense
-        type="text"
-        label="Country"
-        option-label="geoName"
-        option-value="geoId"
-        emit-value
-        map-options
-        @update:model-value="(val) => getStateList(val)"
-        :options="countryList"
-        :rules="[(val) => !!val || 'select  the country']"
-      ></q-select>
-      <q-select
-        :disable="!isCountryValid"
-        dense
-        option-label="geoName"
-        option-value="geoId"
-        type="text"
-        label="State"
-        :options="stateList"
-        v-model="newVendorDetails.stateProvinceGeoId"
-        :rules="[(val) => val || 'Select the State']"
-      ></q-select>
-      <q-input
-        dense
-        type="text"
-        label="Postal Code"
-        v-model="newVendorDetails.postalCode"
-        :rules="[(val) => (val && val.length > 0) || 'Enter a Postalcode']"
-      ></q-input>
-
-      <div class="row justify-evenly q-py-md">
-        <q-btn rounded label="Cancel" color="red" v-close-popup></q-btn>
-        <q-btn rounded label="Submit" color="primary" type="submit"></q-btn>
-      </div>
-    </q-form>
-  </q-card-section>
-</q-card> -->
