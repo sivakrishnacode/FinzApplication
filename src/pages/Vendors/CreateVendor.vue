@@ -251,7 +251,7 @@
         :name="3"
         title="Add UPI Account"
         icon="settings"
-        :done="step > 1"
+        :done="step > 2"
       >
         <div class="row justify-center full-width q-gutter-y-md">
           <div class="" style="width: 50%">
@@ -278,7 +278,7 @@
                   label="Back"
                   color="red"
                   v-close-popup
-                  @click="step = 1"
+                  @click="step = 2"
                 ></q-btn>
                 <div v-if="isUpiFormValid">
                   <q-btn
@@ -561,13 +561,14 @@ export default {
           });
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err.response.data.errors);
           $q.notify({
-            message: err.errors,
+            message: err.response.data.errors,
             position: "top-right",
-            color: "green",
             type: "negative",
             icon: "cancel",
+            closeBtn: "close",
+            timeout: "10000",
           });
         });
 
@@ -583,15 +584,24 @@ export default {
             accountNo: bankDetails.value.accountNo,
             ifscCode: bankDetails.value.ifscCode,
           },
-        }).then((res) => {
-          $q.notify({
-            message: "Bank Details Added Succesfully",
-            position: "top-right",
-            color: "green",
-            type: "positive",
-            icon: "done",
+        })
+          .then((res) => {
+            $q.notify({
+              message: "Bank Details Added Succesfully",
+              position: "top-right",
+              color: "green",
+              type: "positive",
+              icon: "done",
+            });
+          })
+          .catch((err) => {
+            $q.notify({
+              message: err.response.data.errors,
+              position: "top-right",
+              type: "negative",
+              icon: "cancel",
+            });
           });
-        });
       }
 
       if (isAccoutFound.value.isUpi) {
@@ -604,15 +614,24 @@ export default {
             partyId: partyId.value,
             upiId: upiId.value,
           },
-        }).then((res) => {
-          $q.notify({
-            message: "UPI Details Added Succesfully",
-            position: "top-right",
-            color: "green",
-            type: "positive",
-            icon: "done",
+        })
+          .then((res) => {
+            $q.notify({
+              message: "UPI Details Added Succesfully",
+              position: "top-right",
+              color: "green",
+              type: "positive",
+              icon: "done",
+            });
+          })
+          .catch((err) => {
+            $q.notify({
+              message: err.response.data.errors,
+              position: "top-right",
+              type: "negative",
+              icon: "cancel",
+            });
           });
-        });
       }
 
       router.push({
@@ -688,4 +707,10 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>
