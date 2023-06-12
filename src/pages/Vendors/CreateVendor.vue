@@ -552,9 +552,23 @@ export default {
       })
         .then((res) => {
           partyId.value = res.data.partyId;
+          $q.notify({
+            message: "Vendor Details Added Succesfully",
+            position: "top-right",
+            color: "green",
+            type: "positive",
+            icon: "done",
+          });
         })
         .catch((err) => {
           console.log(err);
+          $q.notify({
+            message: err.errors,
+            position: "top-right",
+            color: "green",
+            type: "negative",
+            icon: "cancel",
+          });
         });
 
       if (isAccoutFound.value.isBank) {
@@ -570,7 +584,13 @@ export default {
             ifscCode: bankDetails.value.ifscCode,
           },
         }).then((res) => {
-          console.log(res);
+          $q.notify({
+            message: "Bank Details Added Succesfully",
+            position: "top-right",
+            color: "green",
+            type: "positive",
+            icon: "done",
+          });
         });
       }
 
@@ -585,14 +605,21 @@ export default {
             upiId: upiId.value,
           },
         }).then((res) => {
-          console.log(res);
+          $q.notify({
+            message: "UPI Details Added Succesfully",
+            position: "top-right",
+            color: "green",
+            type: "positive",
+            icon: "done",
+          });
         });
       }
 
-      $q.notify({
-        message: "",
-        position: "top-right",
-        color: "green",
+      router.push({
+        name: "vendorInfo_page",
+        params: {
+          vendorId: partyId.value,
+        },
       });
     }
 
