@@ -98,7 +98,7 @@
     </div>
 
     <!-- Invoice Info side -->
-    <div class="q-gutter-y-md column justify-center full-width">
+    <div class="q-gutter-y-md column item-start full-width">
       <!-- title -->
       <div class="row full-width justify-center">
         <div
@@ -108,7 +108,9 @@
           <div class="q-mt-md text-primary text-h6">
             {{ invoiceDetail.fromParty?.organization.organizationName }}
           </div>
-          <div class="text-blue-grey-1">{{ invoiceDetail.invoiceId }}</div>
+          <div class="text-blue-grey-1 q-mb-sm">
+            {{ invoiceDetail.invoiceId }}
+          </div>
         </div>
       </div>
 
@@ -159,7 +161,7 @@
       <div class="row justify-center full-width">
         <div
           class="bg-secondary q-pa-lg"
-          style="border-radius: 17px; width: 70%"
+          style="border-radius: 17px; width: 700px"
         >
           <q-scroll-area style="height: 600px">
             <div class="q-gutter-y-md">

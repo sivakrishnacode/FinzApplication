@@ -164,12 +164,26 @@
             </q-list>
           </q-menu>
         </q-btn>
-        <!-- <q-btn
+        <q-btn
           color="primary"
           icon="add"
           label="Upload Invoice"
           @click="selectFile"
-        /> -->
+        />
+        <q-file
+          v-model="invoiceFile"
+          type="file"
+          label="Upload Invoice"
+          ref="fileInputRef"
+          rounded
+          outlined
+          style="opacity: 0; position: absolute; max-width: 1px"
+          @update:model-value="invoiceFileUpload"
+        >
+          <template #append>
+            <q-icon name="backup" />
+          </template>
+        </q-file>
       </div>
       <!-- quick filter -->
       <div class="q-pa-md">
