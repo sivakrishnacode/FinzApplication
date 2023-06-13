@@ -12,7 +12,7 @@
         </template>
       </q-input>
 
-      <!-- add vendor btn -->
+      <!-- upload invoice btn -->
       <q-btn
         rounded
         class="full-width"
@@ -28,12 +28,14 @@
       <div>
         <q-tabs
           v-model="currentTab"
-          active-color="white bg-primary"
+          active-color="white bg-secondary"
           class="q-mx-md bg-grey-2"
           indicator-color="transparent"
           no-caps
+          switch-indicator
           dense
-          style="border-radius: 12px"
+          outside-arrows
+          style="border-radius: 12px; border: 1px solid silver"
         >
           <q-tab
             v-for="data in enumTabList"
@@ -54,29 +56,40 @@
           <q-item
             v-for="data in invoiceList"
             :key="data"
-            active-class="text-bold text-h6"
+            active-class="text-bold "
             clickable
             v-ripple
             class="bg-secondary text-primary"
             style="border-radius: 5px"
+            @click="getInvoiceDetails(data.invoiceId)"
+            :active="invoiceDetail.invoiceId === data.invoiceId ? true : false"
           >
             <!-- avator -->
             <q-item-section class="">
-              <q-item-label class="text-bold">
-                {{ data.invoiceId }}
-              </q-item-label>
-              <q-item-label> {{ data.organizationName }} </q-item-label>
-              <q-item-label class="text-bold"> Vendor@mail.com </q-item-label>
+              <div class="q-gutter-y-md">
+                <q-item-label class="text-bold">
+                  {{ data.organizationName }}
+                </q-item-label>
+                <q-item-label> {{ data.invoiceId }} </q-item-label>
+                <q-item-label class="text-bold">
+                  email not Received
+                </q-item-label>
+              </div>
             </q-item-section>
 
             <!-- name -->
-            <q-item-section avatar>
-              <q-item-label class="text-bold"
-                >Total: {{ data.invoiceTotal }}
+            <q-item-section avatar class="">
+              <q-item-label class="text-bold">
+                Total: {{ data.invoiceTotal }}
               </q-item-label>
               <q-item-label>Unpaid: {{ data.unpaidTotal }} </q-item-label>
               <q-item-label class="text-bold">
-                {{ data.statusId }}
+                <q-badge
+                  rounded
+                  :color="statusColor(data.statusId)"
+                  :label="data.statusId"
+                >
+                </q-badge>
               </q-item-label>
             </q-item-section>
           </q-item>
@@ -85,18 +98,17 @@
     </div>
 
     <!-- Invoice Info side -->
-    <div
-      class="q-gutter-y-md row justify-center full-width"
-      style="width: 700px"
-    >
+    <div class="q-gutter-y-md column justify-center full-width">
       <!-- title -->
       <div class="row full-width justify-center">
         <div
           class="bg-secondary text-center"
-          style="border-radius: 0 0 70px 70px; height: 80px; width: 700px"
+          style="border-radius: 0 0 70px 70px; width: 700px"
         >
-          <div class="q-mt-md text-primary text-h6">Siva krishna {{ id }}</div>
-          <div class="text-blue-grey-1">sivakrishnacoc@gmail.com</div>
+          <div class="q-mt-md text-primary text-h6">
+            {{ invoiceDetail.fromParty?.organization.organizationName }}
+          </div>
+          <div class="text-blue-grey-1">{{ invoiceDetail.invoiceId }}</div>
         </div>
       </div>
 
@@ -144,132 +156,143 @@
       </div>
 
       <!-- body -->
-      <div
-        class="item-center bg-secondary q-pa-lg"
-        style="border-radius: 17px; min-width: 700px; max-width: 900px"
-      >
-        <div class="q-gutter-y-md">
-          <!-- vendor info -->
-          <q-item class="row justify-between text-primary">
-            <!-- left -->
-            <q-item-section>
-              <q-item-label class="text-primary text-weight-bold">
-                {{ invoiceDetail.fromParty?.organization.organizationName }}
-              </q-item-label>
-              <q-item-label class="text-white text-caption">
-                email not Received
-              </q-item-label>
-            </q-item-section>
-            <!-- right -->
+      <div class="row justify-center full-width">
+        <div
+          class="bg-secondary q-pa-lg"
+          style="border-radius: 17px; width: 70%"
+        >
+          <q-scroll-area style="height: 600px">
+            <div class="q-gutter-y-md">
+              <!-- vendor info -->
+              <q-item class="row justify-between text-primary">
+                <!-- left -->
+                <q-item-section>
+                  <q-item-label class="text-primary text-weight-bold">
+                    {{ invoiceDetail.fromParty?.organization.organizationName }}
+                  </q-item-label>
+                  <q-item-label class="text-white text-caption">
+                    email not Received
+                  </q-item-label>
+                </q-item-section>
+                <!-- right -->
 
-            <q-btn
-              outline
-              rounded
-              color="primary"
-              label="View"
-              @click="vendoPage(invoiceDetail.fromParty?.partyId)"
-            />
-          </q-item>
+                <q-btn
+                  outline
+                  rounded
+                  color="primary"
+                  label="View"
+                  @click="vendoPage(invoiceDetail.fromParty?.partyId)"
+                />
+              </q-item>
 
-          <!-- invoice file -->
-          <q-item class="row justify-between text-primary q-py-md">
-            <!-- left -->
-            <q-item-section>
-              <q-item-label class="text-primary text-weight-bold">
-                Invoice:
-              </q-item-label>
-              <q-item-label class="text-white text-caption">
-                {{ invoiceDetail.externalId }}
-              </q-item-label>
-            </q-item-section>
-            <!-- right -->
+              <!-- invoice file -->
+              <q-item class="row justify-between text-primary q-py-md">
+                <!-- left -->
+                <q-item-section>
+                  <q-item-label class="text-primary text-weight-bold">
+                    Invoice:
+                  </q-item-label>
+                  <q-item-label class="text-white text-caption">
+                    {{ invoiceDetail.externalId }}
+                  </q-item-label>
+                </q-item-section>
+                <!-- right -->
 
-            <q-btn outline rounded color="primary" label="View Invoice">
-            </q-btn>
-          </q-item>
-        </div>
+                <q-btn outline rounded color="primary" label="View Invoice">
+                </q-btn>
+              </q-item>
+            </div>
 
-        <!-- list items -->
-        <div>
-          <!-- columns -->
-          <q-item class="row justify-between">
-            <q-item-section class="col-1 text-weight-bold">
-              S.NO
-            </q-item-section>
-            <q-item-section class="col-4 text-weight-bold">
-              Product Name
-            </q-item-section>
-            <q-item-section class="col-2 text-weight-bold row content-center">
-              Quantity
-            </q-item-section>
-            <q-item-section class="col-3 text-weight-bold row content-center">
-              Price
-            </q-item-section>
-          </q-item>
-
-          <q-separator />
-
-          <!-- rows -->
-          <q-list
-            v-for="(data, index) in invoiceDetail.items"
-            :key="data.invoiceId"
-          >
-            <q-item class="row justify-between text-primary">
-              <q-item-section class="col-1">{{ index + 1 }}</q-item-section>
-              <q-item-section class="col-4">{{
-                data.description
-              }}</q-item-section>
-              <q-item-section class="col-2 row content-center">
-                {{ data.quantity }}
-              </q-item-section>
-              <q-item-section class="col-3 row content-center">
-                {{ data.amount }}
-              </q-item-section>
-            </q-item>
-          </q-list>
-
-          <q-separator />
-
-          <!-- totals -->
-
-          <div class="row justify-between q-pa-md">
-            <div class="text-weight-bold">Total</div>
-            <div>{{ invoiceDetail.invoiceTotal }}</div>
-          </div>
-
-          <div class="row justify-between q-pa-md">
-            <div class="text-weight-bold">Paid Amount:</div>
+            <!-- list items -->
             <div>
-              {{ invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal }}
-            </div>
-          </div>
+              <!-- columns -->
+              <q-item class="row justify-between">
+                <q-item-section class="col-1 text-weight-bold">
+                  S.NO
+                </q-item-section>
+                <q-item-section class="col-4 text-weight-bold">
+                  Product Name
+                </q-item-section>
+                <q-item-section
+                  class="col-2 text-weight-bold row content-center"
+                >
+                  Quantity
+                </q-item-section>
+                <q-item-section
+                  class="col-3 text-weight-bold row content-center"
+                >
+                  Price
+                </q-item-section>
+              </q-item>
 
-          <div class="row justify-between q-pa-md">
-            <div class="text-weight-bold">UnPaid Amount:</div>
-            <div>{{ invoiceDetail.unpaidTotal }}</div>
-          </div>
+              <q-separator />
 
-          <q-separator spaced />
-        </div>
+              <!-- rows -->
+              <q-list
+                v-for="(data, index) in invoiceDetail.items"
+                :key="data.invoiceId"
+              >
+                <q-item class="row justify-between text-primary">
+                  <q-item-section class="col-1">{{ index + 1 }}</q-item-section>
+                  <q-item-section class="col-4">{{
+                    data.description
+                  }}</q-item-section>
+                  <q-item-section class="col-2 row content-center">
+                    {{ data.quantity }}
+                  </q-item-section>
+                  <q-item-section class="col-3 row content-center">
+                    {{ data.amount }}
+                  </q-item-section>
+                </q-item>
+              </q-list>
 
-        <!-- invoice history -->
-        <div class="q-pa-md">
-          <div class="text-h6 text-primary">Invoice History:</div>
-          <div
-            class="row justify-between q-pa-md"
-            style="border: 1px solid gray"
-          >
-            <div class="row content-center q-gutter-x-md">
-              <div class="text-h6">02-11-2022</div>
-              <div class="row content-center">06:45 AM</div>
-            </div>
-            <div class="">
-              <div class="text-white text-wight-bold" style="font-size: 20px">
-                Received
+              <q-separator />
+
+              <!-- totals -->
+
+              <div class="row justify-between q-pa-md">
+                <div class="text-weight-bold">Total</div>
+                <div>{{ invoiceDetail.invoiceTotal }}</div>
               </div>
-              <div>by John Doe</div>
+
+              <div class="row justify-between q-pa-md">
+                <div class="text-weight-bold">Paid Amount:</div>
+                <div>
+                  {{ invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal }}
+                </div>
+              </div>
+
+              <div class="row justify-between q-pa-md">
+                <div class="text-weight-bold">UnPaid Amount:</div>
+                <div>{{ invoiceDetail.unpaidTotal }}</div>
+              </div>
+
+              <q-separator spaced />
             </div>
-          </div>
+
+            <!-- invoice history -->
+            <div class="q-pa-md">
+              <div class="text-h6 text-primary">Invoice History:</div>
+              <div
+                class="row justify-between q-pa-md"
+                style="border: 1px solid gray"
+              >
+                <div class="row content-center q-gutter-x-md">
+                  <div class="text-h6">02-11-2022</div>
+                  <div class="row content-center">06:45 AM</div>
+                </div>
+                <div class="">
+                  <div
+                    class="text-white text-wight-bold"
+                    style="font-size: 20px"
+                  >
+                    Received
+                  </div>
+                  <div>by John Doe</div>
+                </div>
+              </div>
+            </div>
+          </q-scroll-area>
         </div>
       </div>
     </div>
@@ -300,21 +323,6 @@ export default {
     const invoiceDetail = ref("");
     const toStatusFlow = ref([]);
 
-    function getTabEnumList() {
-      api({
-        method: "GET",
-        url: "enumeration",
-        headers: useAuth.authKey,
-        params: {
-          enumTypeId: "UIInvoiceStatus",
-        },
-      }).then(async (res) => {
-        res.data.enumerationList.map((data) => {
-          enumTabList.value.push(data);
-        });
-      });
-    }
-
     function getInvoiceList() {
       invoiceList.value = [];
       api({
@@ -343,9 +351,25 @@ export default {
         headers: useAuth.authKey,
       }).then((res) => {
         invoiceDetail.value = res.data;
+        console.log(invoiceDetail.value);
       });
-      console.log(invoiceDetail.value);
+
       getToStatusFlow(invoiceDetail.value.statusId);
+    }
+
+    function getTabEnumList() {
+      api({
+        method: "GET",
+        url: "enumeration",
+        headers: useAuth.authKey,
+        params: {
+          enumTypeId: "UIInvoiceStatus",
+        },
+      }).then(async (res) => {
+        res.data.enumerationList.map((data) => {
+          enumTabList.value.push(data);
+        });
+      });
     }
 
     function getToStatusFlow(id) {
@@ -370,14 +394,13 @@ export default {
         headers: useAuth.authKey,
         url: "invoices/invoiceStatusUpdate",
         params: {
-          invoiceId: id,
+          invoiceId: invoiceDetail.value.invoiceId,
           vendorStatusId: statusIds.statusId,
           toStatusId: statusIds.toStatusId,
         },
       }).then((data) => {
         console.log(data);
       });
-      getInvoiceDetails(route.params.invoiceId);
     }
 
     function vendoPage(id) {
@@ -388,6 +411,27 @@ export default {
         },
       });
     }
+
+    // Status Color
+    const statusColor = (statusId) => {
+      const colors = [
+        { statusId: "InvoiceReceived", color: "light-blue-9" },
+        { statusId: "InvoiceIncoming", color: "orange-10" },
+        { statusId: "InvoicePmtSent", color: "green-8" },
+        { statusId: "InvoiceCancelled", color: "red-8" },
+        { statusId: "InvoiceApproved", color: "indigo-10" },
+      ];
+
+      const data = colors.find((data) => {
+        if (data.statusId == statusId) {
+          return data;
+        }
+      });
+
+      if (data) {
+        return data.color;
+      }
+    };
 
     onMounted(() => {
       getInvoiceDetails(route.params.invoiceId);
@@ -404,11 +448,13 @@ export default {
       enumTabList,
       getInvoiceList,
       currentTab,
+      getInvoiceDetails,
 
       // invoice info side
       invoiceDetail,
       toStatusFlow,
       changeInvoiceStatus,
+      statusColor,
     };
   },
 };

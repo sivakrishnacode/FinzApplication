@@ -37,7 +37,19 @@ const routes = [
       {
         path: "payment",
         name: "payment_page",
-        component: () => import("pages/Payment.vue"),
+        component: () => import("pages/Payments/Payment.vue"),
+        children: [
+          {
+            path: "",
+            name: "paymentList_page",
+            component: () => import("src/pages/Payments/PaymentList.vue"),
+          },
+          {
+            path: ":paymentId/paymentInfo",
+            name: "paymentInfo_page",
+            component: () => import("src/pages/Payments/PaymentInfo.vue"),
+          },
+        ],
       },
       {
         path: "vendors",
