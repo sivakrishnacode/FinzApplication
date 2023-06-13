@@ -3,13 +3,19 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, onMounted } from "vue";
 
 export default defineComponent({
   name: "App",
   setup() {
-    window.addEventListener("beforeunload", (e) => {
-      alert("oo");
+    onMounted(() => {
+      // add script
+      var tempScript = document.createElement("script");
+      tempScript.setAttribute(
+        "src",
+        "https://documentservices.adobe.com/view-sdk/viewer.js"
+      );
+      document.head.appendChild(tempScript);
     });
   },
 });

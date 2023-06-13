@@ -215,75 +215,7 @@
       </div>
 
       <q-dialog v-model="previewDialog">
-        <!-- For Img -->
-        <q-card v-if="isFileImage" :persistent="isUploading">
-          <q-item class="row justify-between">
-            <q-item-label>{{ invoiceFile.name }}</q-item-label>
-            <q-btn
-              icon="close"
-              color="primary"
-              dense
-              round
-              flat
-              @click="closePreview"
-            />
-          </q-item>
-          <q-separator />
-          <q-item class="full-height">
-            <q-img :src="tempImageUrl"></q-img>
-          </q-item>
-
-          <q-separator />
-
-          <q-item class="row justify-center">
-            <q-btn label="Upload" color="primary" rounded no-caps>
-              <template #loading>
-                <q-spinner color="white" size="1em" />
-              </template>
-            </q-btn>
-          </q-item>
-        </q-card>
-
-        <!-- For Pdf -->
-        <q-card
-          v-if="!isFileImage"
-          style="width: 500px"
-          :persistent="isUploading"
-        >
-          <q-item class="row justify-between">
-            <div class="text-primary text-weight-bold">
-              {{ invoiceFile.name }}
-            </div>
-            <q-btn
-              icon="close"
-              color="primary"
-              dense
-              round
-              flat
-              @click="closePreview"
-            />
-          </q-item>
-
-          <q-separator />
-
-          <pdf :src="tempFileUrl"></pdf>
-
-          <q-separator />
-
-          <q-item class="row justify-center">
-            <q-btn
-              label="Upload"
-              color="primary"
-              rounded
-              no-caps
-              @click="fileUploadHandler"
-            >
-              <template #loading>
-                <q-spinner color="white" size="1em" />
-              </template>
-            </q-btn>
-          </q-item>
-        </q-card>
+        <div id="pdf-viewer"></div>
       </q-dialog>
     </div>
 
@@ -425,19 +357,16 @@
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
+import { nextTick, onMounted, ref } from "vue";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "src/stores/useAuthStore";
 import { api } from "src/boot/axios";
 
-import pdf from "pdfvuer";
+// import pdf from "pdfvuer";
 
 export default {
   name: "invoiceList_page",
-  components: {
-    pdf,
-  },
 
   setup() {
     const $q = useQuasar();
@@ -568,8 +497,8 @@ export default {
         params["fromDate"] = correctDateRange.value.fromDate;
         params["thruDate"] = correctDateRange.value.thruDate;
       }
-      // params["pageSize"] = 3;
-      // params["pageIndex"] = 0;
+      params["pageSize"] = 100;
+      params["pageIndex"] = 0;
 
       console.log(params);
 
@@ -679,14 +608,35 @@ export default {
       invoiceFileName.value = invoiceFile.value.name;
 
       tempFileUrl.value = URL.createObjectURL(invoiceFile.value);
+      nextTick(() => {
+        var adobeDCView = new AdobeDC.View({
+          clientId: "2dca231a9daf4cba8ee969c8274088eb",
+          divId: "pdf-viewer",
+        });
 
-      if (invoiceFileType.value.includes("image/")) {
-        previewDialog.value = true;
-        isFileImage.value = true;
-      } else {
-        previewDialog.value = true;
-        isFileImage.value = false;
-      }
+        adobeDCView.previewFile(
+          {
+            content: { location: { url: tempFileUrl.value } },
+            metaData: { fileName: invoiceFileName.value },
+          },
+          {
+            embedMode: "SIZED_CONTAINER",
+            showDownloadPDF: false,
+            showPrintPDF: false,
+          }
+        );
+      });
+
+      previewDialog.value = true;
+      isFileImage.value = false;
+
+      // if (invoiceFileType.value.includes("image/")) {
+      //   previewDialog.value = true;
+      //   isFileImage.value = true;
+      // } else {
+      //   previewDialog.value = true;
+      //   isFileImage.value = false;
+      // }
     }
 
     const fileUploadHandler = () => {
@@ -864,21 +814,6 @@ export default {
       getTabEnumList();
       getDateFilterEnumList();
     });
-
-    // <q-file
-    //       v-model="invoiceFile"
-    //       type="file"
-    //       label="Upload Invoice"
-    //       ref="fileInputRef"
-    //       rounded
-    //       outlined
-    //       style="opacity: 0; position: absolute; max-width: 1px"
-    //       @update:model-value="invoiceFileUpload"
-    //     >
-    //       <template #append>
-    //         <q-icon name="backup" />
-    //       </template>
-    //     </q-file>
 
     return {
       getInvoiceList,
