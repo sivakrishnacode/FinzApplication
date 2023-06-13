@@ -1,5 +1,6 @@
 <template>
   <div class="q-mx-sm q-px-xl">
+    <!-- left side  -->
     <div class="column items-center q-pt-md">
       <!-- search and days filter -->
       <div class="row">
@@ -53,6 +54,8 @@
             </div>
           </template>
         </q-select>
+
+        <!-- date filter -->
         <q-btn color="primary" icon="filter_alt" rounded>
           <q-menu
             style="border-radius: 8px"
@@ -164,26 +167,30 @@
             </q-list>
           </q-menu>
         </q-btn>
-        <q-btn
-          color="primary"
-          icon="add"
-          label="Upload Invoice"
-          @click="selectFile"
-        />
-        <q-file
-          v-model="invoiceFile"
-          type="file"
-          label="Upload Invoice"
-          ref="fileInputRef"
-          rounded
-          outlined
-          style="opacity: 0; position: absolute; max-width: 1px"
-          @update:model-value="invoiceFileUpload"
-        >
-          <template #append>
-            <q-icon name="backup" />
-          </template>
-        </q-file>
+
+        <!-- upload btn -->
+        <div class="row absolute" style="right: 56px">
+          <q-btn
+            color="primary"
+            icon="backup"
+            label="Upload"
+            @click="selectFile"
+          />
+          <q-file
+            v-model="invoiceFile"
+            type="file"
+            label="Upload Invoice"
+            ref="fileInputRef"
+            rounded
+            outlined
+            style="opacity: 0; position: absolute; max-width: 1px"
+            @update:model-value="invoiceFileUpload"
+          >
+            <template #append>
+              <q-icon name="backup" />
+            </template>
+          </q-file>
+        </div>
       </div>
       <!-- quick filter -->
       <div class="q-pa-md">
@@ -319,7 +326,7 @@
       />
     </div>
 
-    <q-separator spaced />
+    <q-separator />
 
     <!-- Table -->
     <div class="table-container">
@@ -329,15 +336,20 @@
         separator="horizontal"
         class="q-py-md"
         flat
-        hide-bottom
+        :rows-per-page-options="[5, 10, 20, 50, 100, 200, 500, 0]"
       >
         <q-separator />
 
         <!-- header -->
         <template v-slot:header="props">
-          <q-tr :props="props" class="text-weight-bold text-h5 bg-blue-grey-1">
+          <q-tr
+            :props="props"
+            class="text-weight-bold text-primary bg-blue-grey-1"
+          >
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-              {{ col.label }}
+              <div style="font-size: larger">
+                {{ col.label }}
+              </div>
             </q-th>
           </q-tr>
         </template>
@@ -350,7 +362,9 @@
             @click="invoiceRedirect(props.row.invoiceId)"
           >
             <q-td key="Invoice_date">
-              {{ dateModifer(props.row.invoiceDate) }}
+              <div>
+                {{ dateModifer(props.row.invoiceDate) }}
+              </div>
             </q-td>
 
             <q-td key="Vendor">
@@ -378,10 +392,10 @@
               <q-chip :class="'text-' + statusColor(props.row.statusId)">
                 <q-badge
                   rounded
-                  :color="statusColor(props.row.statusId)"
+                  :color="statusColor(props.row.statusId).color"
                   class="q-mr-sm"
                 />
-                {{ props.row.statusId }}
+                {{ statusColor(props.row.statusId).message }}
               </q-chip>
             </q-td>
           </q-tr>
@@ -513,9 +527,9 @@ export default {
         align: "center",
       },
     ]);
-    const pagination = ref({
-      rowsPerPage: 10,
-    });
+    // const pagination = ref({
+    //   rowsPerPage: 10,
+    // });
 
     const currentTab = ref("allInvoice");
     const invoiceInfoTab = ref(false);
@@ -547,6 +561,8 @@ export default {
         params["fromDate"] = correctDateRange.value.fromDate;
         params["thruDate"] = correctDateRange.value.thruDate;
       }
+      params["pageSize"] = 10;
+      params["pageIndex"] = 0;
 
       console.log(params);
 
@@ -739,11 +755,23 @@ export default {
     // Status Color
     const statusColor = (statusId) => {
       const colors = [
-        { statusId: "InvoiceReceived", color: "light-blue-9" },
-        { statusId: "InvoiceIncoming", color: "orange-10" },
-        { statusId: "InvoicePmtSent", color: "green-8" },
-        { statusId: "InvoiceCancelled", color: "red-8" },
-        { statusId: "InvoiceApproved", color: "indigo-10" },
+        {
+          statusId: "InvoiceReceived",
+          color: "light-blue-9",
+          message: "Reveived",
+        },
+        {
+          statusId: "InvoiceIncoming",
+          color: "orange-10",
+          message: "Incoming",
+        },
+        { statusId: "InvoicePmtSent", color: "green-8", message: "Sended" },
+        { statusId: "InvoiceCancelled", color: "red-8", message: "Cancelled" },
+        {
+          statusId: "InvoiceApproved",
+          color: "indigo-10",
+          message: "Approved",
+        },
       ];
 
       const data = colors.find((data) => {
@@ -753,7 +781,7 @@ export default {
       });
 
       if (data) {
-        return data.color;
+        return data;
       }
     };
 
@@ -863,7 +891,7 @@ export default {
       rows,
       columns,
       invoiceInfoData,
-      pagination,
+      // pagination,
       selectVendor,
       dateModifer,
       fileInputRef,

@@ -66,15 +66,13 @@
           >
             <!-- avator -->
             <q-item-section class="">
-              <div class="q-gutter-y-md">
-                <q-item-label class="text-bold">
-                  {{ data.organizationName }}
-                </q-item-label>
-                <q-item-label> {{ data.invoiceId }} </q-item-label>
-                <q-item-label class="text-bold">
-                  email not Received
-                </q-item-label>
-              </div>
+              <q-item-label class="text-bold">
+                {{ data.organizationName }}
+              </q-item-label>
+              <q-item-label> {{ data.invoiceId }} </q-item-label>
+              <q-item-label class="text-bold">
+                email not Received
+              </q-item-label>
             </q-item-section>
 
             <!-- name -->
@@ -86,8 +84,8 @@
               <q-item-label class="text-bold">
                 <q-badge
                   rounded
-                  :color="statusColor(data.statusId)"
-                  :label="data.statusId"
+                  :color="statusColor(data.statusId)?.color"
+                  :label="statusColor(data.statusId)?.message"
                 >
                 </q-badge>
               </q-item-label>
@@ -417,11 +415,23 @@ export default {
     // Status Color
     const statusColor = (statusId) => {
       const colors = [
-        { statusId: "InvoiceReceived", color: "light-blue-9" },
-        { statusId: "InvoiceIncoming", color: "orange-10" },
-        { statusId: "InvoicePmtSent", color: "green-8" },
-        { statusId: "InvoiceCancelled", color: "red-8" },
-        { statusId: "InvoiceApproved", color: "indigo-10" },
+        {
+          statusId: "InvoiceReceived",
+          color: "light-blue-9",
+          message: "Reveived",
+        },
+        {
+          statusId: "InvoiceIncoming",
+          color: "orange-10",
+          message: "Incoming",
+        },
+        { statusId: "InvoicePmtSent", color: "green-8", message: "Sended" },
+        { statusId: "InvoiceCancelled", color: "red-8", message: "Cancelled" },
+        {
+          statusId: "InvoiceApproved",
+          color: "indigo-10",
+          message: "Approved",
+        },
       ];
 
       const data = colors.find((data) => {
@@ -431,7 +441,7 @@ export default {
       });
 
       if (data) {
-        return data.color;
+        return data;
       }
     };
 

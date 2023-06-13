@@ -634,12 +634,14 @@ export default {
           });
       }
 
-      router.push({
-        name: "vendorInfo_page",
-        params: {
-          vendorId: partyId.value,
-        },
-      });
+      setTimeout(() => {
+        router.push({
+          name: "vendorInfo_page",
+          params: {
+            vendorId: partyId.value,
+          },
+        });
+      }, 3000);
     }
 
     // computed props

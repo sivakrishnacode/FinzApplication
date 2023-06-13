@@ -33,6 +33,18 @@ const routes = [
         path: "accounting",
         name: "accounting_page",
         component: () => import("pages/Accounting/Accounting.vue"),
+        children: [
+          {
+            path: "",
+            name: "accountingList_page",
+            component: () => import("src/pages/Accounting/AccountingList.vue"),
+          },
+          {
+            path: ":accTransId/accountingInfo",
+            name: "accountingInfo_page",
+            component: () => import("src/pages/Accounting/AccountingInfo.vue"),
+          },
+        ],
       },
       {
         path: "payment",
