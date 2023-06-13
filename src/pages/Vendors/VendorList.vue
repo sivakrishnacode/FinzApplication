@@ -66,22 +66,23 @@
 
     <!-- table Container -->
     <div class="table-container">
-      <q-table
-        ref="tableRef"
-        :rows="rows"
-        :columns="columns"
-        row-key="name"
-        v-model:pagination="pagination"
-        :loading="isLoading"
-        @request="(props) => getVendors(props)"
-        separator="horizontal"
-        style="border-radius: 12px"
-        class="q-py-md"
-        flat
-        hide-bottom
-      >
-        <!-- top -->
-        <!-- <template v-slot:top>
+      <div style="border: 2px solid silver; border-radius: 19px">
+        <q-table
+          ref="tableRef"
+          :rows="rows"
+          :columns="columns"
+          row-key="name"
+          v-model:pagination="pagination"
+          :loading="isLoading"
+          @request="(props) => getVendors(props)"
+          separator="horizontal"
+          style="border-radius: 20px"
+          class="q-py-md"
+          flat
+          hide-bottom
+        >
+          <!-- top -->
+          <!-- <template v-slot:top>
           <div class="full-width row justify-end">
             <div class="row no-wrap">
               <div class="row content-center q-pr-md">Rows per page :</div>
@@ -97,153 +98,153 @@
           </div>
         </template> -->
 
-        <!-- header -->
-        <template v-slot:header="props">
-          <q-tr
-            :props="props"
-            class="text-weight-bold text-primary bg-secondary"
-          >
-            <q-th v-for="col in props.cols" :key="col.name" :props="props">
-              <div style="font-size: larger">
-                {{ col.label }}
-              </div>
-            </q-th>
-          </q-tr>
-        </template>
-
-        <!-- body -->
-        <template #body="props">
-          <q-tr
-            :props="props"
-            class="text-center cursor-pointer"
-            @click="vendorInfo(props.row.partyId)"
-            style="border: 2px solid gray"
-          >
-            <!-- profile -->
-            <q-td key="profile">
-              <q-avatar class="bg-primary text-white" size="lg">
-                <div>
-                  {{ firstLetters(props.row.organizationName).toUpperCase() }}
+          <!-- header -->
+          <template v-slot:header="props">
+            <q-tr :props="props" class="text-weight-bold text-primary">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <div style="font-size: larger">
+                  {{ col.label }}
                 </div>
-              </q-avatar>
-            </q-td>
+              </q-th>
+            </q-tr>
+          </template>
 
-            <!-- org name -->
-            <q-td key="organizationname">
-              <div style="font-size: 15px">
-                {{ props.row.organizationName }}
-              </div>
-            </q-td>
+          <!-- body -->
+          <template #body="props">
+            <q-tr
+              :props="props"
+              class="text-center cursor-pointer"
+              @click="vendorInfo(props.row.partyId)"
+              style="border: 2px solid gray"
+            >
+              <!-- profile -->
+              <q-td key="profile">
+                <q-avatar class="bg-primary text-white" size="lg">
+                  <div>
+                    {{ firstLetters(props.row.organizationName).toUpperCase() }}
+                  </div>
+                </q-avatar>
+              </q-td>
 
-            <!-- email -->
-            <q-td key="email">
-              <div style="font-size: 15px">
-                {{
-                  props.row.contactMechs.find(
-                    (val) => val.contactMechTypeEnumId == "CmtEmailAddress"
-                  ).infoString
-                }}
-              </div>
-            </q-td>
+              <!-- org name -->
+              <q-td key="organizationname">
+                <div style="font-size: 15px">
+                  {{ props.row.organizationName }}
+                </div>
+              </q-td>
 
-            <!-- contact num -->
-            <q-td key="contactNumber">
-              <div style="font-size: 15px">
-                +91
-                {{
-                  props.row.contactMechs.find(
-                    (val) => val.contactMechTypeEnumId == "CmtTelecomNumber"
-                  ).contactNumber
-                }}
-              </div>
-            </q-td>
+              <!-- email -->
+              <q-td key="email">
+                <div style="font-size: 15px">
+                  {{
+                    props.row.contactMechs.find(
+                      (val) => val.contactMechTypeEnumId == "CmtEmailAddress"
+                    ).infoString
+                  }}
+                </div>
+              </q-td>
 
-            <q-td key="location">
-              <div style="font-size: 15px">
-                {{
-                  props.row.contactMechs.find(
-                    (val) => val.contactMechTypeEnumId == "CmtPostalAddress"
-                  ).city
-                }}
-              </div>
-            </q-td>
+              <!-- contact num -->
+              <q-td key="contactNumber">
+                <div style="font-size: 15px">
+                  +91
+                  {{
+                    props.row.contactMechs.find(
+                      (val) => val.contactMechTypeEnumId == "CmtTelecomNumber"
+                    ).contactNumber
+                  }}
+                </div>
+              </q-td>
 
-            <!-- status -->
-            <q-td key="status">
-              <q-chip
-                :class="props.row.disabled === 'N' ? 'text-green' : 'text-red'"
-              >
-                <q-badge
-                  rounded
-                  :color="props.row.disabled === 'N' ? 'green' : 'red'"
-                  class="q-mr-sm"
-                />
-                {{ props.row.disabled === "N" ? "Active" : "In Active" }}
-              </q-chip>
-            </q-td>
+              <q-td key="location">
+                <div style="font-size: 15px">
+                  {{
+                    props.row.contactMechs.find(
+                      (val) => val.contactMechTypeEnumId == "CmtPostalAddress"
+                    ).city
+                  }}
+                </div>
+              </q-td>
 
-            <q-td key="more">
-              <q-btn
-                round
-                flat
-                class="text-dark"
-                icon="more_vert"
-                @click="
-                  (e) => {
-                    e.stopPropagation();
-                  }
-                "
-              >
-                <q-menu anchor="center left" self="center end">
-                  <q-item
-                    clickable
-                    v-ripple
-                    @click="vendorInfo(props.row.partyId)"
-                  >
-                    <q-item-section avatar>
-                      <q-icon name="visibility" />
-                    </q-item-section>
+              <!-- status -->
+              <q-td key="status">
+                <q-chip
+                  :class="
+                    props.row.disabled === 'N' ? 'text-green' : 'text-red'
+                  "
+                >
+                  <q-badge
+                    rounded
+                    :color="props.row.disabled === 'N' ? 'green' : 'red'"
+                    class="q-mr-sm"
+                  />
+                  {{ props.row.disabled === "N" ? "Active" : "In Active" }}
+                </q-chip>
+              </q-td>
 
-                    <q-item-section>View Profile</q-item-section>
-                  </q-item>
+              <q-td key="more">
+                <q-btn
+                  round
+                  flat
+                  class="text-dark"
+                  icon="more_vert"
+                  @click="
+                    (e) => {
+                      e.stopPropagation();
+                    }
+                  "
+                >
+                  <q-menu anchor="center left" self="center end">
+                    <q-item
+                      clickable
+                      v-ripple
+                      @click="vendorInfo(props.row.partyId)"
+                    >
+                      <q-item-section avatar>
+                        <q-icon name="visibility" />
+                      </q-item-section>
 
-                  <q-item clickable v-ripple>
-                    <q-item-section avatar>
-                      <q-icon name="receipt_long" />
-                    </q-item-section>
+                      <q-item-section>View Profile</q-item-section>
+                    </q-item>
 
-                    <q-item-section>Invoice</q-item-section>
-                  </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section avatar>
+                        <q-icon name="receipt_long" />
+                      </q-item-section>
 
-                  <q-item clickable v-ripple>
-                    <q-item-section avatar>
-                      <q-icon name="account_balance" />
-                    </q-item-section>
+                      <q-item-section>Invoice</q-item-section>
+                    </q-item>
 
-                    <q-item-section>Accounting</q-item-section>
-                  </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section avatar>
+                        <q-icon name="account_balance" />
+                      </q-item-section>
 
-                  <q-item clickable v-ripple>
-                    <q-item-section avatar>
-                      <q-icon name="payments" />
-                    </q-item-section>
+                      <q-item-section>Accounting</q-item-section>
+                    </q-item>
 
-                    <q-item-section>Payments</q-item-section>
-                  </q-item>
-                </q-menu>
-              </q-btn>
-            </q-td>
-          </q-tr>
-        </template>
+                    <q-item clickable v-ripple>
+                      <q-item-section avatar>
+                        <q-icon name="payments" />
+                      </q-item-section>
 
-        <!-- no-data -->
-        <template v-slot:no-data>NO Data</template>
+                      <q-item-section>Payments</q-item-section>
+                    </q-item>
+                  </q-menu>
+                </q-btn>
+              </q-td>
+            </q-tr>
+          </template>
 
-        <!-- Loading Page -->
-        <template v-slot:loading>
-          <q-inner-loading showing color="primary" />
-        </template>
-      </q-table>
+          <!-- no-data -->
+          <template v-slot:no-data>NO Data</template>
+
+          <!-- Loading Page -->
+          <template v-slot:loading>
+            <q-inner-loading showing color="primary" />
+          </template>
+        </q-table>
+      </div>
 
       <!-- paginatio btn -->
       <div

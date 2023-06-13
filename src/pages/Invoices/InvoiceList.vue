@@ -362,32 +362,40 @@
             @click="invoiceRedirect(props.row.invoiceId)"
           >
             <q-td key="Invoice_date">
-              <div>
+              <div style="font-size: 15px">
                 {{ dateModifer(props.row.invoiceDate) }}
               </div>
             </q-td>
 
             <q-td key="Vendor">
-              {{ props.row.organizationName }}
+              <div style="font-size: 15px">
+                {{ props.row.organizationName }}
+              </div>
             </q-td>
 
             <q-td key="Email"> Email not reseaved from server </q-td>
 
             <q-td key="Amount">
-              {{
-                props.row.invoiceTotal.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: props.row.currencyUomId,
-                })
-              }}
+              <div style="font-size: 15px">
+                {{
+                  props.row.invoiceTotal.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: props.row.currencyUomId,
+                  })
+                }}
+              </div>
             </q-td>
 
-            <q-td key="Due_Date">{{
-              props.row.unpaidTotal.toLocaleString("en-US", {
-                style: "currency",
-                currency: props.row.currencyUomId,
-              })
-            }}</q-td>
+            <q-td key="Due_Date">
+              <div style="font-size: 15px">
+                {{
+                  props.row.unpaidTotal.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: props.row.currencyUomId,
+                  })
+                }}
+              </div>
+            </q-td>
             <q-td key="Status">
               <q-chip :class="'text-' + statusColor(props.row.statusId)">
                 <q-badge
@@ -395,7 +403,9 @@
                   :color="statusColor(props.row.statusId).color"
                   class="q-mr-sm"
                 />
-                {{ statusColor(props.row.statusId).message }}
+                <div style="font-size: 15px">
+                  {{ statusColor(props.row.statusId).message }}
+                </div>
               </q-chip>
             </q-td>
           </q-tr>
@@ -527,9 +537,6 @@ export default {
         align: "center",
       },
     ]);
-    // const pagination = ref({
-    //   rowsPerPage: 10,
-    // });
 
     const currentTab = ref("allInvoice");
     const invoiceInfoTab = ref(false);
@@ -561,8 +568,8 @@ export default {
         params["fromDate"] = correctDateRange.value.fromDate;
         params["thruDate"] = correctDateRange.value.thruDate;
       }
-      params["pageSize"] = 10;
-      params["pageIndex"] = 0;
+      // params["pageSize"] = 3;
+      // params["pageIndex"] = 0;
 
       console.log(params);
 
