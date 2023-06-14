@@ -1,6 +1,6 @@
 <template>
   <div class="q-mx-sm q-px-xl">
-    <!-- left side  -->
+    <!-- search section  -->
     <div class="column items-center q-pt-md">
       <!-- search and days filter -->
       <div class="row">
@@ -202,7 +202,7 @@
           no-caps
           dense
           style="border-radius: 12px; border: 1px solid silver"
-          @update:model-value="getInvoiceList(daysFilterValue.enumId)"
+          @update:model-value="getInvoiceList()"
         >
           <q-tab
             v-for="data in enumTabList"
@@ -214,8 +214,35 @@
         </q-tabs>
       </div>
 
-      <q-dialog v-model="previewDialog">
-        <div id="pdf-viewer"></div>
+      <!-- file preview dialog -->
+      <q-dialog v-model="previewDialog" persistent>
+        <div
+          style="border-radius: 10px; width: 400px"
+          class="fit full-height bg-blue-grey-1"
+        >
+          <div id="pdf-viewer" style="height: 780px"></div>
+
+          <div class="row justify-evenly q-py-md">
+            <q-btn
+              rounded
+              label="Cancel"
+              color="red"
+              v-close-popup
+              @click="closePreview()"
+            ></q-btn>
+            <q-btn
+              rounded
+              label="Submit"
+              :loading="isFileUploading"
+              color="primary"
+              @click="fileUploadHandler()"
+            >
+              <template v-slot:loading>
+                <q-spinner color="white" />
+              </template>
+            </q-btn>
+          </div>
+        </div>
       </q-dialog>
     </div>
 
@@ -263,12 +290,15 @@
     <!-- Table -->
     <div class="table-container">
       <q-table
+        ref="tableRef"
+        v-model:pagination="pagination"
+        @request="getInvoiceList()"
         :rows="rows"
         :columns="columns"
         separator="horizontal"
         class="q-py-md"
         flat
-        :rows-per-page-options="[5, 10, 20, 50, 100, 200, 500, 0]"
+        hide-bottom
       >
         <q-separator />
 
@@ -351,6 +381,37 @@
         </template>
       </q-table>
 
+      <!-- paginatio btn -->
+      <div
+        class="row justify-center q-ma-md"
+        v-if="pagination.rowsNumber <= 0 ? false : true"
+      >
+        <q-pagination
+          v-model="pagination.page"
+          :max="Math.ceil(pagination.rowsNumber / pagination.rowsPerPage)"
+          max-pages="8"
+          direction-links
+          color="primary"
+          active-color="blue-8"
+          active-text-color="white"
+          :boundary-numbers="false"
+          @update:model-value="(val) => getInvoiceList()"
+        />
+        <div class="row absolute" style="right: 56px">
+          <div class="row justify-center items-center q-pr-md">
+            Rows per page of {{ pagination.rowsNumber }} :
+          </div>
+          <q-select
+            dense
+            borderless
+            style="width: 50px"
+            @update:model-value="tableRef.requestServerInteraction()"
+            v-model="pagination.rowsPerPage"
+            :options="[5, 7, 20, 50, 100, 200, 500]"
+          />
+        </div>
+      </div>
+
       <!-- invoice info -->
     </div>
   </div>
@@ -384,7 +445,7 @@ export default {
 
     const isFileImage = ref(false);
     const fileInputRef = ref(null);
-    const isUploading = ref(false);
+    const isFileUploading = ref(false);
     const tempFileUrl = ref("");
 
     const isLoading = ref(false);
@@ -466,13 +527,22 @@ export default {
         align: "center",
       },
     ]);
+    const tableRef = ref(null);
 
     const currentTab = ref("allInvoice");
     const invoiceInfoTab = ref(false);
     const enumTabList = ref([]);
 
+    const pagination = ref({
+      sortBy: "column",
+      descending: false,
+      page: 1,
+      rowsPerPage: 5,
+      rowsNumber: 0,
+    });
+
     // get Invoices List
-    function getInvoiceList() {
+    async function getInvoiceList() {
       var params = {};
       rows.value = [];
 
@@ -497,12 +567,13 @@ export default {
         params["fromDate"] = correctDateRange.value.fromDate;
         params["thruDate"] = correctDateRange.value.thruDate;
       }
-      params["pageSize"] = 100;
-      params["pageIndex"] = 0;
 
-      console.log(params);
+      // pagination
 
-      api({
+      params["pageSize"] = pagination.value.rowsPerPage;
+      params["pageIndex"] = pagination.value.page - 1;
+
+      await api({
         method: "GET",
         headers: useAuth.authKey,
         url: "invoices",
@@ -510,10 +581,16 @@ export default {
       })
         .then((res) => {
           rows.value = [];
+          pagination.value.rowsNumber = res.data.invoiceListCount;
+
           res.data.invoiceList.map((data) => {
             rows.value.push(data);
           });
           params = {};
+
+          // pagination.value.page = pag;
+          // pagination.value.rowsPerPage = rowsPerPage;
+          // isLoading.value = false;
         })
         .catch((err) => {
           console.log(err);
@@ -527,7 +604,7 @@ export default {
       vendorFilterSelected.value.name = name;
       vendorFilterSelected.value.partyId = id;
 
-      getInvoiceList();
+      getInvoiceList({ pagination: pagination.value });
 
       // invoiceInfoTab.value = false;
       // invoiceInfoData.value = "";
@@ -608,11 +685,13 @@ export default {
       invoiceFileName.value = invoiceFile.value.name;
 
       tempFileUrl.value = URL.createObjectURL(invoiceFile.value);
+
       nextTick(() => {
         var adobeDCView = new AdobeDC.View({
           clientId: "2dca231a9daf4cba8ee969c8274088eb",
           divId: "pdf-viewer",
         });
+        console.log(tempFileUrl.value);
 
         adobeDCView.previewFile(
           {
@@ -641,12 +720,11 @@ export default {
 
     const fileUploadHandler = () => {
       console.log("clicked");
+      isFileUploading.value = true;
 
       var formData = new FormData();
       formData.append("wikiSpaceId", "Invoices");
       formData.append("attachmentFile", invoiceFile.value);
-
-      isUploading.value = true;
 
       api({
         method: "POST",
@@ -659,7 +737,7 @@ export default {
       })
         .then((res) => {
           console.log(res);
-          isUploading.value = false;
+          isFileUploading.value = false;
           previewDialog.value = false;
           $q.notify({
             position: "top-right",
@@ -676,6 +754,7 @@ export default {
             type: "negative",
             icon: "cancel",
           });
+          isFileUploading.value = false;
         });
       getInvoiceList();
     };
@@ -810,7 +889,7 @@ export default {
     }
 
     onMounted(() => {
-      getInvoiceList();
+      tableRef.value.requestServerInteraction();
       getTabEnumList();
       getDateFilterEnumList();
     });
@@ -829,11 +908,12 @@ export default {
       cancelConfirmDailog,
       tempFileUrl,
       fileUploadHandler,
-      isUploading,
+      isFileUploading,
       rows,
       columns,
+      tableRef,
       invoiceInfoData,
-      // pagination,
+      pagination,
       selectVendor,
       dateModifer,
       fileInputRef,
