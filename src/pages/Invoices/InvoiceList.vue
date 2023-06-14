@@ -179,11 +179,10 @@
           <q-file
             v-model="invoiceFile"
             type="file"
-            label="Upload Invoice"
             ref="fileInputRef"
             rounded
             outlined
-            style="opacity: 0; position: absolute; max-width: 1px; right: 1px"
+            style="opacity: 0; position: absolute; max-width: 1px; right: 13px"
             @update:model-value="invoiceFileUpload"
           >
           </q-file>

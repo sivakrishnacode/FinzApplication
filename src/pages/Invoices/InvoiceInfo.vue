@@ -119,7 +119,7 @@
           style="width: 700px; border-radius: 20px; border: 1px solid gray"
         >
           <div class="row content-center q-pl-md" style="font-size: 20px">
-            {{ invoiceDetail.statusId }}
+            {{ invoiceDetail.status?.description }}
           </div>
           <div class="row content-center q-gutter-x-sm">
             <div v-for="data in toStatusFlow" :key="data">
@@ -353,7 +353,6 @@ export default {
         headers: useAuth.authKey,
       }).then((res) => {
         invoiceDetail.value = res.data;
-        console.log(invoiceDetail.value);
       });
 
       getToStatusFlow(invoiceDetail.value.statusId);

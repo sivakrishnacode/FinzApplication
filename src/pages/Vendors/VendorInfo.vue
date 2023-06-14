@@ -91,6 +91,22 @@
             {{ vendorInfoData.emailAddress }}
           </div>
         </div>
+
+        <!--  -->
+        <div class="row absolute" style="right: 50px">
+          <div
+            class="bg-secondary"
+            style="border-radius: 0 0 70px 70px; height: 50px"
+          >
+            <q-btn
+              size="15px"
+              icon="close"
+              color="primary"
+              flat
+              @click="router.back()"
+            />
+          </div>
+        </div>
       </div>
 
       <!-- Nav bar btn -->
@@ -331,7 +347,6 @@
                 <div class="row justify-end q-gutter-x-sm full-width">
                   <q-btn
                     v-if="!isVendorEditable"
-                    icon="save"
                     label="Save Changes"
                     size="15px"
                     flat
@@ -861,6 +876,7 @@ export default {
       stateProvinceGeoId: "",
       postalCode: "",
     });
+
     const isVendorEditable = ref(true);
     const vendorsActiveBankDetails = ref([]);
     const vendorsInActiveBankDetails = ref([]);
@@ -931,14 +947,20 @@ export default {
           vendorInfoData.value.stateProvinceGeoId,
         postalCode: vendorInfoData.value.postalCode,
       };
-
       api({
         method: "PATCH",
         url: "vendors/vendorContactInfo",
         headers: useAuth.authKey,
         params: params,
       }).then((res) => {
-        vendorInfo(route.params.vendorId);
+        vendorInfo(res.data.partyId);
+        $q.notify({
+          message: "Vendor Edited Succesfully",
+          position: "top-right",
+          color: "green",
+          type: "positive",
+          icon: "done",
+        });
       });
     }
 
@@ -1078,43 +1100,6 @@ export default {
       bankAccountDetails((id = "accountDetails"));
     }
 
-    // add vendor
-    function addVendor() {
-      addVendor_dialogBox.value = false;
-      api({
-        method: "POST",
-        url: "vendors/vendor",
-        headers: useAuth.authKey,
-        data: {
-          vendorName: newVendorDetails.value.vendorName,
-          contactNumber: newVendorDetails.value.contactNumber,
-          emailAddress: newVendorDetails.value.emailAddress,
-          address1: newVendorDetails.value.address1,
-          address2: newVendorDetails.value.address2,
-          city: newVendorDetails.value.city,
-          countryGeoId: newVendorDetails.value.countryGeoId.geoId,
-          stateProvinceGeoId: newVendorDetails.value.stateProvinceGeoId.geoId,
-          postalCode: newVendorDetails.value.postalCode,
-        },
-      })
-        .then((res) => {
-          addVendor_dialogBox.value = false;
-          newVendorDetails.value = {};
-          rows.value = [];
-          getVendorList();
-          $q.notify({
-            position: "top-right",
-            message: "Vendor added succesfully",
-            type: "positive",
-            icon: "done",
-          });
-        })
-        .catch((err) => {
-          addVendor_dialogBox.value = false;
-          console.log(err);
-        });
-    }
-
     // add all countryList to vendor dialog box
     function addCountryList() {
       api({
@@ -1175,7 +1160,7 @@ export default {
       vendorInfo,
       addVendor_dialogBox,
       addBank_dialogBox,
-
+      router,
       tab,
       vendorInfoData,
       editVendor,
@@ -1185,7 +1170,7 @@ export default {
       vendorsActiveBankDetails,
       vendorsInActiveBankDetails,
       bankAccountStatus,
-      addVendor,
+
       newVendorDetails,
       addCountryList,
       countryList,
