@@ -372,7 +372,7 @@ export default {
       sortBy: "column",
       descending: false,
       page: 1,
-      rowsPerPage: 5,
+      rowsPerPage: 10,
       rowsNumber: 0,
     });
 

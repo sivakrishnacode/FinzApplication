@@ -161,137 +161,143 @@
         <q-tab-panels v-model="tab">
           <!-- profile Details -->
           <q-tab-panel name="userDetails">
-            <div class="q-pa-md bg-secondary" style="border-radius: 20px">
-              <!-- title -->
-              <div class="text-primary text-bold row justify-center full-width">
-                Profile Details
-              </div>
-
-              <q-separator spaced />
-
-              <div class="row q-gutter-y-lg">
-                <!-- first row -->
-                <div class="row full-width items-center justify-center">
-                  <div class="col-5 q-gutter-x-xl">
-                    <div class="text-primary" style="font-size: 19px">
-                      <q-input
-                        input-class="text-h6 text-primary"
-                        :filled="!isVendorEditable"
-                        :readonly="isVendorEditable"
-                        label="Vendor Name"
-                        borderless
-                        v-model="vendorInfoData.organizationName"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="col-5 q-gutter-x-xl">
-                    <div class="text-primary" style="font-size: 19px">
-                      <q-input
-                        input-class="text-h6 text-primary"
-                        :filled="!isVendorEditable"
-                        :readonly="isVendorEditable"
-                        label="Email ID"
-                        borderless
-                        v-model="vendorInfoData.emailAddress"
-                      />
-                    </div>
-                  </div>
+            <div class="full-width">
+              <div
+                class="row justify-center q-pa-md bg-secondary"
+                style="border-radius: 20px; max-width: 1000px"
+              >
+                <!-- title -->
+                <div
+                  class="text-primary text-bold row justify-center full-width"
+                >
+                  Profile Details
                 </div>
 
-                <!-- second row -->
-                <div class="row full-width items-center justify-center">
-                  <div class="col-5 q-gutter-x-xl">
-                    <div class="text-primary" style="font-size: 19px">
-                      <q-input
-                        input-class="text-h6 text-primary"
-                        :filled="!isVendorEditable"
-                        :readonly="isVendorEditable"
-                        label="Contact Number"
-                        borderless
-                        v-model="vendorInfoData.contactNumber"
-                      />
+                <q-separator spaced />
+
+                <div class="row q-gutter-y-lg">
+                  <!-- first row -->
+                  <div class="row full-width items-center justify-center">
+                    <div class="col-5 q-gutter-x-xl">
+                      <div class="text-primary" style="font-size: 19px">
+                        <q-input
+                          input-class="text-h6 text-primary"
+                          :filled="!isVendorEditable"
+                          :readonly="isVendorEditable"
+                          label="Vendor Name"
+                          borderless
+                          v-model="vendorInfoData.organizationName"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="col-5 q-gutter-x-xl">
+                      <div class="text-primary" style="font-size: 19px">
+                        <q-input
+                          input-class="text-h6 text-primary"
+                          :filled="!isVendorEditable"
+                          :readonly="isVendorEditable"
+                          label="Email ID"
+                          borderless
+                          v-model="vendorInfoData.emailAddress"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div class="col-5 q-gutter-x-xl">
-                    <div class="text-primary" style="font-size: 19px">
-                      <q-input
-                        input-class="text-h6 text-primary"
-                        :filled="!isVendorEditable"
-                        :readonly="isVendorEditable"
-                        label="Address 1"
-                        borderless
-                        v-model="vendorInfoData.address1"
-                      />
+                  <!-- second row -->
+                  <div class="row full-width items-center justify-center">
+                    <div class="col-5 q-gutter-x-xl">
+                      <div class="text-primary" style="font-size: 19px">
+                        <q-input
+                          input-class="text-h6 text-primary"
+                          :filled="!isVendorEditable"
+                          :readonly="isVendorEditable"
+                          label="Contact Number"
+                          borderless
+                          v-model="vendorInfoData.contactNumber"
+                        />
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                <!-- third row -->
-                <div class="row full-width items-center justify-center">
-                  <div class="col-5 q-gutter-x-xl">
-                    <div class="text-primary" style="font-size: 19px">
-                      <q-input
-                        input-class="text-h6 text-primary"
-                        :filled="!isVendorEditable"
-                        :readonly="isVendorEditable"
-                        label="Address 2"
-                        borderless
-                        v-model="vendorInfoData.address2"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="col-5 q-gutter-x-xl">
-                    <div class="text-primary" style="font-size: 19px">
-                      <q-input
-                        input-class="text-h6 text-primary"
-                        :filled="!isVendorEditable"
-                        :readonly="isVendorEditable"
-                        label="City"
-                        borderless
-                        v-model="vendorInfoData.city"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 4 row -->
-                <div class="row full-width items-center justify-center">
-                  <div class="col-5 q-gutter-x-xl">
-                    <div class="text-primary" style="font-size: 19px">
-                      <q-select
-                        v-model="vendorInfoData.countryGeoId"
-                        :filled="!isVendorEditable"
-                        :readonly="isVendorEditable"
-                        borderless
-                        type="text"
-                        label="Country"
-                        option-label="geoName"
-                        option-value="geoId"
-                        @update:model-value="
-                          getStateList(vendorInfoData.countryGeoId.geoId)
-                        "
-                        :options="countryList"
-                      ></q-select>
+                    <div class="col-5 q-gutter-x-xl">
+                      <div class="text-primary" style="font-size: 19px">
+                        <q-input
+                          input-class="text-h6 text-primary"
+                          :filled="!isVendorEditable"
+                          :readonly="isVendorEditable"
+                          label="Address 1"
+                          borderless
+                          v-model="vendorInfoData.address1"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div class="col-5 q-gutter-x-xl">
-                    <div class="text-primary" style="font-size: 19px">
-                      <q-select
-                        :filled="!isVendorEditable"
-                        :readonly="isVendorEditable"
-                        borderless
-                        option-label="geoName"
-                        option-value="geoId"
-                        type="text"
-                        label="State"
-                        :options="stateList"
-                        v-model="vendorInfoData.stateName"
-                      ></q-select>
-                      <!-- <q-input
+                  <!-- third row -->
+                  <div class="row full-width items-center justify-center">
+                    <div class="col-5 q-gutter-x-xl">
+                      <div class="text-primary" style="font-size: 19px">
+                        <q-input
+                          input-class="text-h6 text-primary"
+                          :filled="!isVendorEditable"
+                          :readonly="isVendorEditable"
+                          label="Address 2"
+                          borderless
+                          v-model="vendorInfoData.address2"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="col-5 q-gutter-x-xl">
+                      <div class="text-primary" style="font-size: 19px">
+                        <q-input
+                          input-class="text-h6 text-primary"
+                          :filled="!isVendorEditable"
+                          :readonly="isVendorEditable"
+                          label="City"
+                          borderless
+                          v-model="vendorInfoData.city"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 4 row -->
+                  <div class="row full-width items-center justify-center">
+                    <div class="col-5 q-gutter-x-xl">
+                      <div class="text-primary" style="font-size: 19px">
+                        <q-select
+                          v-model="vendorInfoData.countryGeoId"
+                          :filled="!isVendorEditable"
+                          :readonly="isVendorEditable"
+                          borderless
+                          type="text"
+                          label="Country"
+                          option-label="geoName"
+                          option-value="geoId"
+                          @update:model-value="
+                            getStateList(vendorInfoData.countryGeoId.geoId)
+                          "
+                          :options="countryList"
+                        ></q-select>
+                      </div>
+                    </div>
+
+                    <div class="col-5 q-gutter-x-xl">
+                      <div class="text-primary" style="font-size: 19px">
+                        <q-select
+                          :filled="!isVendorEditable"
+                          :readonly="isVendorEditable"
+                          borderless
+                          option-label="geoName"
+                          option-value="geoId"
+                          type="text"
+                          label="State"
+                          :options="stateList"
+                          v-model="vendorInfoData.stateName"
+                        ></q-select>
+                        <!-- <q-input
                         input-class="text-h6 text-primary"
                         :filled="!isVendorEditable"
                         :readonly="isVendorEditable"
@@ -299,59 +305,60 @@
                         borderless
                         v-model="vendorInfoData.stateName"
                       /> -->
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 5th row -->
-                <div class="row full-width items-center justify-center">
-                  <div class="col-5 q-gutter-x-xl">
-                    <div class="text-primary" style="font-size: 19px">
-                      <q-input
-                        input-class="text-h6 text-primary"
-                        :filled="!isVendorEditable"
-                        :readonly="isVendorEditable"
-                        label="Pincode"
-                        borderless
-                        v-model="vendorInfoData.postalCode"
-                      />
+                      </div>
                     </div>
                   </div>
 
-                  <div class="col-5 q-gutter-x-xl"></div>
-                </div>
-              </div>
+                  <!-- 5th row -->
+                  <div class="row full-width items-center justify-center">
+                    <div class="col-5 q-gutter-x-xl">
+                      <div class="text-primary" style="font-size: 19px">
+                        <q-input
+                          input-class="text-h6 text-primary"
+                          :filled="!isVendorEditable"
+                          :readonly="isVendorEditable"
+                          label="Pincode"
+                          borderless
+                          v-model="vendorInfoData.postalCode"
+                        />
+                      </div>
+                    </div>
 
-              <div class="row justify-end q-gutter-x-sm">
-                <q-btn
-                  v-if="!isVendorEditable"
-                  icon="save"
-                  label="Save Changes"
-                  size="15px"
-                  flat
-                  class="text-white bg-primary"
-                  rounded
-                  @click="(isVendorEditable = true), editVendor()"
-                />
-                <q-btn
-                  v-if="!isVendorEditable"
-                  label="Cancel"
-                  size="15px"
-                  class="text-primary"
-                  flat
-                  outlined
-                  @click="isVendorEditable = true"
-                />
-                <q-btn
-                  v-if="isVendorEditable"
-                  icon="edit"
-                  label="Edit Profile"
-                  size="15px"
-                  flat
-                  class="text-white bg-primary"
-                  rounded
-                  @click="(isVendorEditable = false), addCountryList()"
-                />
+                    <div class="col-5 q-gutter-x-xl"></div>
+                  </div>
+                </div>
+
+                <div class="row justify-end q-gutter-x-sm full-width">
+                  <q-btn
+                    v-if="!isVendorEditable"
+                    icon="save"
+                    label="Save Changes"
+                    size="15px"
+                    flat
+                    class="text-white bg-primary"
+                    rounded
+                    @click="(isVendorEditable = true), editVendor()"
+                  />
+                  <q-btn
+                    v-if="!isVendorEditable"
+                    label="Cancel"
+                    size="15px"
+                    class="text-primary"
+                    flat
+                    outlined
+                    @click="isVendorEditable = true"
+                  />
+                  <q-btn
+                    v-if="isVendorEditable"
+                    icon="edit"
+                    label="Edit Profile"
+                    size="15px"
+                    flat
+                    class="text-white bg-primary"
+                    rounded
+                    @click="(isVendorEditable = false), addCountryList()"
+                  />
+                </div>
               </div>
             </div>
           </q-tab-panel>

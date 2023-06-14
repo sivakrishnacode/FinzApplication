@@ -331,6 +331,8 @@ export default {
         url: "invoices",
         params: {
           statusId: currentTab.value,
+          pageIndex: 0,
+          pageSize: 100,
         },
       })
         .then((res) => {

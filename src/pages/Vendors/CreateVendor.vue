@@ -5,7 +5,6 @@
       v-model="step"
       active-color="primary"
       inactive-color="secondary"
-      header-nav
       animated
       keep-alive
       style="

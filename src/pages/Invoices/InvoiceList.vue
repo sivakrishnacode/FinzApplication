@@ -183,12 +183,9 @@
             ref="fileInputRef"
             rounded
             outlined
-            style="opacity: 0; position: absolute; max-width: 1px"
+            style="opacity: 0; position: absolute; max-width: 1px; right: 1px"
             @update:model-value="invoiceFileUpload"
           >
-            <template #append>
-              <q-icon name="backup" />
-            </template>
           </q-file>
         </div>
       </div>
@@ -537,7 +534,7 @@ export default {
       sortBy: "column",
       descending: false,
       page: 1,
-      rowsPerPage: 5,
+      rowsPerPage: 10,
       rowsNumber: 0,
     });
 
