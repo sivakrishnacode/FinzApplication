@@ -245,7 +245,7 @@
     <!-- Preview box -->
 
     <!-- filter preview chip -->
-    <div class="row content-center">
+    <div class="row justify-center">
       <q-chip
         v-model="isDaysFilterActive"
         color="primary"
@@ -281,102 +281,99 @@
       />
     </div>
 
-    <q-separator />
-
     <!-- Table -->
     <div class="table-container">
-      <q-table
-        ref="tableRef"
-        v-model:pagination="pagination"
-        @request="getInvoiceList()"
-        :rows="rows"
-        :columns="columns"
-        separator="horizontal"
-        class="q-py-md"
-        flat
-        hide-bottom
-      >
-        <q-separator />
+      <div style="border: 2px solid silver; border-radius: 19px">
+        <q-table
+          ref="tableRef"
+          v-model:pagination="pagination"
+          @request="getInvoiceList()"
+          :rows="rows"
+          :columns="columns"
+          separator="horizontal"
+          class="q-py-md"
+          style="border-radius: 20px"
+          flat
+          hide-bottom
+        >
+          <q-separator />
 
-        <!-- header -->
-        <template v-slot:header="props">
-          <q-tr
-            :props="props"
-            class="text-weight-bold text-primary bg-blue-grey-1"
-          >
-            <q-th v-for="col in props.cols" :key="col.name" :props="props">
-              <div style="font-size: larger">
-                {{ col.label }}
-              </div>
-            </q-th>
-          </q-tr>
-        </template>
-
-        <!-- body -->
-        <template #body="props">
-          <q-tr
-            :props="props"
-            class="text-center cursor-pointer"
-            @click="invoiceRedirect(props.row.invoiceId)"
-          >
-            <q-td key="Invoice_date">
-              <div style="font-size: 15px">
-                {{ dateModifer(props.row.invoiceDate) }}
-              </div>
-            </q-td>
-
-            <q-td key="Vendor">
-              <div style="font-size: 15px">
-                {{ props.row.organizationName }}
-              </div>
-            </q-td>
-
-            <q-td key="Email"> Email not reseaved from server </q-td>
-
-            <q-td key="Amount">
-              <div style="font-size: 15px">
-                {{
-                  props.row.invoiceTotal.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: props.row.currencyUomId,
-                  })
-                }}
-              </div>
-            </q-td>
-
-            <q-td key="Due_Date">
-              <div style="font-size: 15px">
-                {{
-                  props.row.unpaidTotal.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: props.row.currencyUomId,
-                  })
-                }}
-              </div>
-            </q-td>
-            <q-td key="Status">
-              <q-chip :class="'text-' + statusColor(props.row.statusId)">
-                <q-badge
-                  rounded
-                  :color="statusColor(props.row.statusId).color"
-                  class="q-mr-sm"
-                />
-                <div style="font-size: 15px">
-                  {{ statusColor(props.row.statusId).message }}
+          <!-- header -->
+          <template v-slot:header="props">
+            <q-tr :props="props" class="text-weight-bold text-primary">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <div style="font-size: larger">
+                  {{ col.label }}
                 </div>
-              </q-chip>
-            </q-td>
-          </q-tr>
-        </template>
+              </q-th>
+            </q-tr>
+          </template>
 
-        <!-- No data -->
-        <template v-slot:no-data>
-          <div class="row justify-center full-width">
-            <h6>No Data Found</h6>
-          </div>
-        </template>
-      </q-table>
+          <!-- body -->
+          <template #body="props">
+            <q-tr
+              :props="props"
+              class="text-center cursor-pointer"
+              @click="invoiceRedirect(props.row.invoiceId)"
+            >
+              <q-td key="Invoice_date">
+                <div style="font-size: 15px">
+                  {{ dateModifer(props.row.invoiceDate) }}
+                </div>
+              </q-td>
 
+              <q-td key="Vendor">
+                <div style="font-size: 15px">
+                  {{ props.row.organizationName }}
+                </div>
+              </q-td>
+
+              <q-td key="Email"> Email not reseaved from server </q-td>
+
+              <q-td key="Amount">
+                <div style="font-size: 15px">
+                  {{
+                    props.row.invoiceTotal.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: props.row.currencyUomId,
+                    })
+                  }}
+                </div>
+              </q-td>
+
+              <q-td key="Due_Date">
+                <div style="font-size: 15px">
+                  {{
+                    props.row.unpaidTotal.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: props.row.currencyUomId,
+                    })
+                  }}
+                </div>
+              </q-td>
+              <q-td key="Status">
+                <q-chip :class="'text-' + statusColor(props.row.statusId)">
+                  <q-badge
+                    rounded
+                    :color="statusColor(props.row.statusId).color"
+                    class="q-mr-sm"
+                  />
+                  <div style="font-size: 15px">
+                    {{ statusColor(props.row.statusId).message }}
+                  </div>
+                </q-chip>
+              </q-td>
+            </q-tr>
+          </template>
+
+          <!-- No data -->
+          <template v-slot:no-data>
+            <div class="row justify-center full-width">
+              <h6>No Data Found</h6>
+            </div>
+          </template>
+        </q-table>
+      </div>
       <!-- paginatio btn -->
       <div
         class="row justify-center q-ma-md"

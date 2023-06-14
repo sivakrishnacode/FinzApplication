@@ -13,22 +13,66 @@
       </q-input>
 
       <!-- upload invoice btn -->
-      <q-btn
-        rounded
-        class="full-width"
-        color="primary"
-        label="Upload Invoice"
-        no-caps
-        icon="upload"
-        no-wrap
-        style="height: 20px"
-      />
+      <div class="full-width">
+        <q-btn
+          rounded
+          class="full-width"
+          color="primary"
+          label="Upload Invoice"
+          no-caps
+          icon="upload"
+          no-wrap
+          style="height: 20px"
+          @click="selectFile"
+        />
+        <q-file
+          v-model="invoiceFile"
+          type="file"
+          ref="fileInputRef"
+          rounded
+          outlined
+          style="opacity: 0; position: absolute; max-width: 1px; top: 125px"
+          @update:model-value="invoiceFileUpload"
+        >
+        </q-file>
+      </div>
+
+      <!-- file preview dialog -->
+      <q-dialog v-model="previewDialog" persistent>
+        <div
+          style="border-radius: 10px; width: 400px"
+          class="fit full-height bg-blue-grey-1"
+        >
+          <div id="pdf-viewer" style="height: 780px"></div>
+
+          <div class="row justify-evenly q-py-md">
+            <q-btn
+              rounded
+              label="Cancel"
+              color="red"
+              v-close-popup
+              @click="closePreview()"
+            ></q-btn>
+            <q-btn
+              rounded
+              label="Submit"
+              :loading="isFileUploading"
+              color="primary"
+              @click="fileUploadHandler()"
+            >
+              <template v-slot:loading>
+                <q-spinner color="white" />
+              </template>
+            </q-btn>
+          </div>
+        </div>
+      </q-dialog>
 
       <!-- tabs -->
       <div>
         <q-tabs
           v-model="currentTab"
-          active-color="white bg-secondary"
+          active-color="white bg-primary"
           class="q-mx-md bg-grey-2"
           indicator-color="transparent"
           no-caps
@@ -43,6 +87,7 @@
             :label="data.description"
             :name="data.enumId"
             @click="(currentTab = data.enumId), getInvoiceList()"
+            style="border-radius: 15px"
           />
         </q-tabs>
       </div>
@@ -108,6 +153,22 @@
           </div>
           <div class="text-blue-grey-1 q-mb-sm">
             {{ invoiceDetail.invoiceId }}
+          </div>
+        </div>
+
+        <!--  -->
+        <div class="row absolute" style="right: 50px">
+          <div
+            class="bg-secondary"
+            style="border-radius: 0 0 70px 70px; height: 50px"
+          >
+            <q-btn
+              size="15px"
+              icon="close"
+              color="primary"
+              flat
+              @click="router.back()"
+            />
           </div>
         </div>
       </div>
@@ -301,9 +362,10 @@
 
 <script>
 import { useRouter, useRoute } from "vue-router";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, nextTick } from "vue";
 import { api } from "src/boot/axios";
 import { useAuthStore } from "src/stores/useAuthStore";
+import { useQuasar } from "quasar";
 
 export default {
   name: "invoiceInfo_page",
@@ -311,6 +373,7 @@ export default {
     const router = useRouter();
     const route = useRoute();
     const useAuth = useAuthStore();
+    const $q = useQuasar();
 
     const id = route.params.invoiceId;
 
@@ -322,6 +385,21 @@ export default {
     // invoice info items
     const invoiceDetail = ref("");
     const toStatusFlow = ref([]);
+
+    // file upload
+    // upload section
+    const invoiceFile = ref(null);
+    const invoiceFileType = ref(null);
+    const invoiceFileName = ref(null);
+
+    const previewDialog = ref(false);
+    const approveConfirmDailog = ref(false);
+    const cancelConfirmDailog = ref(false);
+
+    const isFileImage = ref(false);
+    const fileInputRef = ref(null);
+    const isFileUploading = ref(false);
+    const tempFileUrl = ref("");
 
     function getInvoiceList() {
       invoiceList.value = [];
@@ -446,6 +524,97 @@ export default {
       }
     };
 
+    //  file upload
+
+    function invoiceFileUpload() {
+      console.log(invoiceFile.value.name);
+
+      invoiceFileType.value = invoiceFile.value.type;
+      invoiceFileName.value = invoiceFile.value.name;
+
+      tempFileUrl.value = URL.createObjectURL(invoiceFile.value);
+
+      nextTick(() => {
+        var adobeDCView = new AdobeDC.View({
+          clientId: "2dca231a9daf4cba8ee969c8274088eb",
+          divId: "pdf-viewer",
+        });
+        console.log(tempFileUrl.value);
+
+        adobeDCView.previewFile(
+          {
+            content: { location: { url: tempFileUrl.value } },
+            metaData: { fileName: invoiceFileName.value },
+          },
+          {
+            embedMode: "SIZED_CONTAINER",
+            showDownloadPDF: false,
+            showPrintPDF: false,
+          }
+        );
+      });
+
+      previewDialog.value = true;
+      isFileImage.value = false;
+
+      // if (invoiceFileType.value.includes("image/")) {
+      //   previewDialog.value = true;
+      //   isFileImage.value = true;
+      // } else {
+      //   previewDialog.value = true;
+      //   isFileImage.value = false;
+      // }
+    }
+
+    const fileUploadHandler = () => {
+      isFileUploading.value = true;
+
+      var formData = new FormData();
+      formData.append("wikiSpaceId", "Invoices");
+      formData.append("attachmentFile", invoiceFile.value);
+
+      api({
+        method: "POST",
+        url: "invoices/uploadInvoice",
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        headers: useAuth.authKey,
+      })
+        .then((res) => {
+          console.log(res);
+          isFileUploading.value = false;
+          previewDialog.value = false;
+          $q.notify({
+            position: "top-right",
+            message: "Invoice Uploaded Succesfully",
+            type: "positive",
+            icon: "done",
+          });
+        })
+        .catch((err) => {
+          $q.notify({
+            position: "top-right",
+            message: err.response.data.errors,
+            type: "negative",
+            icon: "cancel",
+          });
+          isFileUploading.value = false;
+        });
+      getInvoiceList();
+    };
+
+    const closePreview = () => {
+      previewDialog.value = false;
+      tempFileUrl.value = "";
+      invoiceFile.value = null;
+    };
+
+    const selectFile = () => {
+      fileInputRef.value.pickFiles();
+    };
+
     onMounted(() => {
       getInvoiceDetails(route.params.invoiceId);
       getTabEnumList();
@@ -453,6 +622,18 @@ export default {
     });
 
     return {
+      // file upload
+      invoiceFileUpload,
+      fileUploadHandler,
+      closePreview,
+      selectFile,
+      isFileUploading,
+      invoiceFile,
+      approveConfirmDailog,
+      cancelConfirmDailog,
+      previewDialog,
+      fileInputRef,
+
       id,
       vendoPage,
 
@@ -468,6 +649,7 @@ export default {
       toStatusFlow,
       changeInvoiceStatus,
       statusColor,
+      router,
     };
   },
 };
