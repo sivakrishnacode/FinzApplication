@@ -109,8 +109,8 @@
                 option-value="geoId"
                 emit-value
                 map-options
-                @update:model-value="(val) => getStateList(val)"
-                :options="countryList"
+                @update:model-value="(val) => useGeos.getStateList(val)"
+                :options="useGeos.countryList"
                 :rules="[(val) => !!val || 'select  the country']"
               ></q-select>
             </div>
@@ -124,7 +124,7 @@
                 option-value="geoId"
                 type="text"
                 label="State"
-                :options="stateList"
+                :options="useGeos.stateList"
                 v-model="newVendorDetails.stateProvinceGeoId"
                 :rules="[(val) => val || 'Select the State']"
               ></q-select>
@@ -456,14 +456,18 @@
 <script>
 import { api } from "src/boot/axios";
 import { useAuthStore } from "src/stores/useAuthStore";
-import { ref, onMounted, computed } from "vue";
+import { useGeosStore } from "src/stores/UseGeosStore";
+import { ref, computed, toRef } from "vue";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
 
 export default {
   name: "createVendor_page",
   setup() {
     const useAuth = useAuthStore();
+
+    const useGeos = useGeosStore();
     const router = useRouter();
     const $q = useQuasar();
 
@@ -497,40 +501,6 @@ export default {
       stateProvinceGeoId: "",
       postalCode: "",
     });
-    const countryList = ref([]);
-    const stateList = ref([]);
-
-    // add all countryList to vendor dialog box
-    function addCountryList() {
-      api({
-        method: "GET",
-        url: "geos",
-        headers: useAuth.authKey,
-      })
-        .then((res) => {
-          res.data.geoList.map((data) => {
-            countryList.value.push(data);
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-
-    //add states to vendor dialog box
-    function getStateList(geoId) {
-      stateList.value = [];
-
-      api({
-        method: "GET",
-        url: `geos/${geoId}/regions`,
-        headers: useAuth.authKey,
-      }).then((res) => {
-        const data = res.data.resultList;
-
-        stateList.value.push(...data);
-      });
-    }
 
     async function submitDetails() {
       await api({
@@ -676,16 +646,11 @@ export default {
       }
     });
 
-    onMounted(() => {
-      addCountryList();
-    });
-
     return {
       newVendorDetails,
 
-      getStateList,
-      countryList,
-      stateList,
+      useGeos,
+
       isCountryValid,
       upiId,
       bankDetails,

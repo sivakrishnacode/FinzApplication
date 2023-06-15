@@ -6,7 +6,15 @@
       style="width: 400px"
       v-if="!$q.screen.lt.md"
     >
-      <q-input rounded outlined label="Search" dense>
+      <q-input
+        rounded
+        outlined
+        label="Search"
+        v-model="search"
+        @update:model-value="(val) => searchInput(val)"
+        dense
+        clearable
+      >
         <template #append>
           <q-icon name="search" />
         </template>
@@ -87,7 +95,7 @@
             :label="data.description"
             :name="data.enumId"
             @click="(currentTab = data.enumId), getInvoiceList()"
-            style="border-radius: 15px"
+            style="border-radius: 19px"
           />
         </q-tabs>
       </div>
@@ -98,6 +106,12 @@
       >
         <!-- List -->
         <q-list class="q-gutter-sm">
+          <div
+            v-if="invoiceList.length == 0"
+            class="row justify-center q-pa-lg text-bold text-h6 text-primary"
+          >
+            No data
+          </div>
           <q-item
             v-for="data in invoiceList"
             :key="data"
@@ -381,6 +395,7 @@ export default {
     const enumTabList = ref([]);
     const currentTab = ref("allInvoice");
     const invoiceList = ref([]);
+    const search = ref("");
 
     // invoice info items
     const invoiceDetail = ref("");
@@ -489,6 +504,18 @@ export default {
           vendorId: id,
         },
       });
+    }
+
+    function searchInput(val) {
+      console.log(val);
+      if (val == "" || val == null) {
+        getInvoiceList();
+      } else {
+        var result = invoiceList.value.filter((person) =>
+          person.organizationName.toLowerCase().includes(val.toLowerCase())
+        );
+        invoiceList.value = result;
+      }
     }
 
     // Status Color
@@ -643,6 +670,8 @@ export default {
       getInvoiceList,
       currentTab,
       getInvoiceDetails,
+      search,
+      searchInput,
 
       // invoice info side
       invoiceDetail,

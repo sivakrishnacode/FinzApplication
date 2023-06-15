@@ -290,12 +290,14 @@
                           borderless
                           type="text"
                           label="Country"
+                          @update:model-value="
+                            useGeos.getStateList(
+                              vendorInfoData.countryGeoId.geoId
+                            )
+                          "
+                          :options="useGeos.countryList"
                           option-label="geoName"
                           option-value="geoId"
-                          @update:model-value="
-                            getStateList(vendorInfoData.countryGeoId.geoId)
-                          "
-                          :options="countryList"
                         ></q-select>
                       </div>
                     </div>
@@ -310,7 +312,7 @@
                           option-value="geoId"
                           type="text"
                           label="State"
-                          :options="stateList"
+                          :options="useGeos.stateList"
                           v-model="vendorInfoData.stateName"
                         ></q-select>
                         <!-- <q-input
@@ -371,7 +373,7 @@
                     flat
                     class="text-white bg-primary"
                     rounded
-                    @click="(isVendorEditable = false), addCountryList()"
+                    @click="isVendorEditable = false"
                   />
                 </div>
               </div>
@@ -834,6 +836,7 @@ import { onMounted, ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useQuasar } from "quasar";
 import { useAuthStore } from "src/stores/useAuthStore";
+import { useGeosStore } from "src/stores/UseGeosStore";
 import { api } from "src/boot/axios";
 
 export default {
@@ -842,6 +845,7 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const useAuth = useAuthStore();
+    const useGeos = useGeosStore();
     const $q = useQuasar();
 
     const isShowActiveBankAccount = ref(false);
@@ -1100,39 +1104,6 @@ export default {
       bankAccountDetails((id = "accountDetails"));
     }
 
-    // add all countryList to vendor dialog box
-    function addCountryList() {
-      api({
-        method: "GET",
-        url: "geos",
-        headers: useAuth.authKey,
-      })
-        .then((res) => {
-          res.data.geoList.map((data) => {
-            countryList.value.push(data);
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-
-    //add states to vendor dialog box
-    function getStateList(geoId) {
-      console.log(geoId);
-      stateList.value = [];
-
-      api({
-        method: "GET",
-        url: `geos/${geoId}/regions`,
-        headers: useAuth.authKey,
-      }).then((res) => {
-        const data = res.data.resultList;
-
-        stateList.value.push(...data);
-      });
-    }
-
     const isCountryValid = computed(() => {
       if (
         newVendorDetails.value.countryGeoId !== "" &&
@@ -1170,13 +1141,12 @@ export default {
       vendorsActiveBankDetails,
       vendorsInActiveBankDetails,
       bankAccountStatus,
+      useGeos,
 
       newVendorDetails,
-      addCountryList,
-      countryList,
-      getStateList,
+
       isCountryValid,
-      stateList,
+
       isShowActiveBankAccount,
       addBankAccount,
       newBankAccountDetails,

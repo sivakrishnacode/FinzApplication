@@ -442,6 +442,8 @@ export default {
     const tempFileUrl = ref("");
 
     const isLoading = ref(false);
+
+    // search section
     const searchOptions = ref([]);
     const search = ref("");
 
@@ -454,7 +456,7 @@ export default {
     const isDateFilterActiveForChip = ref(false);
     const daysFilterSelected = ref("");
 
-    // vendor search
+    // vendor filter
     const isVendorFilterActiveForChip = ref(false);
     const vendorFilterSelected = ref({
       name: "",
