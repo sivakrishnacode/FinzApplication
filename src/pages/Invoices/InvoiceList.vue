@@ -442,8 +442,6 @@ export default {
     const tempFileUrl = ref("");
 
     const isLoading = ref(false);
-
-    // search section
     const searchOptions = ref([]);
     const search = ref("");
 
@@ -473,8 +471,6 @@ export default {
       fromDate: "",
       thruDate: "",
     });
-
-    const invoiceInfoData = ref(null);
 
     const rows = ref([]);
     const columns = ref([
@@ -525,7 +521,7 @@ export default {
     const tableRef = ref(null);
 
     const currentTab = ref("allInvoice");
-    const invoiceInfoTab = ref(false);
+
     const enumTabList = ref([]);
 
     const pagination = ref({
@@ -600,26 +596,6 @@ export default {
       vendorFilterSelected.value.partyId = id;
 
       getInvoiceList({ pagination: pagination.value });
-
-      // invoiceInfoTab.value = false;
-      // invoiceInfoData.value = "";
-      // console.log(id);
-
-      // if (id == null) {
-      //   id = 100561;
-      // }
-
-      // await api({
-      //   method: "GET",
-      //   headers: useAuth.authKey,
-      //   url: `invoices/${id}`,
-      // })
-      //   .then((res) => {
-      //     invoiceInfoData.value = res.data;
-      //   })
-      //   .finally(() => {
-      //     invoiceInfoTab.value = true;
-      //   });
     }
 
     function invoiceRedirect(id) {
@@ -907,7 +883,7 @@ export default {
       rows,
       columns,
       tableRef,
-      invoiceInfoData,
+
       pagination,
       selectVendor,
       dateModifer,
@@ -943,9 +919,6 @@ export default {
       // vendor filter
       isVendorFilterActiveForChip,
       vendorFilterSelected,
-
-      // invoice info tab
-      invoiceInfoTab,
     };
   },
 };
