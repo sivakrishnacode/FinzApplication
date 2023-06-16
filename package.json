@@ -13,6 +13,7 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "apexcharts": "^3.40.0",
+    "authj": "^2.0.0",
     "axios": "^1.2.1",
     "chart.js": "^4.3.0",
     "core-js": "^3.6.5",

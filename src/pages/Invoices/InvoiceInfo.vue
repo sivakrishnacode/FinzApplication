@@ -1,9 +1,9 @@
 <template>
-  <div class="row justify-between no-wrap">
+  <div class="row no-wrap">
     <!-- Side list -->
     <div
       class="q-gutter-y-sm q-pa-lg"
-      style="width: 400px"
+      style="width: 450px"
       v-if="!$q.screen.lt.md"
     >
       <q-input
@@ -155,219 +155,31 @@
     </div>
 
     <!-- Invoice Info side -->
-    <div class="q-gutter-y-md column item-start full-width">
-      <!-- title -->
-      <div class="row full-width justify-center">
+    <div class="row justify-center full-width bg-info">
+      <div class="row bg-green full-width">
         <div
-          class="bg-secondary text-center"
-          style="border-radius: 0 0 70px 70px; width: 700px"
+          class="bg-blue row justify-center"
+          :class="$q.screen.lt.lg ? 'col-12' : 'col-8'"
         >
-          <div class="q-mt-md text-primary text-h6">
-            {{ invoiceDetail.fromParty?.organization.organizationName }}
-          </div>
-          <div class="text-blue-grey-1 q-mb-sm">
-            {{ invoiceDetail.invoiceId }}
+          <div class="" style="width: 70%">
+            <!-- title -->
+            <div
+              class="bg-secondary text-center full-width"
+              style="border-radius: 0 0 70px 70px"
+            >
+              <div class="text-primary text-h6 q-pa-sm">
+                {{ invoiceDetail.fromParty?.organization.organizationName }}
+              </div>
+              <div class="text-blue-grey-1 q-pb-sm">
+                {{ invoiceDetail.invoiceId }}
+              </div>
+            </div>
+
+            <!-- body -->
           </div>
         </div>
-
-        <!--  -->
-        <div class="row absolute" style="right: 50px">
-          <div
-            class="bg-secondary"
-            style="border-radius: 0 0 70px 70px; height: 50px"
-          >
-            <q-btn
-              size="15px"
-              icon="close"
-              color="primary"
-              flat
-              @click="router.back()"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- status -->
-      <div class="full-width row justify-center">
-        <div
-          class="row justify-between content-center q-pa-sm"
-          style="width: 700px; border-radius: 20px; border: 1px solid gray"
-        >
-          <div class="row content-center q-pl-md" style="font-size: 20px">
-            {{ invoiceDetail.status?.description }}
-          </div>
-          <div class="row content-center q-gutter-x-sm">
-            <div v-for="data in toStatusFlow" :key="data">
-              <div v-if="data.description == 'Approved'">
-                <q-btn
-                  rounded
-                  label="Approve"
-                  color="primary"
-                  @click="changeInvoiceStatus(data)"
-                />
-              </div>
-
-              <div v-else-if="data.description == 'Cancelled'">
-                <q-btn
-                  rounded
-                  outline
-                  label="Cancel"
-                  color="primary"
-                  @click="changeInvoiceStatus(data)"
-                />
-              </div>
-
-              <div v-else-if="data.description == 'Payment Sent'">
-                <q-btn
-                  rounded
-                  label="Pay"
-                  color="primary"
-                  @click="changeInvoiceStatus(data)"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- body -->
-      <div class="row justify-center full-width">
-        <div
-          class="bg-secondary q-pa-lg"
-          style="border-radius: 17px; width: 700px"
-        >
-          <q-scroll-area style="height: 600px">
-            <div class="q-gutter-y-md">
-              <!-- vendor info -->
-              <q-item class="row justify-between text-primary">
-                <!-- left -->
-                <q-item-section>
-                  <q-item-label class="text-primary text-weight-bold">
-                    {{ invoiceDetail.fromParty?.organization.organizationName }}
-                  </q-item-label>
-                  <q-item-label class="text-white text-caption">
-                    email not Received
-                  </q-item-label>
-                </q-item-section>
-                <!-- right -->
-
-                <q-btn
-                  outline
-                  rounded
-                  color="primary"
-                  label="View"
-                  @click="vendoPage(invoiceDetail.fromParty?.partyId)"
-                />
-              </q-item>
-
-              <!-- invoice file -->
-              <q-item class="row justify-between text-primary q-py-md">
-                <!-- left -->
-                <q-item-section>
-                  <q-item-label class="text-primary text-weight-bold">
-                    Invoice:
-                  </q-item-label>
-                  <q-item-label class="text-white text-caption">
-                    {{ invoiceDetail.externalId }}
-                  </q-item-label>
-                </q-item-section>
-                <!-- right -->
-
-                <q-btn outline rounded color="primary" label="View Invoice">
-                </q-btn>
-              </q-item>
-            </div>
-
-            <!-- list items -->
-            <div>
-              <!-- columns -->
-              <q-item class="row justify-between">
-                <q-item-section class="col-1 text-weight-bold">
-                  S.NO
-                </q-item-section>
-                <q-item-section class="col-4 text-weight-bold">
-                  Product Name
-                </q-item-section>
-                <q-item-section
-                  class="col-2 text-weight-bold row content-center"
-                >
-                  Quantity
-                </q-item-section>
-                <q-item-section
-                  class="col-3 text-weight-bold row content-center"
-                >
-                  Price
-                </q-item-section>
-              </q-item>
-
-              <q-separator />
-
-              <!-- rows -->
-              <q-list
-                v-for="(data, index) in invoiceDetail.items"
-                :key="data.invoiceId"
-              >
-                <q-item class="row justify-between text-primary">
-                  <q-item-section class="col-1">{{ index + 1 }}</q-item-section>
-                  <q-item-section class="col-4">{{
-                    data.description
-                  }}</q-item-section>
-                  <q-item-section class="col-2 row content-center">
-                    {{ data.quantity }}
-                  </q-item-section>
-                  <q-item-section class="col-3 row content-center">
-                    {{ data.amount }}
-                  </q-item-section>
-                </q-item>
-              </q-list>
-
-              <q-separator />
-
-              <!-- totals -->
-
-              <div class="row justify-between q-pa-md">
-                <div class="text-weight-bold">Total</div>
-                <div>{{ invoiceDetail.invoiceTotal }}</div>
-              </div>
-
-              <div class="row justify-between q-pa-md">
-                <div class="text-weight-bold">Paid Amount:</div>
-                <div>
-                  {{ invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal }}
-                </div>
-              </div>
-
-              <div class="row justify-between q-pa-md">
-                <div class="text-weight-bold">UnPaid Amount:</div>
-                <div>{{ invoiceDetail.unpaidTotal }}</div>
-              </div>
-
-              <q-separator spaced />
-            </div>
-
-            <!-- invoice history -->
-            <div class="q-pa-md">
-              <div class="text-h6 text-primary">Invoice History:</div>
-              <div
-                class="row justify-between q-pa-md"
-                style="border: 1px solid gray"
-              >
-                <div class="row content-center q-gutter-x-md">
-                  <div class="text-h6">02-11-2022</div>
-                  <div class="row content-center">06:45 AM</div>
-                </div>
-                <div class="">
-                  <div
-                    class="text-white text-wight-bold"
-                    style="font-size: 20px"
-                  >
-                    Received
-                  </div>
-                  <div>by John Doe</div>
-                </div>
-              </div>
-            </div>
-          </q-scroll-area>
+        <div class="bg-yellow" :class="$q.screen.lt.lg ? 'col-12' : 'col-4'">
+          two
         </div>
       </div>
     </div>
