@@ -3,7 +3,7 @@
     <!-- Side list -->
     <div
       class="q-gutter-y-sm q-pa-lg"
-      style="width: 450px"
+      style="width: 400px"
       v-if="!$q.screen.lt.md"
     >
       <q-input
@@ -161,25 +161,230 @@
           class="bg-blue row justify-center"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-8'"
         >
-          <div class="" style="width: 70%">
+          <div style="width: 70%">
             <!-- title -->
-            <div
-              class="bg-secondary text-center full-width"
-              style="border-radius: 0 0 70px 70px"
-            >
-              <div class="text-primary text-h6 q-pa-sm">
-                {{ invoiceDetail.fromParty?.organization.organizationName }}
-              </div>
-              <div class="text-blue-grey-1 q-pb-sm">
-                {{ invoiceDetail.invoiceId }}
+            <div class="bg-info q-px-xl">
+              <div
+                class="bg-secondary text-center full-width"
+                style="border-radius: 0 0 70px 70px"
+              >
+                <div class="text-primary text-h6 q-pa-sm">
+                  {{ invoiceDetail.fromParty?.organization.organizationName }}
+                </div>
+                <div class="text-blue-grey-1 q-pb-sm">
+                  {{ invoiceDetail.invoiceId }}
+                </div>
+                <!-- cancel btn -->
+                <!-- <div class="row absolute" style="top: 59px">
+                  <div
+                    class="bg-info"
+                    style="border-radius: 0 0 70px 70px; height: 50px"
+                  >
+                    <q-btn
+                      size="15px"
+                      icon="close"
+                      color="primary"
+                      flat
+                      @click="router.back()"
+                    />
+                  </div>
+                </div> -->
               </div>
             </div>
 
             <!-- body -->
+            <div
+              class="row justify-center bg-red q-my-md"
+              style="border-radius: 20px"
+            >
+              <!-- status -->
+              <div class="full-width bg-green q-py-md">
+                <q-item clickable v-ripple>
+                  <q-item-section>
+                    <q-item-label overline>Invoice Status:</q-item-label>
+                    <q-item-label>Approved</q-item-label>
+                  </q-item-section>
+
+                  <q-item-section avatar>
+                    <q-btn outline rounded color="primary" label="View" />
+                  </q-item-section>
+                </q-item>
+              </div>
+              <!-- vendor -->
+              <div class="full-width bg-blue q-py-md">
+                <q-item clickable v-ripple>
+                  <q-item-section>
+                    <q-item-label overline>Vendor Name:</q-item-label>
+                    <q-item-label>Sivakrishna</q-item-label>
+                    <q-item-label overline>
+                      sivakrishnacoc@gmail.com
+                    </q-item-label>
+                  </q-item-section>
+
+                  <q-item-section avatar>
+                    <q-btn outline rounded color="primary" label="View" />
+                  </q-item-section>
+                </q-item>
+              </div>
+
+              <!-- organization -->
+              <div class="full-width bg-purple q-py-md">
+                <q-item clickable v-ripple>
+                  <q-item-section>
+                    <q-item-label overline>Organization Name:</q-item-label>
+                    <q-item-label>Brillah Traders</q-item-label>
+                  </q-item-section>
+
+                  <q-item-section avatar>
+                    <q-btn outline rounded color="primary" label="View" />
+                  </q-item-section>
+                </q-item>
+              </div>
+              <!-- view invoice -->
+
+              <div class="full-width bg-yellow q-py-sm">
+                <q-item clickable v-ripple>
+                  <q-item-section>
+                    <q-item-label overline>View Invoice:</q-item-label>
+                  </q-item-section>
+
+                  <q-item-section avatar>
+                    <q-btn outline rounded color="primary" label="View" />
+                  </q-item-section>
+                </q-item>
+              </div>
+
+              <div class="full-width q-pa-sm">
+                <!-- columns -->
+                <q-item class="row justify-between">
+                  <q-item-section class="col-1 text-weight-bold">
+                    S.NO
+                  </q-item-section>
+                  <q-item-section class="col-3 text-weight-bold">
+                    Product Name
+                  </q-item-section>
+                  <q-item-section class="col-3 text-weight-bold">
+                    unit price
+                  </q-item-section>
+                  <q-item-section
+                    class="col-2 text-weight-bold row content-center"
+                  >
+                    Quantity
+                  </q-item-section>
+                  <q-item-section
+                    class="col-2 text-weight-bold row content-center"
+                  >
+                    Price
+                  </q-item-section>
+                </q-item>
+
+                <!-- rows -->
+                <q-item
+                  class="row justify-between bg-yellow"
+                  v-for="data in 4"
+                  :key="data"
+                >
+                  <q-item-section class="col-1 text-weight-bold">
+                    S.NO
+                  </q-item-section>
+                  <q-item-section class="col-3 text-weight-bold">
+                    Product Name
+                  </q-item-section>
+                  <q-item-section class="col-3 text-weight-bold">
+                    unit price
+                  </q-item-section>
+                  <q-item-section
+                    class="col-2 text-weight-bold row content-center"
+                  >
+                    Quantity
+                  </q-item-section>
+                  <q-item-section
+                    class="col-2 text-weight-bold row content-center"
+                  >
+                    Price
+                  </q-item-section>
+                </q-item>
+              </div>
+            </div>
+
+            <!-- right side -->
           </div>
         </div>
         <div class="bg-yellow" :class="$q.screen.lt.lg ? 'col-12' : 'col-4'">
-          two
+          <div class="q-ma-lg">
+            <q-card class="bg-blue">
+              <!-- total -->
+              <q-item class="q-my-sm">
+                <q-item-section>
+                  <q-item-label>Total Amount:</q-item-label>
+                </q-item-section>
+
+                <q-item-section avatar>
+                  <q-item-label>$2967</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <!-- paid -->
+              <q-item class="q-my-sm">
+                <q-item-section>
+                  <q-item-label>Paid Amount:</q-item-label>
+                </q-item-section>
+
+                <q-item-section avatar>
+                  <q-item-label>$1278</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <!-- unpaid -->
+              <q-item class="q-my-sm">
+                <q-item-section>
+                  <q-item-label>UnPaid Amount:</q-item-label>
+                </q-item-section>
+
+                <q-item-section avatar>
+                  <q-item-label>$1645</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-separator spaced />
+              <!-- btns -->
+              <div class="q-pa-md row justify-evenly">
+                <q-btn outline rounded color="primary" label="Cancel" />
+                <q-btn unelevated rounded color="primary" label="Approve" />
+              </div>
+            </q-card>
+
+            <q-card>
+              <div class="text-h5 q-pa-md">Invoice History:</div>
+              <q-item class="q-my-sm">
+                <q-item-section>
+                  <q-item-label>Date : 02-12-2023</q-item-label>
+                  <q-item-label overline>Time : 06:54 PM</q-item-label>
+                </q-item-section>
+
+                <q-item-section avatar>
+                  <q-item-label class="text-h6 text-green"
+                    >Approved</q-item-label
+                  >
+                  <q-item-label overline>By User1</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item class="q-my-sm">
+                <q-item-section>
+                  <q-item-label>Date : 02-12-2023</q-item-label>
+                  <q-item-label overline>Time : 06:54 PM</q-item-label>
+                </q-item-section>
+
+                <q-item-section avatar>
+                  <q-item-label class="text-h6 text-green"
+                    >Approved</q-item-label
+                  >
+                  <q-item-label overline>By User1</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-card>
+          </div>
         </div>
       </div>
     </div>
