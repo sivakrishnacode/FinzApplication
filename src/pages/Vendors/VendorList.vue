@@ -400,7 +400,6 @@ export default {
           pagination.value.rowsNumber = res.data.documentListCount;
 
           useVendor.getVendors(vendorsList);
-
           rows.value = useVendor.allVendorList;
 
           pagination.value.page = page;
@@ -469,9 +468,7 @@ export default {
       firstLetters,
       newVendorDetails,
       pagination,
-
       getVendors,
-
       searchFun,
       vendorInfo,
 

@@ -159,7 +159,7 @@
       <div class="row full-width">
         <!-- center body -->
         <div
-          class="row justify-center bg-red"
+          class="row justify-center"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-8'"
         >
           <div style="width: 80%">
@@ -207,14 +207,15 @@
                     </q-item-section>
 
                     <q-item-section avatar>
-                      <q-item-label
-                        class="text-h6"
-                        :class="
-                          'text-' +
-                          statusColor(invoiceDetail.status?.statusId)?.color
-                        "
-                      >
-                        {{ invoiceDetail.status?.description }}
+                      <q-item-label>
+                        <q-badge
+                          :color="
+                            statusColor(invoiceDetail.status?.statusId)?.color
+                          "
+                          class="text-h6"
+                        >
+                          {{ invoiceDetail.status?.description }}
+                        </q-badge>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -334,7 +335,7 @@
 
         <!-- right side -->
         <div
-          class="row justify-center q-mt-md bg-yellow"
+          class="row justify-center q-mt-md"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-4'"
         >
           <div style="width: 80%" class="q-gutter-y-md">
