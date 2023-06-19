@@ -85,6 +85,7 @@
           indicator-color="transparent"
           no-caps
           switch-indicator
+          :mobile-arrows="false"
           dense
           outside-arrows
           style="border-radius: 12px; border: 1px solid silver"
@@ -314,7 +315,7 @@
                       {{ data.description }}
                     </q-item-section>
                     <q-item-section class="col-3 text-weight-bold">
-                      {{ (data.amount / data.quantity).toFixed() }}
+                      {{ data.amount }}
                     </q-item-section>
                     <q-item-section
                       class="col-2 text-weight-bold row content-center"
@@ -324,7 +325,7 @@
                     <q-item-section
                       class="col-2 text-weight-bold row content-center"
                     >
-                      {{ data.amount }}
+                      {{ data.amount * data.quantity }}
                     </q-item-section>
                   </q-item>
                 </div>
@@ -419,7 +420,34 @@
               <div class="text-h5 q-pa-md" style="text-decoration: underline">
                 Invoice History:
               </div>
-              <q-item class="q-my-sm">
+              <q-item
+                class="q-my-sm"
+                v-for="data in invoiceDetail.invoiceHistory"
+                :key="data"
+              >
+                <q-item-section>
+                  <q-item-label
+                    >Date :
+                    {{
+                      formateTimeStamp(data.changedDate).formattedTimestamp
+                    }}</q-item-label
+                  >
+                  <q-item-label overline
+                    >Time :{{
+                      formateTimeStamp(data.changedDate).time
+                    }}</q-item-label
+                  >
+                </q-item-section>
+
+                <q-item-section avatar>
+                  <q-item-label class="text-h6 text-green">
+                    {{ data.description }}
+                  </q-item-label>
+                  <q-item-label overline>by {{ data.username }}</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <!-- <q-item class="q-my-sm">
                 <q-item-section>
                   <q-item-label>Date : 02-12-2023</q-item-label>
                   <q-item-label overline>Time : 06:54 PM</q-item-label>
@@ -431,21 +459,7 @@
                   >
                   <q-item-label overline>By User1</q-item-label>
                 </q-item-section>
-              </q-item>
-
-              <q-item class="q-my-sm">
-                <q-item-section>
-                  <q-item-label>Date : 02-12-2023</q-item-label>
-                  <q-item-label overline>Time : 06:54 PM</q-item-label>
-                </q-item-section>
-
-                <q-item-section avatar>
-                  <q-item-label class="text-h6 text-green"
-                    >Approved</q-item-label
-                  >
-                  <q-item-label overline>By User1</q-item-label>
-                </q-item-section>
-              </q-item>
+              </q-item> -->
             </div>
           </div>
         </div>
@@ -478,7 +492,7 @@ export default {
     const search = ref("");
 
     // invoice info items
-    const invoiceDetail = ref("");
+    const invoiceDetail = ref({});
     const toStatusFlow = ref([]);
 
     // file upload
@@ -527,8 +541,23 @@ export default {
       }).then((res) => {
         invoiceDetail.value = res.data;
       });
-
+      getInvoiceHistory(invoiceDetail.value.invoiceId);
       getToStatusFlow(invoiceDetail.value.statusId);
+    }
+
+    function getInvoiceHistory(id) {
+      api({
+        method: "GET",
+        url: "/userStatusHistory",
+        params: {
+          invoiceId: id,
+        },
+        headers: useAuth.authKey,
+      }).then((res) => {
+        invoiceDetail.value["invoiceHistory"] = res.data.invoiceHistoryList;
+
+        console.log(invoiceDetail.value.invoiceHistory);
+      });
     }
 
     function getTabEnumList() {
@@ -631,8 +660,25 @@ export default {
       }
     };
 
-    //  file upload
+    const formateTimeStamp = (timeStamp) => {
+      const date = new Date(timeStamp);
 
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
+
+      const formattedTimestamp = `${year}-${month}-${day}`;
+
+      const time = `${hours - 12}:${minutes} ${
+        hours >= 12 && hours < 0 ? "AM" : "PM"
+      }`;
+      return { formattedTimestamp, time };
+    };
+
+    //  file upload
     function invoiceFileUpload() {
       console.log(invoiceFile.value.name);
 
@@ -759,6 +805,7 @@ export default {
       changeInvoiceStatus,
       statusColor,
       router,
+      formateTimeStamp,
     };
   },
 };
