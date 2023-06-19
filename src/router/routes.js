@@ -27,6 +27,11 @@ const routes = [
             name: "invoiceInfo_page",
             component: () => import("src/pages/Invoices/InvoiceInfo.vue"),
           },
+          {
+            path: ":invoiceId/payment_page",
+            name: "payment",
+            component: () => import("src/pages/Invoices/PayPage.vue"),
+          },
         ],
       },
       {
