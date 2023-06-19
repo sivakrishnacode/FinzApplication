@@ -155,16 +155,16 @@
     </div>
 
     <!-- Invoice Info side -->
-    <div class="row justify-center full-width bg-info">
-      <div class="row bg-green full-width">
+    <div class="row justify-center full-width">
+      <div class="row full-width">
         <!-- center body -->
         <div
-          class="bg-blue row justify-center"
+          class="row justify-center bg-red"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-8'"
         >
-          <div style="width: 70%">
+          <div style="width: 80%">
             <!-- title -->
-            <div class="bg-info q-px-xl">
+            <div class="q-px-xl">
               <div
                 class="bg-secondary text-center full-width"
                 style="border-radius: 0 0 70px 70px"
@@ -193,118 +193,140 @@
               </div>
             </div>
 
-            <!-- body -->
-            <div
-              class="row justify-center bg-red q-my-md"
-              style="border-radius: 20px"
-            >
-              <!-- status -->
-              <div class="full-width bg-green q-py-md">
-                <q-item clickable v-ripple>
-                  <q-item-section>
-                    <q-item-label overline>Invoice Status:</q-item-label>
-                    <q-item-label>Approved</q-item-label>
-                  </q-item-section>
+            <div style="border-radius: 13px" class="bg-secondary q-ma-sm">
+              <!-- body -->
+              <div
+                class="row justify-center q-my-md q-pa-lg"
+                style="border-radius: 20px"
+              >
+                <!-- status -->
+                <div class="full-width q-py-md">
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label>Invoice Status:</q-item-label>
+                    </q-item-section>
 
-                  <q-item-section avatar>
-                    <q-btn outline rounded color="primary" label="View" />
-                  </q-item-section>
-                </q-item>
-              </div>
-              <!-- vendor -->
-              <div class="full-width bg-blue q-py-md">
-                <q-item clickable v-ripple>
-                  <q-item-section>
-                    <q-item-label overline>Vendor Name:</q-item-label>
-                    <q-item-label>Sivakrishna</q-item-label>
-                    <q-item-label overline>
-                      sivakrishnacoc@gmail.com
-                    </q-item-label>
-                  </q-item-section>
+                    <q-item-section avatar>
+                      <q-item-label
+                        class="text-h6"
+                        :class="
+                          'text-' +
+                          statusColor(invoiceDetail.status?.statusId)?.color
+                        "
+                      >
+                        {{ invoiceDetail.status?.description }}
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </div>
 
-                  <q-item-section avatar>
-                    <q-btn outline rounded color="primary" label="View" />
-                  </q-item-section>
-                </q-item>
-              </div>
+                <!-- vendor -->
+                <div class="full-width q-py-md">
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label overline>Vendor Name:</q-item-label>
+                      <q-item-label>{{
+                        invoiceDetail.fromParty?.organization.organizationName
+                      }}</q-item-label>
+                    </q-item-section>
 
-              <!-- organization -->
-              <div class="full-width bg-purple q-py-md">
-                <q-item clickable v-ripple>
-                  <q-item-section>
-                    <q-item-label overline>Organization Name:</q-item-label>
-                    <q-item-label>Brillah Traders</q-item-label>
-                  </q-item-section>
+                    <q-item-section avatar>
+                      <q-btn
+                        outline
+                        rounded
+                        color="primary"
+                        label="View Vendor"
+                        @click="vendoPage(invoiceDetail.fromParty?.partyId)"
+                      />
+                    </q-item-section>
+                  </q-item>
+                </div>
 
-                  <q-item-section avatar>
-                    <q-btn outline rounded color="primary" label="View" />
-                  </q-item-section>
-                </q-item>
-              </div>
-              <!-- view invoice -->
+                <!-- organization -->
+                <div class="full-width q-py-md">
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label overline>Organization Name:</q-item-label>
+                      <q-item-label>{{
+                        invoiceDetail.toParty?.organization.organizationName
+                      }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </div>
 
-              <div class="full-width bg-yellow q-py-sm">
-                <q-item clickable v-ripple>
-                  <q-item-section>
-                    <q-item-label overline>View Invoice:</q-item-label>
-                  </q-item-section>
+                <!-- view invoice -->
+                <div class="full-width q-py-sm">
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label overline>View Invoice:</q-item-label>
+                      <q-item-label>{{
+                        invoiceDetail.externalId
+                      }}</q-item-label>
+                    </q-item-section>
 
-                  <q-item-section avatar>
-                    <q-btn outline rounded color="primary" label="View" />
-                  </q-item-section>
-                </q-item>
-              </div>
+                    <q-item-section avatar>
+                      <q-btn
+                        outline
+                        rounded
+                        color="primary"
+                        label="View Invoice"
+                      />
+                    </q-item-section>
+                  </q-item>
+                </div>
 
-              <div class="full-width q-pa-sm">
-                <!-- columns -->
-                <q-item class="row justify-between">
-                  <q-item-section class="col-1 text-weight-bold">
-                    S.NO
-                  </q-item-section>
-                  <q-item-section class="col-3 text-weight-bold">
-                    Product Name
-                  </q-item-section>
-                  <q-item-section class="col-3 text-weight-bold">
-                    unit price
-                  </q-item-section>
-                  <q-item-section
-                    class="col-2 text-weight-bold row content-center"
+                <!-- items list -->
+                <div class="full-width q-pa-sm">
+                  <!-- columns -->
+                  <q-item class="row justify-between">
+                    <q-item-section class="col-1 text-weight-bold">
+                      S.NO
+                    </q-item-section>
+                    <q-item-section class="col-3 text-weight-bold">
+                      Product Name
+                    </q-item-section>
+                    <q-item-section class="col-3 text-weight-bold">
+                      Unit price
+                    </q-item-section>
+                    <q-item-section
+                      class="col-2 text-weight-bold row content-center"
+                    >
+                      Quantity
+                    </q-item-section>
+                    <q-item-section
+                      class="col-2 text-weight-bold row content-center"
+                    >
+                      Price
+                    </q-item-section>
+                  </q-item>
+
+                  <!-- rows -->
+                  <q-item
+                    class="row justify-between"
+                    v-for="(data, index) in invoiceDetail.items"
+                    :key="index"
                   >
-                    Quantity
-                  </q-item-section>
-                  <q-item-section
-                    class="col-2 text-weight-bold row content-center"
-                  >
-                    Price
-                  </q-item-section>
-                </q-item>
-
-                <!-- rows -->
-                <q-item
-                  class="row justify-between bg-yellow"
-                  v-for="data in 4"
-                  :key="data"
-                >
-                  <q-item-section class="col-1 text-weight-bold">
-                    S.NO
-                  </q-item-section>
-                  <q-item-section class="col-3 text-weight-bold">
-                    Product Name
-                  </q-item-section>
-                  <q-item-section class="col-3 text-weight-bold">
-                    unit price
-                  </q-item-section>
-                  <q-item-section
-                    class="col-2 text-weight-bold row content-center"
-                  >
-                    Quantity
-                  </q-item-section>
-                  <q-item-section
-                    class="col-2 text-weight-bold row content-center"
-                  >
-                    Price
-                  </q-item-section>
-                </q-item>
+                    <q-item-section class="col-1 text-weight-bold">
+                      {{ index + 1 }}
+                    </q-item-section>
+                    <q-item-section class="col-3 text-weight-bold">
+                      {{ data.description }}
+                    </q-item-section>
+                    <q-item-section class="col-3 text-weight-bold">
+                      {{ (data.amount / data.quantity).toFixed() }}
+                    </q-item-section>
+                    <q-item-section
+                      class="col-2 text-weight-bold row content-center"
+                    >
+                      {{ data.quantity }}
+                    </q-item-section>
+                    <q-item-section
+                      class="col-2 text-weight-bold row content-center"
+                    >
+                      {{ data.amount }}
+                    </q-item-section>
+                  </q-item>
+                </div>
               </div>
             </div>
           </div>
@@ -312,12 +334,13 @@
 
         <!-- right side -->
         <div
-          class="row justify-center bg-yellow"
+          class="row justify-center q-mt-md bg-yellow"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-4'"
         >
-          <div class="q-ma-lg" style="width: 70%">
+          <div style="width: 80%" class="q-gutter-y-md">
             <!-- amount -->
-            <q-card class="bg-blue">
+
+            <div class="bg-secondary q-pa-lg" style="border-radius: 13px">
               <!-- total -->
               <q-item class="q-my-sm">
                 <q-item-section>
@@ -325,7 +348,7 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label>$2967</q-item-label>
+                  <q-item-label>{{ invoiceDetail.invoiceTotal }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -336,7 +359,11 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label>$1278</q-item-label>
+                  <q-item-label>
+                    {{
+                      invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal
+                    }}</q-item-label
+                  >
                 </q-item-section>
               </q-item>
 
@@ -347,20 +374,47 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label>$1645</q-item-label>
+                  <q-item-label>{{ invoiceDetail.unpaidTotal }}</q-item-label>
                 </q-item-section>
               </q-item>
 
               <q-separator spaced />
               <!-- btns -->
               <div class="q-pa-md row justify-evenly">
-                <q-btn outline rounded color="primary" label="Cancel" />
-                <q-btn unelevated rounded color="primary" label="Approve" />
+                <div v-for="data in toStatusFlow" :key="data">
+                  <div v-if="data.description == 'Approved'">
+                    <q-btn
+                      rounded
+                      label="Approve"
+                      color="primary"
+                      @click="changeInvoiceStatus(data)"
+                    />
+                  </div>
+
+                  <div v-else-if="data.description == 'Cancelled'">
+                    <q-btn
+                      rounded
+                      outline
+                      label="Cancel"
+                      color="primary"
+                      @click="changeInvoiceStatus(data)"
+                    />
+                  </div>
+
+                  <div v-else-if="data.description == 'Payment Sent'">
+                    <q-btn
+                      rounded
+                      label="Pay"
+                      color="primary"
+                      @click="changeInvoiceStatus(data)"
+                    />
+                  </div>
+                </div>
               </div>
-            </q-card>
+            </div>
 
             <!-- HISTORY -->
-            <q-card>
+            <div class="bg-secondary q-pa-lg" style="border-radius: 13px">
               <div class="text-h5 q-pa-md" style="text-decoration: underline">
                 Invoice History:
               </div>
@@ -391,7 +445,7 @@
                   <q-item-label overline>By User1</q-item-label>
                 </q-item-section>
               </q-item>
-            </q-card>
+            </div>
           </div>
         </div>
       </div>
