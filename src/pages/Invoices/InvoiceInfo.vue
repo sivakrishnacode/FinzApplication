@@ -341,7 +341,6 @@
         >
           <div style="width: 80%" class="q-gutter-y-md">
             <!-- amount -->
-
             <div class="bg-secondary q-pa-lg" style="border-radius: 13px">
               <!-- total -->
               <q-item class="q-my-sm">
@@ -441,9 +440,15 @@
 
                 <q-item-section avatar>
                   <q-item-label class="text-h6 text-green">
-                    {{ data.description }}
+                    <q-badge
+                      class="text-body1"
+                      color="secondary"
+                      :text-color="statusColor(data.newValueText)?.color"
+                    >
+                      {{ data.description }}
+                    </q-badge>
                   </q-item-label>
-                  <q-item-label overline>by {{ data.username }}</q-item-label>
+                  <q-item-label overline> by {{ data.username }} </q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -555,8 +560,6 @@ export default {
         headers: useAuth.authKey,
       }).then((res) => {
         invoiceDetail.value["invoiceHistory"] = res.data.invoiceHistoryList;
-
-        console.log(invoiceDetail.value.invoiceHistory);
       });
     }
 
