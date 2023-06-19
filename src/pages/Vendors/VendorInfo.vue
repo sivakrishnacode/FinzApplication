@@ -837,6 +837,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useQuasar } from "quasar";
 import { useAuthStore } from "src/stores/useAuthStore";
 import { useGeosStore } from "src/stores/UseGeosStore";
+
 import { api } from "src/boot/axios";
 
 export default {
@@ -846,6 +847,7 @@ export default {
     const router = useRouter();
     const useAuth = useAuthStore();
     const useGeos = useGeosStore();
+
     const $q = useQuasar();
 
     const isShowActiveBankAccount = ref(false);

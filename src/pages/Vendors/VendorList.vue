@@ -291,12 +291,14 @@ import { useQuasar } from "quasar";
 import { api } from "src/boot/axios";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "src/stores/useAuthStore";
+import { useVendorStore } from "src/stores/UseVendorStore";
 
 export default {
   name: "vendorsList_page",
   setup() {
     const router = useRouter();
     const useAuth = useAuthStore();
+    const useVendor = useVendorStore();
 
     const tableRef = ref(null);
     const isLoading = ref(false);
@@ -397,9 +399,9 @@ export default {
           const vendorsList = res.data.documentList;
           pagination.value.rowsNumber = res.data.documentListCount;
 
-          vendorsList.map((data) => {
-            rows.value.push(data);
-          });
+          useVendor.getVendors(vendorsList);
+
+          rows.value = useVendor.allVendorList;
 
           pagination.value.page = page;
           pagination.value.rowsPerPage = rowsPerPage;
@@ -421,7 +423,6 @@ export default {
 
     // search vendor
     async function searchFun(val, update) {
-      console.log(val);
       isLoading.value = true;
 
       await update(() => {
@@ -433,11 +434,9 @@ export default {
           }).then((res) => {
             searchOptions.value = [];
 
-            console.log(res.data.documentList);
+            useVendor.searchVendor(res.data.documentList);
 
-            res.data.documentList.map((data) => {
-              searchOptions.value.push(data);
-            });
+            searchOptions.value = useVendor.tempVendorList;
 
             isLoading.value = false;
           });
