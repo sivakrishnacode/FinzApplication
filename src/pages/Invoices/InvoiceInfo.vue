@@ -157,6 +157,7 @@
     <!-- Invoice Info side -->
     <div class="row justify-center full-width bg-info">
       <div class="row bg-green full-width">
+        <!-- center body -->
         <div
           class="bg-blue row justify-center"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-8'"
@@ -306,12 +307,16 @@
                 </q-item>
               </div>
             </div>
-
-            <!-- right side -->
           </div>
         </div>
-        <div class="bg-yellow" :class="$q.screen.lt.lg ? 'col-12' : 'col-4'">
-          <div class="q-ma-lg">
+
+        <!-- right side -->
+        <div
+          class="row justify-center bg-yellow"
+          :class="$q.screen.lt.lg ? 'col-12' : 'col-4'"
+        >
+          <div class="q-ma-lg" style="width: 70%">
+            <!-- amount -->
             <q-card class="bg-blue">
               <!-- total -->
               <q-item class="q-my-sm">
@@ -354,8 +359,11 @@
               </div>
             </q-card>
 
+            <!-- HISTORY -->
             <q-card>
-              <div class="text-h5 q-pa-md">Invoice History:</div>
+              <div class="text-h5 q-pa-md" style="text-decoration: underline">
+                Invoice History:
+              </div>
               <q-item class="q-my-sm">
                 <q-item-section>
                   <q-item-label>Date : 02-12-2023</q-item-label>
