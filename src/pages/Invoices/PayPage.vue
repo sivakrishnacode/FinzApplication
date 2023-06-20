@@ -1,90 +1,482 @@
 <template>
-  <div>
-    <q-list bordered>
-      <q-expansion-item
-        group="somegroup"
-        icon="explore"
-        label="First"
-        default-opened
-        header-class="text-primary"
-      >
-        <q-card>
-          <q-card-section>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem,
-            eius reprehenderit eos corrupti commodi magni quaerat ex numquam,
-            dolorum officiis modi facere maiores architecto suscipit iste
-            eveniet doloribus ullam aliquid.
-          </q-card-section>
-        </q-card>
-      </q-expansion-item>
+  <div class="row justify-center wrap">
+    <!-- main -->
+    <div class="q-ma-md" style="max-width: 50vw; width: 100%; min-width: 600px">
+      <q-list bordered>
+        <q-expansion-item
+          icon="looks_one"
+          label="Party Details"
+          header-class="text-red text-h6"
+          class="q-ma-lg"
+        >
+          <q-card>
+            <q-card-section>
+              <div>
+                <div class="full-width q-py-md">
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label overline>Vendor Name:</q-item-label>
+                      <q-item-label>
+                        {{
+                          invoiceDetail.fromParty?.organization.organizationName
+                        }}
+                      </q-item-label>
+                    </q-item-section>
 
-      <q-separator />
+                    <q-item-section avatar>
+                      <q-btn
+                        outline
+                        rounded
+                        color="primary"
+                        label="View Vendor"
+                        @click="vendoPage(invoiceDetail.fromParty?.partyId)"
+                      />
+                    </q-item-section>
+                  </q-item>
+                </div>
 
-      <q-expansion-item
-        group="somegroup"
-        icon="perm_identity"
-        label="Second"
-        header-class="text-teal"
-      >
-        <q-card>
-          <q-card-section>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem,
-            eius reprehenderit eos corrupti commodi magni quaerat ex numquam,
-            dolorum officiis modi facere maiores architecto suscipit iste
-            eveniet doloribus ullam aliquid.
-          </q-card-section>
-        </q-card>
-      </q-expansion-item>
+                <!-- organization -->
+                <div class="full-width q-py-md">
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label overline>Organization Name:</q-item-label>
+                      <q-item-label>
+                        {{
+                          invoiceDetail.toParty?.organization.organizationName
+                        }}
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </div>
 
-      <q-separator />
+                <!-- view invoice -->
+                <div class="full-width q-py-sm">
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label overline>View Invoice:</q-item-label>
+                      <q-item-label>
+                        {{ invoiceDetail.externalId }}
+                      </q-item-label>
+                    </q-item-section>
 
-      <q-expansion-item
-        group="somegroup"
-        icon="shopping_cart"
-        label="Third"
-        header-class="text-purple"
-      >
-        <q-card>
-          <q-card-section>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem,
-            eius reprehenderit eos corrupti commodi magni quaerat ex numquam,
-            dolorum officiis modi facere maiores architecto suscipit iste
-            eveniet doloribus ullam aliquid.
-          </q-card-section>
-        </q-card>
-      </q-expansion-item>
+                    <q-item-section avatar>
+                      <q-btn
+                        outline
+                        rounded
+                        color="primary"
+                        label="View Invoice"
+                      />
+                    </q-item-section>
+                  </q-item>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
 
-      <q-separator />
+        <q-separator />
 
-      <q-expansion-item
-        group="somegroup"
-        icon="bluetooth"
-        label="Fourth"
-        header-class="bg-teal text-white"
-        expand-icon-class="text-white"
-      >
-        <q-card class="bg-teal-2">
-          <q-card-section>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem,
-            eius reprehenderit eos corrupti commodi magni quaerat ex numquam,
-            dolorum officiis modi facere maiores architecto suscipit iste
-            eveniet doloribus ullam aliquid.
-          </q-card-section>
-        </q-card>
-      </q-expansion-item>
-    </q-list>
+        <q-expansion-item
+          icon="looks_two"
+          class="q-ma-lg"
+          label="Invoice Items"
+          header-class="text-green text-h6"
+        >
+          <q-card class="q-ma-none">
+            <q-card-section>
+              <!-- columns -->
+              <q-item class="row justify-between">
+                <q-item-section class="col-1 text-weight-bold">
+                  S.NO
+                </q-item-section>
+                <q-item-section class="col-3 text-weight-bold">
+                  Product Name
+                </q-item-section>
+                <q-item-section class="col-3 text-weight-bold">
+                  Unit price
+                </q-item-section>
+                <q-item-section
+                  class="col-2 text-weight-bold row content-center"
+                >
+                  Quantity
+                </q-item-section>
+                <q-item-section
+                  class="col-2 text-weight-bold row content-center"
+                >
+                  Price
+                </q-item-section>
+              </q-item>
+
+              <!-- rows -->
+              <q-item
+                class="row justify-between"
+                v-for="(data, index) in invoiceDetail.items"
+                :key="index"
+              >
+                <q-item-section class="col-1 text-weight-bold">
+                  {{ index + 1 }}
+                </q-item-section>
+                <q-item-section class="col-3 text-weight-bold">
+                  {{ data.description }}
+                </q-item-section>
+                <q-item-section class="col-3 text-weight-bold">
+                  {{ data.amount }}
+                </q-item-section>
+                <q-item-section
+                  class="col-2 text-weight-bold row content-center"
+                >
+                  {{ data.quantity }}
+                </q-item-section>
+                <q-item-section
+                  class="col-2 text-weight-bold row content-center"
+                >
+                  {{ data.amount * data.quantity }}
+                </q-item-section>
+              </q-item>
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+
+        <q-separator />
+
+        <q-expansion-item
+          default-opened
+          class="q-ma-lg"
+          icon="looks_3"
+          label="Payment Method"
+          header-class="text-blue text-h6"
+        >
+          <q-card>
+            <!-- bank options -->
+            <q-card-section>
+              <!-- upi -->
+              <div class="q-ma-md" style="border: 1px solid red">
+                <q-radio
+                  v-model="bankTypeSelect"
+                  val="upi"
+                  checked-icon="task_alt"
+                  unchecked-icon="panorama_fish_eye"
+                  label="Upi"
+                />
+                <div v-if="bankTypeSelect == 'upi'">
+                  <div
+                    class="row justify-start q-ma-md"
+                    v-for="n in accountDetail.upiDetails"
+                    :key="n"
+                  >
+                    <div
+                      class="q-pa-md full-width bg-secondary"
+                      style="border: 2px solid silver; border-radius: 20px"
+                    >
+                      <div>
+                        UPI ID:
+                        <span class="text-bold">{{
+                          n.upiPayment?.upiAddress
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- bank -->
+              <div class="q-ma-md" style="border: 1px solid red">
+                <q-radio
+                  v-model="bankTypeSelect"
+                  val="bank"
+                  checked-icon="task_alt"
+                  unchecked-icon="panorama_fish_eye"
+                  label="Bank"
+                />
+
+                <div v-if="bankTypeSelect == 'bank'">
+                  <div
+                    class="row justify-start q-ma-md"
+                    v-for="n in accountDetail.bankDetails"
+                    :key="n"
+                  >
+                    <div
+                      class="q-pa-md full-width bg-secondary q-gutter-y-sm"
+                      style="border: 2px solid silver; border-radius: 20px"
+                    >
+                      <div>
+                        A/C Holder name:
+                        <span class="text-bold">{{
+                          n.companyNameOnAccount
+                        }}</span>
+                      </div>
+                      <div>
+                        A/C No:
+                        <span class="text-bold">{{ n.accountNumber }}</span>
+                      </div>
+                      <div>
+                        IFSC CODE:
+                        <span class="text-bold">{{ n.routingNumber }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="q-pa-md colum content-center justify-center">
+                    <div class="q-pa-md q-gutter-y-md">
+                      <div class="text-bold">Payment Mode:</div>
+                      <div class="">
+                        <q-select
+                          dense
+                          outlined
+                          style="width: 300px"
+                          v-model="model"
+                          :options="[1, 2, 3, 4]"
+                          label="Filled"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-card-section>
+
+            <!-- edit amount -->
+            <q-card-section style="border: 1px solid silver">
+              <!-- input -->
+              <div class="row justify-center content-center q-gutter-y-md">
+                <!-- <q-item
+                  clickable
+                  v-ripple
+                  style="
+                    width: 50%;
+                    border-radius: 30px;
+                    border: 1px solid silver;
+                  "
+                >
+                  <q-item-section avatar>
+                    <q-radio v-model="isPayFullAmount" val="full" />
+                  </q-item-section>
+                  <q-item-section class="q-pa-sm">
+                    <q-item-label>
+                      $ {{ invoiceDetail.invoiceTotal }}
+                    </q-item-label>
+                    <q-item-label caption>Pay Full Amount</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item
+                  clickable
+                  v-ripple
+                  style="
+                    width: 50%;
+                    border-radius: 30px;
+                    border: 1px solid silver;
+                  "
+                >
+                  <q-item-section avatar>
+                    <q-radio v-model="isPayFullAmount" val="!full" />
+                  </q-item-section>
+                  <q-item-section class="q-pa-sm">
+                    <q-item-label> Edit Amount </q-item-label>
+                    <q-item-label caption
+                      >Pay less then -
+                      {{ invoiceDetail.invoiceTotal }}</q-item-label
+                    >
+                  </q-item-section>
+                </q-item>
+
+                <q-item
+                  v-if="isPayFullAmount == '!full'"
+                  class="q-pa-none"
+                  style="
+                    width: 50%;
+                    border-radius: 30px;
+                    border: 1px solid silver;
+                  "
+                >
+                  <q-input
+                    rounded
+                    outlined
+                    type="number"
+                    class="full-height full-width"
+                    label="Amount"
+                  />
+                </q-item> -->
+
+                <q-input
+                  :disable="!isAmountEditable"
+                  outlined
+                  v-model="amount.currentAmount"
+                  prefix="$"
+                  type="number"
+                  label="Amount"
+                  style="width: 200px"
+                  :error="!isAmountValid"
+                  :error-message="'Enter Below ' + amount.actualAmount"
+                />
+                <q-btn
+                  icon="edit"
+                  flat
+                  class="text-primary"
+                  @click="isAmountEditable = true"
+                />
+              </div>
+
+              <!-- btns -->
+              <div class="row justify-center q-gutter-x-md">
+                <q-btn
+                  :disable="isAmountValid"
+                  rounded
+                  label="Reset"
+                  color="red"
+                  @click="amount.currentAmount = null"
+                ></q-btn>
+                <q-btn
+                  :disable="!isAmountValid"
+                  rounded
+                  label="Continue"
+                  color="primary"
+                  type="submit"
+                />
+              </div>
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+      </q-list>
+    </div>
+
+    <!-- side box -->
+    <div class="q-pa-md" style="min-width: 400px">
+      <q-card class="q-pa-md">
+        <div class="q-pa-md text-h6">Amount Details:</div>
+        <q-separator />
+        <div class="row justify-between q-pa-md">
+          <div>Invoice amount</div>
+          <div>$ {{ invoiceDetail.invoiceTotal }}</div>
+        </div>
+        <div class="row justify-between q-pa-md">
+          <div>Paid amount</div>
+          <div>
+            $ {{ invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal }}
+          </div>
+        </div>
+        <div class="row justify-between q-pa-md">
+          <div>UnPaid amount</div>
+          <div>$ {{ invoiceDetail.unpaidTotal }}</div>
+        </div>
+
+        <q-separator />
+        <div class="row justify-between q-pa-md">
+          <div class="text-h6">Total amount</div>
+          <div>$ {{ invoiceDetail.invoiceTotal }}</div>
+        </div>
+        <q-separator />
+        <div class="q-pa-md text-green text-bold">
+          Your Total Amount $4504 for 7 items in Invoice123.name
+        </div>
+      </q-card>
+      <div>
+        <q-item class="q-pa-lg">
+          <q-item-section avatar>
+            <q-icon name="verified_user" />
+          </q-item-section>
+          <q-item-section class="text-bold">
+            Safe and Secure Payments. 100% Authentic products.
+            <span class="text-blue text-underline">Refund Policy</span>
+          </q-item-section>
+        </q-item>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { route } from "quasar/wrappers";
-import { useRoute } from "vue-router";
+import { api } from "src/boot/axios";
+import { useAuthStore } from "src/stores/useAuthStore";
+import { computed, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 export default {
   name: "payment_page",
   setup() {
     const route = useRoute();
+    const router = useRouter();
+    const useAuth = useAuthStore();
 
-    console.log(route.params.invoiceId);
+    // accordian section
+    const bankTypeSelect = ref("bank");
+    const isAmountEditable = ref(false);
+    const amount = ref({
+      actualAmount: null,
+      currentAmount: null,
+    });
+
+    const isPayFullAmount = ref("!full");
+
+    const invoiceDetail = ref({});
+    const accountDetail = ref({
+      bankDetails: [],
+      upiDetails: [],
+    });
+
+    async function getInvoiceDetails(invoiseId) {
+      invoiceDetail.value = "";
+      await api({
+        method: "GET",
+        url: `invoices/${invoiseId}`,
+        headers: useAuth.authKey,
+      }).then((res) => {
+        invoiceDetail.value = res.data;
+      });
+
+      getAccountDetails(invoiceDetail.value.fromParty.partyId);
+      amount.value.actualAmount = invoiceDetail.value.invoiceTotal;
+    }
+
+    function getAccountDetails(id) {
+      api({
+        method: "GET",
+        url: "PaymentMethods/bankAccountInfoList",
+        headers: useAuth.authKey,
+        params: {
+          partyId: id,
+        },
+      }).then((res) => {
+        res.data.methodInfoList.map((data) => {
+          if (data.status == "true") {
+            if (data.paymentMethodTypeEnumId == "PmtBankAccount") {
+              accountDetail.value.bankDetails.push(data);
+            } else {
+              accountDetail.value.upiDetails.push(data);
+            }
+          }
+        });
+      });
+      console.log(accountDetail.value);
+    }
+
+    function vendoPage(id) {
+      router.push({
+        name: "vendorInfo_page",
+        params: {
+          vendorId: id,
+        },
+      });
+    }
+
+    const isAmountValid = computed(
+      () => amount.value.actualAmount >= amount.value.currentAmount
+    );
+
+    onMounted(() => {
+      getInvoiceDetails(route.params.invoiceId);
+    });
+
+    return {
+      // accordian 3
+      bankTypeSelect,
+      isAmountValid,
+      amount,
+      isAmountEditable,
+      invoiceDetail,
+      vendoPage,
+      accountDetail,
+      isPayFullAmount,
+    };
   },
 };
 </script>

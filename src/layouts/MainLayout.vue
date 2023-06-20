@@ -131,20 +131,6 @@
 
         <q-item
           active-class="bg-primary text-white text-bold"
-          to="/accounting"
-          clickable
-          v-ripple
-          style="border-radius: 0 30px 30px 0"
-        >
-          <q-item-section avatar>
-            <q-icon name="account_balance" />
-          </q-item-section>
-
-          <q-item-section> Accounting </q-item-section>
-        </q-item>
-
-        <q-item
-          active-class="bg-primary text-white text-bold"
           to="/payment"
           clickable
           v-ripple
@@ -155,6 +141,20 @@
           </q-item-section>
 
           <q-item-section> Payments </q-item-section>
+        </q-item>
+
+        <q-item
+          active-class="bg-primary text-white text-bold"
+          to="/accounting"
+          clickable
+          v-ripple
+          style="border-radius: 0 30px 30px 0"
+        >
+          <q-item-section avatar>
+            <q-icon name="account_balance" />
+          </q-item-section>
+
+          <q-item-section> Accounting </q-item-section>
         </q-item>
       </q-list>
     </q-drawer>

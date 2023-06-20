@@ -361,10 +361,8 @@
 
                 <q-item-section avatar>
                   <q-item-label>
-                    {{
-                      invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal
-                    }}</q-item-label
-                  >
+                    {{ invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -407,7 +405,7 @@
                       rounded
                       label="Pay"
                       color="primary"
-                      @click="changeInvoiceStatus(data)"
+                      @click="redirect('invoicePayPage')"
                     />
                   </div>
                 </div>
@@ -607,6 +605,19 @@ export default {
       }).then((data) => {
         console.log(data);
       });
+      getInvoiceDetails(route.params.invoiceId);
+      getInvoiceList();
+    }
+
+    function redirect(page) {
+      if ((page = "invoicePayPage")) {
+        router.push({
+          name: "payment",
+          params: {
+            invoice: id,
+          },
+        });
+      }
     }
 
     function vendoPage(id) {
@@ -673,7 +684,7 @@ export default {
       const minutes = String(date.getMinutes()).padStart(2, "0");
       const seconds = String(date.getSeconds()).padStart(2, "0");
 
-      const formattedTimestamp = `${year}-${month}-${day}`;
+      const formattedTimestamp = `${day}-${month}-${year}`;
 
       const time = `${hours - 12}:${minutes} ${
         hours >= 12 && hours < 0 ? "AM" : "PM"
@@ -801,6 +812,7 @@ export default {
       getInvoiceDetails,
       search,
       searchInput,
+      redirect,
 
       // invoice info side
       invoiceDetail,

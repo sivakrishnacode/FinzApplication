@@ -1,7 +1,5 @@
 <template>
-  <q-page-container class="no-padding">
-    <RouterView />
-  </q-page-container>
+  <RouterView />
 </template>
 
 <script>

@@ -564,6 +564,8 @@ export default {
       params["pageSize"] = pagination.value.rowsPerPage;
       params["pageIndex"] = pagination.value.page - 1;
 
+      console.log(params);
+
       await api({
         method: "GET",
         headers: useAuth.authKey,
@@ -752,6 +754,8 @@ export default {
         res.data.enumerationList.map((data) => {
           enumTabList.value.push(data);
         });
+
+        console.log(enumTabList.value);
       });
     }
 
