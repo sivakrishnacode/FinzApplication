@@ -359,7 +359,7 @@
                     class="q-mr-sm"
                   />
                   <div style="font-size: 15px">
-                    {{ statusColor(props.row.statusId).message }}
+                    {{ props.row.statusId }}
                   </div>
                 </q-chip>
               </q-td>
@@ -783,6 +783,11 @@ export default {
           statusId: "InvoiceApproved",
           color: "indigo-10",
           message: "Approved",
+        },
+        {
+          statusId: "InvoiceAcked",
+          color: "green-3",
+          message: "Acknowledged",
         },
       ];
 

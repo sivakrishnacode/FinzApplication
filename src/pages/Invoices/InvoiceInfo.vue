@@ -1081,6 +1081,11 @@ export default {
           color: "indigo-10",
           message: "Approved",
         },
+        {
+          statusId: "InvoiceAcked",
+          color: "yellow-10",
+          message: "Acknowledged",
+        },
       ];
 
       const data = colors.find((data) => {

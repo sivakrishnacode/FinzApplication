@@ -257,31 +257,21 @@
             class="text-center cursor-pointer"
             @click="invoiceRedirect(props.row.invoiceId)"
           >
-            <q-td key="PaymentDate">
-              {{ dateModifer(props.row.invoiceDate) }}
-            </q-td>
+            <q-td key="PaymentDate"> dateModifer(props.row.invoiceDate) </q-td>
 
-            <q-td key="invoiceId">
-              {{ props.row.organizationName }}
-            </q-td>
+            <q-td key="invoiceId"> props.row.organizationName </q-td>
 
             <q-td key="vendorName"> Email not reseaved from server </q-td>
 
             <q-td key="status">
-              {{
-                props.row.invoiceTotal.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: props.row.currencyUomId,
-                })
-              }}
+              props.row.invoiceTotal.toLocaleString("en-US", { style:
+              "currency", currency: props.row.currencyUomId, })
             </q-td>
 
-            <q-td key="more">{{
-              props.row.unpaidTotal.toLocaleString("en-US", {
-                style: "currency",
-                currency: props.row.currencyUomId,
-              })
-            }}</q-td>
+            <q-td key="more">
+              props.row.unpaidTotal.toLocaleString("en-US", { style: "currency",
+              currency: props.row.currencyUomId, })
+            </q-td>
           </q-tr>
         </template>
 
@@ -423,7 +413,6 @@ export default {
         method: "GET",
         headers: useAuth.authKey,
         url: "payments",
-        params: params,
       })
         .then((res) => {
           rows.value = [];

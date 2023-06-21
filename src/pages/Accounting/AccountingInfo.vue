@@ -1,5 +1,5 @@
 <template>
-  <div>acc info {{ accTransId }}</div>
+  <div>acc info {{ acctgTransId }}</div>
 </template>
 
 <script>
@@ -11,12 +11,12 @@ export default {
   setup() {
     const route = useRoute();
 
-    var accTransId = route.params.accTransId;
+    var acctgTransId = route.params.acctgTransId;
     onMounted(() => {
-      console.log(accTransId);
+      console.log(acctgTransId);
     });
     return {
-      accTransId,
+      acctgTransId,
     };
   },
 };

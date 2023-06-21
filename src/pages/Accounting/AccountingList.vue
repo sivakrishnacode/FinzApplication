@@ -168,7 +168,6 @@
         :columns="columns"
         row-key="name"
         :loading="isLoading"
-        @request="(props) => getVendors(props)"
         separator="horizontal"
         style="border-radius: 12px"
         class="q-py-md"
@@ -211,73 +210,34 @@
           <q-tr
             :props="props"
             class="text-center cursor-pointer"
-            @click="vendorInfo(props.row.partyId)"
+            @click="accountingInfo(props.row.acctgTransId)"
             style="border: 2px solid gray"
           >
             <!-- profile -->
-            <q-td key="profile">
-              <q-avatar class="bg-primary text-white" size="lg">
-                <div>
-                  {{ firstLetters(props.row.organizationName).toUpperCase() }}
-                </div>
-              </q-avatar>
+            <q-td key="transectionId">
+              <div>acctgTransId : {{ props.row.acctgTransId }}</div>
             </q-td>
 
             <!-- org name -->
-            <q-td key="organizationname">
+            <q-td key="paymentId">
               <div style="font-size: 15px">
-                {{ props.row.organizationName }}
+                paymentId {{ props.row.paymentId }}
               </div>
             </q-td>
 
             <!-- email -->
-            <q-td key="email">
+            <q-td key="invoiceId">
               <div style="font-size: 15px">
-                {{
-                  props.row.contactMechs.find(
-                    (val) => val.contactMechTypeEnumId == "CmtEmailAddress"
-                  ).infoString
-                }}
+                {{ formateTimeStamp(props.row.postedDate).formattedTimestamp }}
               </div>
             </q-td>
 
             <!-- contact num -->
-            <q-td key="contactNumber">
-              <div style="font-size: 15px">
-                +91
-                {{
-                  props.row.contactMechs.find(
-                    (val) => val.contactMechTypeEnumId == "CmtTelecomNumber"
-                  ).contactNumber
-                }}
-              </div>
+            <q-td key="amount">
+              <div style="font-size: 15px">{{ props.row.amount }}</div>
             </q-td>
 
-            <q-td key="location">
-              <div style="font-size: 15px">
-                {{
-                  props.row.contactMechs.find(
-                    (val) => val.contactMechTypeEnumId == "CmtPostalAddress"
-                  ).city
-                }}
-              </div>
-            </q-td>
-
-            <!-- status -->
-            <q-td key="status">
-              <q-chip
-                :class="props.row.disabled === 'N' ? 'text-green' : 'text-red'"
-              >
-                <q-badge
-                  rounded
-                  :color="props.row.disabled === 'N' ? 'green' : 'red'"
-                  class="q-mr-sm"
-                />
-                {{ props.row.disabled === "N" ? "Active" : "In Active" }}
-              </q-chip>
-            </q-td>
-
-            <q-td key="more">
+            <!-- <q-td key="more">
               <q-btn
                 round
                 flat
@@ -327,7 +287,7 @@
                   </q-item>
                 </q-menu>
               </q-btn>
-            </q-td>
+            </q-td> -->
           </q-tr>
         </template>
 
@@ -385,45 +345,31 @@ export default {
     const rows = ref([]);
     const columns = [
       {
-        name: "profile",
+        name: "transectionId",
         required: true,
-        field: " ",
+        field: "transectionId",
         required: true,
-        label: "Profile",
+        label: "transectionId",
         align: "center",
-        style: "color: red",
       },
       {
-        name: "organizationName",
+        name: "paymentId",
         required: true,
-        field: " ",
+        field: " paymentId",
         required: true,
-        label: "Organization Name",
-        align: "center",
-      },
-      { name: "email", field: "emailAddress", align: "center", label: "Email" },
-      {
-        name: "number",
-        field: "contactNumber",
-        label: "Contact No",
+        label: "paymentId Id",
         align: "center",
       },
       {
-        name: "location",
-        field: "location",
-        label: "Location",
+        name: "invoiceId",
+        field: "invoiceId",
+        label: "invoiceId Name",
         align: "center",
       },
       {
-        name: "status",
-        field: "status",
-        label: "Status",
-        align: "center",
-      },
-      {
-        name: "more",
-        field: "more",
-        label: "More",
+        name: "amount",
+        field: " amount",
+        label: "amount",
         align: "center",
       },
     ];
@@ -459,12 +405,13 @@ export default {
         });
     }
 
-    //first letter of a world
-    function firstLetters(str) {
-      let words = str.split(" ");
-      let firstLetter1 = words[0].charAt(0).toUpperCase();
-      let firstLetter2 = words.length > 1 ? words[1].charAt(0) : "";
-      return firstLetter1 + firstLetter2;
+    function accountingInfo(id) {
+      router.push({
+        name: "accountingInfo_page",
+        params: {
+          acctgTransId: id,
+        },
+      });
     }
 
     // search vendor
@@ -557,6 +504,24 @@ export default {
       }
     };
 
+    const formateTimeStamp = (timeStamp) => {
+      const date = new Date(timeStamp);
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
+
+      const formattedTimestamp = `${day}-${month}-${year}`;
+
+      const time = `${hours - 12}:${minutes} ${
+        hours >= 12 && hours < 0 ? "AM" : "PM"
+      }`;
+      return { formattedTimestamp, time };
+    };
+
     onMounted(() => {
       getDateFilterEnumList();
       getAccountingList();
@@ -567,8 +532,6 @@ export default {
       columns,
       moreBtn,
 
-      firstLetters,
-
       searchFun,
       vendorInfo,
 
@@ -576,6 +539,8 @@ export default {
       isLoading,
       searchOptions,
       model: ref(""),
+      formateTimeStamp,
+      accountingInfo,
 
       // paginationMaxPages
 

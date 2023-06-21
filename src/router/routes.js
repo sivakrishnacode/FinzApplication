@@ -45,7 +45,7 @@ const routes = [
             component: () => import("src/pages/Accounting/AccountingList.vue"),
           },
           {
-            path: ":accTransId/accountingInfo",
+            path: ":acctgTransId/accountingInfo",
             name: "accountingInfo_page",
             component: () => import("src/pages/Accounting/AccountingInfo.vue"),
           },
