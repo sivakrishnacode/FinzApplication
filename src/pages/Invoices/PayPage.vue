@@ -4,6 +4,7 @@
     <div class="q-ma-md" style="max-width: 50vw; width: 100%; min-width: 600px">
       <q-list bordered>
         <q-expansion-item
+          default-opened
           icon="looks_one"
           label="Party Details"
           header-class="text-red text-h6"
@@ -77,6 +78,7 @@
         <q-separator />
 
         <q-expansion-item
+          default-opened
           icon="looks_two"
           class="q-ma-lg"
           label="Invoice Items"
@@ -237,50 +239,48 @@
 
             <!-- edit amount -->
             <q-card-section style="border: 1px solid silver">
-              <!-- input -->
-              <div class="row justify-center content-center q-gutter-y-md">
-                <!-- <q-item
-                  clickable
-                  v-ripple
-                  style="
-                    width: 50%;
-                    border-radius: 30px;
-                    border: 1px solid silver;
-                  "
-                >
-                  <q-item-section avatar>
-                    <q-radio v-model="isPayFullAmount" val="full" />
-                  </q-item-section>
-                  <q-item-section class="q-pa-sm">
-                    <q-item-label>
-                      $ {{ invoiceDetail.invoiceTotal }}
-                    </q-item-label>
-                    <q-item-label caption>Pay Full Amount</q-item-label>
-                  </q-item-section>
-                </q-item>
+              <!--amount  input -->
+              <div class="row justify-center q-gutter-y-md">
+                <!-- fullamount -->
+                <div class="row justify-center full-width">
+                  <q-item
+                    tag="label"
+                    v-ripple
+                    style="width: 50%; border: 1px solid silver"
+                  >
+                    <q-item-section avatar>
+                      <q-radio v-model="isPayFullAmount" val="full" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>
+                        $ {{ invoiceDetail.invoiceTotal }}
+                      </q-item-label>
+                      <q-item-label caption>Pay Full Amount</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </div>
 
-                <q-item
-                  clickable
-                  v-ripple
-                  style="
-                    width: 50%;
-                    border-radius: 30px;
-                    border: 1px solid silver;
-                  "
-                >
-                  <q-item-section avatar>
-                    <q-radio v-model="isPayFullAmount" val="!full" />
-                  </q-item-section>
-                  <q-item-section class="q-pa-sm">
-                    <q-item-label> Edit Amount </q-item-label>
-                    <q-item-label caption
-                      >Pay less then -
-                      {{ invoiceDetail.invoiceTotal }}</q-item-label
-                    >
-                  </q-item-section>
-                </q-item>
+                <!-- partail amount -->
+                <div class="row justify-center full-width">
+                  <q-item
+                    tag="label"
+                    v-ripple
+                    style="width: 50%; border: 1px solid silver"
+                  >
+                    <q-item-section avatar>
+                      <q-radio v-model="isPayFullAmount" val="!full" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label> Edit Amount </q-item-label>
+                      <q-item-label caption
+                        >Pay less then -
+                        {{ invoiceDetail.invoiceTotal }}</q-item-label
+                      >
+                    </q-item-section>
+                  </q-item>
+                </div>
 
-                <q-item
+                <div
                   v-if="isPayFullAmount == '!full'"
                   class="q-pa-none"
                   style="
@@ -289,32 +289,8 @@
                     border: 1px solid silver;
                   "
                 >
-                  <q-input
-                    rounded
-                    outlined
-                    type="number"
-                    class="full-height full-width"
-                    label="Amount"
-                  />
-                </q-item> -->
-
-                <q-input
-                  :disable="!isAmountEditable"
-                  outlined
-                  v-model="amount.currentAmount"
-                  prefix="$"
-                  type="number"
-                  label="Amount"
-                  style="width: 200px"
-                  :error="!isAmountValid"
-                  :error-message="'Enter Below ' + amount.actualAmount"
-                />
-                <q-btn
-                  icon="edit"
-                  flat
-                  class="text-primary"
-                  @click="isAmountEditable = true"
-                />
+                  <q-input rounded outlined type="number" label="Amount" />
+                </div>
               </div>
 
               <!-- btns -->

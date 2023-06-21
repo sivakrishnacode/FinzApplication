@@ -3,7 +3,7 @@
     <!-- left Side list -->
     <div
       class="q-gutter-y-sm q-pa-lg"
-      style="width: 450px"
+      style="width: 500px"
       v-if="!$q.screen.lt.md"
     >
       <!-- Search bar -->
@@ -69,6 +69,7 @@
                     (val) => val.contactMechTypeEnumId == "CmtEmailAddress"
                   ).infoString
                 }}
+                <!-- .substring(0, 30) + "..." -->
               </q-item-label>
             </q-item-section>
           </q-item>

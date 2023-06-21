@@ -158,7 +158,10 @@
         </q-item>
       </q-list>
     </q-drawer>
-    <q-page-container>
+    <q-page-container
+      class="absolute full-width"
+      style="height: 100vh; overflow: hidden; overflow-y: scroll"
+    >
       <!-- <q-page>
 
       </q-page> -->

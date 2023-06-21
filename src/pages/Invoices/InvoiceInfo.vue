@@ -6,43 +6,172 @@
       style="width: 400px"
       v-if="!$q.screen.lt.md"
     >
-      <q-input
-        rounded
-        outlined
-        label="Search"
-        v-model="search"
-        @update:model-value="(val) => searchInput(val)"
-        dense
-        clearable
-      >
-        <template #append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
-
-      <!-- upload invoice btn -->
-      <div class="full-width">
-        <q-btn
-          rounded
-          class="full-width"
-          color="primary"
-          label="Upload Invoice"
-          no-caps
-          icon="upload"
-          no-wrap
-          style="height: 20px"
-          @click="selectFile"
-        />
-        <q-file
-          v-model="invoiceFile"
-          type="file"
-          ref="fileInputRef"
-          rounded
+      <!-- search & date filter -->
+      <div class="row no-wrap full-width q-gutter-x-sm">
+        <!-- search input -->
+        <q-select
+          dense
           outlined
-          style="opacity: 0; position: absolute; max-width: 1px; top: 125px"
-          @update:model-value="invoiceFileUpload"
+          rounded
+          v-model="search"
+          class="q-pr-md"
+          clearable
+          use-input
+          hide-selected
+          fill-input
+          input-debounce="0"
+          option-label="organizationName"
+          option-value="partyId"
+          :options="searchOptions"
+          @filter="searchVendor"
+          :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
         >
-        </q-file>
+          <template #append>
+            <q-icon name="search" />
+          </template>
+
+          <template v-slot:no-option>
+            <q-item class="text-center">
+              <q-item-section class="text-grey"> No results </q-item-section>
+            </q-item>
+          </template>
+
+          <template v-slot:option="scope">
+            <div
+              :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
+            >
+              <q-item
+                clickable
+                class="full-width q-pa-md text-center"
+                v-bind="scope.itemProps"
+              >
+                <q-item-section
+                  class="full-width"
+                  @click="
+                    selectVendor(scope.opt.partyId, scope.opt.organizationName),
+                      (search = '')
+                  "
+                >
+                  <q-item-label>{{ scope.opt.organizationName }}</q-item-label>
+                  <q-item-label caption>{{ scope.opt.partyId }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </div>
+          </template>
+        </q-select>
+        <!-- date filter -->
+
+        <q-btn color="primary" icon="filter_alt" rounded>
+          <q-menu
+            style="border-radius: 8px"
+            class="shadow-8"
+            ref="isfilterPopActive"
+          >
+            <q-list>
+              <q-item
+                dense
+                clickable
+                v-ripple
+                tag="label"
+                v-for="data in daysEnumerationsList"
+                :key="data.enumId"
+                class="q-py-md"
+              >
+                <q-item-section avatar>
+                  <q-radio
+                    v-model="daysFilterValue"
+                    :val="data"
+                    dense
+                    @update:model-value="applyDaysFilter"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ data.description }}</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-separator v-if="isDateRangeFilterActive" spaced />
+
+              <!--  date range filter section -->
+              <div
+                class="q-mx-sm q-mb-sm q-gutter-y-sm column items-center"
+                v-if="isDateRangeFilterActive"
+              >
+                <div class="text-primary">Date Range</div>
+
+                <!-- get from date -->
+                <q-input
+                  outlined
+                  v-model="dateRange.fromDate"
+                  mask="##-##-####"
+                  dense
+                  label="DD-MM-YYYY"
+                  readonly
+                  hint="From date"
+                  @click="$refs.fromDatePopUpRef.show()"
+                >
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer" color="primary">
+                      <q-popup-proxy
+                        cover
+                        ref="fromDatePopUpRef"
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-date v-model="dateRange.fromDate" mask="DD-MM-YYYY">
+                          <div class="row items-center justify-end">
+                            <q-btn
+                              v-close-popup
+                              label="Close"
+                              color="primary"
+                              flat
+                            />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+
+                <!-- get to date -->
+                <q-input
+                  outlined
+                  v-model="dateRange.thruDate"
+                  mask="##-##-####"
+                  dense
+                  label="DD-MM-YYYY"
+                  readonly
+                  hint="To Date"
+                  @click="$refs.toDatePopUpRef.show()"
+                >
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer" color="primary">
+                      <q-popup-proxy
+                        cover
+                        ref="toDatePopUpRef"
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-date v-model="dateRange.thruDate" mask="DD-MM-YYYY">
+                          <div class="row items-center justify-end">
+                            <q-btn
+                              v-close-popup
+                              label="Close"
+                              color="primary"
+                              flat
+                            />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+
+                <q-btn label="Apply" color="primary" @click="applyDateFilter" />
+              </div>
+            </q-list>
+          </q-menu>
+        </q-btn>
       </div>
 
       <!-- file preview dialog -->
@@ -76,6 +205,46 @@
         </div>
       </q-dialog>
 
+      <!-- filter preview chip -->
+      <div class="row justify-center">
+        <q-chip
+          v-model="isDaysFilterActive"
+          color="primary"
+          removable
+          text-color="white"
+          :label="daysFilterSelected"
+          @remove="
+            (isDaysFilterActive = false),
+              ((daysFilterSelected = ''),
+              (daysFilterValue = ''),
+              (daysFilterValue = '')),
+              getInvoiceList(),
+              clearInvoiceList()
+          "
+        />
+
+        <q-chip
+          v-model="isDateFilterActiveForChip"
+          color="primary"
+          removable
+          text-color="white"
+          :label="dateRange.fromDate + ' - ' + dateRange.thruDate"
+          @remove="removeFilter('DataFilter')"
+        />
+        <q-chip
+          v-model="isVendorFilterActiveForChip"
+          color="primary"
+          removable
+          text-color="white"
+          :label="vendorFilterSelected.name"
+          @remove="
+            ((vendorFilterSelected.partyId = ''), (search = '')),
+              getInvoiceList(),
+              clearInvoiceList()
+          "
+        />
+      </div>
+
       <!-- tabs -->
       <div>
         <q-tabs
@@ -95,15 +264,18 @@
             :key="data"
             :label="data.description"
             :name="data.enumId"
-            @click="(currentTab = data.enumId), getInvoiceList()"
+            @click="
+              (currentTab = data.enumId), getInvoiceList(), clearInvoiceList()
+            "
             style="border-radius: 19px"
           />
         </q-tabs>
       </div>
 
-      <q-scroll-area
-        class="q-pa-sm"
-        style="border: 1px solid gray; border-radius: 10px; height: 650px"
+      <div
+        class="q-pa-sm scroll overflow-y-hidden scroll relative-position"
+        style="border-radius: 10px; height: 100vh"
+        ref="invoiceListScrollRef"
       >
         <!-- List -->
         <q-list class="q-gutter-sm">
@@ -152,7 +324,29 @@
             </q-item-section>
           </q-item>
         </q-list>
-      </q-scroll-area>
+
+        <!-- upload invoice btn -->
+        <div class="absolute" style="bottom: 160px; right: 30px">
+          <q-btn
+            rounded
+            size="16px"
+            color="primary"
+            icon="upload"
+            no-wrap
+            @click="selectFile"
+          />
+          <q-file
+            v-model="invoiceFile"
+            type="file"
+            ref="fileInputRef"
+            rounded
+            outlined
+            style="opacity: 0; position: absolute; max-width: 1px; top: 125px"
+            @update:model-value="invoiceFileUpload"
+          >
+          </q-file>
+        </div>
+      </div>
     </div>
 
     <!-- Invoice Info side -->
@@ -163,7 +357,7 @@
           class="row justify-center"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-8'"
         >
-          <div style="width: 80%">
+          <div style="width: 80%" class="full-height">
             <!-- title -->
             <div class="q-px-xl">
               <div
@@ -194,6 +388,7 @@
               </div>
             </div>
 
+            <!-- items -->
             <div style="border-radius: 13px" class="bg-secondary q-ma-sm">
               <!-- body -->
               <div
@@ -331,6 +526,84 @@
                 </div>
               </div>
             </div>
+
+            <!-- transections -->
+            <div
+              v-if="invoiceDetail?.paymentApplications"
+              class="bg-secondary q-pa-lg q-ma-sm"
+              style="border-radius: 13px"
+            >
+              <div class="text-h5 q-pa-md" style="text-decoration: underline">
+                Payment History:
+              </div>
+              <q-item
+                class="q-my-sm q-pa-md"
+                v-for="data in invoiceDetail.paymentApplications"
+                :key="data"
+                clickable
+                @click="paymentPage(data.paymentId)"
+              >
+                <q-item-section>
+                  <q-item-label>
+                    Payment ID: {{ data.paymentId }}
+                  </q-item-label>
+                  <q-item-label overline>
+                    Applied date :
+                    {{ formateTimeStamp(data.appliedDate).formattedTimestamp }}
+                  </q-item-label>
+                </q-item-section>
+
+                <q-item-section avatar>
+                  <q-item-label>
+                    <q-badge color="green">
+                      $ {{ data.amountApplied }}
+                    </q-badge>
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </div>
+
+            <!-- history -->
+            <div
+              class="bg-secondary q-pa-lg q-ma-sm"
+              style="border-radius: 13px"
+            >
+              <div class="text-h5 q-pa-md" style="text-decoration: underline">
+                Invoice History:
+              </div>
+              <q-item
+                class="q-my-sm"
+                v-for="data in invoiceDetail.invoiceHistory"
+                :key="data"
+              >
+                <q-item-section>
+                  <q-item-label
+                    >Date :
+                    {{
+                      formateTimeStamp(data.changedDate).formattedTimestamp
+                    }}</q-item-label
+                  >
+                  <q-item-label overline
+                    >Time :{{
+                      formateTimeStamp(data.changedDate).time
+                    }}</q-item-label
+                  >
+                </q-item-section>
+
+                <q-item-section avatar>
+                  <q-item-label class="text-h6 text-green">
+                    <q-badge
+                      class="text-body1"
+                      color="secondary"
+                      :text-color="statusColor(data.newValueText)?.color"
+                    >
+                      {{ data.description }}
+                    </q-badge>
+                  </q-item-label>
+                  <q-item-label overline> by {{ data.username }} </q-item-label>
+                </q-item-section>
+              </q-item>
+            </div>
           </div>
         </div>
 
@@ -411,59 +684,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- HISTORY -->
-            <div class="bg-secondary q-pa-lg" style="border-radius: 13px">
-              <div class="text-h5 q-pa-md" style="text-decoration: underline">
-                Invoice History:
-              </div>
-              <q-item
-                class="q-my-sm"
-                v-for="data in invoiceDetail.invoiceHistory"
-                :key="data"
-              >
-                <q-item-section>
-                  <q-item-label
-                    >Date :
-                    {{
-                      formateTimeStamp(data.changedDate).formattedTimestamp
-                    }}</q-item-label
-                  >
-                  <q-item-label overline
-                    >Time :{{
-                      formateTimeStamp(data.changedDate).time
-                    }}</q-item-label
-                  >
-                </q-item-section>
-
-                <q-item-section avatar>
-                  <q-item-label class="text-h6 text-green">
-                    <q-badge
-                      class="text-body1"
-                      color="secondary"
-                      :text-color="statusColor(data.newValueText)?.color"
-                    >
-                      {{ data.description }}
-                    </q-badge>
-                  </q-item-label>
-                  <q-item-label overline> by {{ data.username }} </q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <!-- <q-item class="q-my-sm">
-                <q-item-section>
-                  <q-item-label>Date : 02-12-2023</q-item-label>
-                  <q-item-label overline>Time : 06:54 PM</q-item-label>
-                </q-item-section>
-
-                <q-item-section avatar>
-                  <q-item-label class="text-h6 text-green"
-                    >Approved</q-item-label
-                  >
-                  <q-item-label overline>By User1</q-item-label>
-                </q-item-section>
-              </q-item> -->
-            </div>
           </div>
         </div>
       </div>
@@ -489,10 +709,43 @@ export default {
     const id = route.params.invoiceId;
 
     // side list items
+    const hasMoreDataToLoad = ref(true);
+    const invoiceListScrollRef = ref(null);
     const enumTabList = ref([]);
     const currentTab = ref("allInvoice");
     const invoiceList = ref([]);
     const search = ref("");
+
+    const index = ref(0);
+
+    // date filter section
+    const daysEnumerationsList = ref([]);
+    const daysFilterValue = ref("");
+    const isDateRangeFilterActive = ref(false);
+
+    const isDaysFilterActive = ref(false);
+    const isDateFilterActiveForChip = ref(false);
+    const daysFilterSelected = ref("");
+
+    // vendor search
+    const isLoading = ref(false);
+    const searchOptions = ref([]);
+    const isVendorFilterActiveForChip = ref(false);
+    const vendorFilterSelected = ref({
+      name: "",
+      partyId: "",
+    });
+
+    const isfilterPopActive = ref(null);
+
+    const dateRange = ref({
+      fromDate: "",
+      toDate: "",
+    });
+    const correctDateRange = ref({
+      fromDate: "",
+      thruDate: "",
+    });
 
     // invoice info items
     const invoiceDetail = ref({});
@@ -514,26 +767,87 @@ export default {
     const tempFileUrl = ref("");
 
     function getInvoiceList() {
-      invoiceList.value = [];
-      api({
-        method: "GET",
-        headers: useAuth.authKey,
-        url: "invoices",
-        params: {
-          statusId: currentTab.value,
-          pageIndex: 0,
-          pageSize: 100,
-        },
-      })
-        .then((res) => {
-          res.data.invoiceList.map((data) => {
-            invoiceList.value.push(data);
-          });
+      var params = {};
+
+      if (currentTab.value) {
+        params["statusId"] = currentTab.value;
+      }
+
+      if (vendorFilterSelected.value.partyId != "") {
+        params["partyId"] = vendorFilterSelected.value.partyId;
+      }
+
+      if (daysFilterValue.value.enumId == "DATE_RANGE") {
+        params["dateFilterId"] = "DATE_RANGE";
+      } else if (daysFilterValue.value.enumId !== undefined) {
+        params["dateFilterId"] = daysFilterValue.value.enumId;
+      }
+
+      if (
+        correctDateRange.value.fromDate !== "" &&
+        correctDateRange.value.thruDate !== ""
+      ) {
+        params["fromDate"] = correctDateRange.value.fromDate;
+        params["thruDate"] = correctDateRange.value.thruDate;
+      }
+
+      params["pageSize"] = calcPageSizeLimit(
+        invoiceListScrollRef.value.clientHeight,
+        60
+      );
+      params["index"] = index.value;
+
+      console.log(params);
+
+      if (hasMoreDataToLoad.value) {
+        api({
+          method: "GET",
+          headers: useAuth.authKey,
+          url: "invoices",
+          params: params,
         })
-        .catch((err) => {
-          console.log(err);
-        });
+          .then((res) => {
+            res.data.invoiceList.map((data) => {
+              invoiceList.value.push(data);
+            });
+
+            if (res.data.invoiceListCount < invoiceList.value.length) {
+              console.log("fit");
+              hasMoreDataToLoad.value = false;
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }
+
+    const calcPageSizeLimit = (scrollContainerHeight, innerItemHeight) => {
+      return Math.round(scrollContainerHeight / innerItemHeight);
+    };
+
+    function clearInvoiceList() {
+      invoiceList.value = [];
+    }
+
+    let prevScrollTop = 0;
+    const scrollHandler = () => {
+      let scrollHeight = invoiceListScrollRef.value.scrollHeight;
+      let scrollTop = invoiceListScrollRef.value.scrollTop;
+      let clientHeight = invoiceListScrollRef.value.clientHeight;
+      console.log(scrollHeight, scrollTop, clientHeight);
+
+      //fetch vendors based on scroll
+      if (prevScrollTop < scrollTop) {
+        if (scrollTop + clientHeight + 1 > scrollHeight) {
+          index.value++;
+          getInvoiceList();
+          //get vendors
+        }
+      }
+
+      prevScrollTop = scrollTop;
+    };
 
     async function getInvoiceDetails(invoiseId) {
       invoiceDetail.value = "";
@@ -606,11 +920,12 @@ export default {
         console.log(data);
       });
       getInvoiceDetails(route.params.invoiceId);
+      clearInvoiceList();
       getInvoiceList();
     }
 
     function redirect(page) {
-      if ((page = "invoicePayPage")) {
+      if (page == "invoicePayPage") {
         router.push({
           name: "payment",
           params: {
@@ -629,15 +944,120 @@ export default {
       });
     }
 
-    function searchInput(val) {
-      console.log(val);
-      if (val == "" || val == null) {
-        getInvoiceList();
+    // ################################# search & filter
+    // const dateModifer = (val) => {
+    //   if (val == undefined) {
+    //     console.log("undef");
+    //     return "";
+    //   } else {
+    //     const date = new Date(val);
+    //     const options = { year: "numeric", month: "short", day: "2-digit" };
+    //     const formattedDate = new Intl.DateTimeFormat("en-US", options).format(
+    //       date
+    //     );
+    //     return formattedDate; // outputs "06 JUN, 2013"
+    //   }
+    // };
+
+    function getDateFilterEnumList() {
+      api({
+        method: "GET",
+        url: "enumeration",
+        headers: useAuth.authKey,
+        params: {
+          enumTypeId: "DateFilterType",
+        },
+      })
+        .then(async (res) => {
+          res.data.enumerationList.map((res) => {
+            daysEnumerationsList.value.push(res);
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    function applyDaysFilter() {
+      isDaysFilterActive.value = true;
+
+      daysFilterSelected.value = daysFilterValue.value.description;
+
+      if (daysFilterValue.value.enumId == "DATE_RANGE") {
+        isDaysFilterActive.value = false;
+        isDateRangeFilterActive.value = true;
       } else {
-        var result = invoiceList.value.filter((person) =>
-          person.organizationName.toLowerCase().includes(val.toLowerCase())
-        );
-        invoiceList.value = result;
+        isDateRangeFilterActive.value = false;
+        console.log(daysFilterValue.value.enumId);
+        clearInvoiceList();
+        getInvoiceList();
+
+        isfilterPopActive.value.hide();
+      }
+    }
+
+    function applyDateFilter() {
+      isDateFilterActiveForChip.value = true;
+      correctDateRange.value.fromDate = reverseDate(dateRange.value.fromDate);
+      correctDateRange.value.thruDate = reverseDate(dateRange.value.thruDate);
+      clearInvoiceList();
+      getInvoiceList();
+      isfilterPopActive.value.hide();
+    }
+
+    async function selectVendor(id, name) {
+      search.value = "";
+      isVendorFilterActiveForChip.value = true;
+      vendorFilterSelected.value.name = name;
+      vendorFilterSelected.value.partyId = id;
+      clearInvoiceList();
+      getInvoiceList();
+    }
+
+    async function searchVendor(val, update) {
+      isLoading.value = true;
+
+      await update(() => {
+        if (val != "") {
+          api({
+            method: "GET",
+            url: `vendors?anyField=${val}`,
+            headers: useAuth.authKey,
+          }).then((res) => {
+            searchOptions.value = [];
+
+            res.data.documentList.map((data) => {
+              searchOptions.value.push(data);
+            });
+
+            isLoading.value = false;
+          });
+        } else {
+          searchOptions.value = [];
+          isLoading.value = false;
+        }
+      });
+    }
+
+    // date converter function
+    const reverseDate = (date) => {
+      if (date !== null) {
+        const part = date.split("-");
+        return part[2] + "-" + part[1] + "-" + part[0];
+      }
+    };
+
+    function removeFilter(type) {
+      if (type == "DataFilter") {
+        correctDateRange.value.fromDate = "";
+        correctDateRange.value.toDate = "";
+        dateRange.value.fromDate = "";
+        dateRange.value.toDate = "";
+        isDateFilterActiveForChip.value = false;
+        daysFilterValue.value = "";
+        isDateRangeFilterActive.value = false;
+        clearInvoiceList();
+        getInvoiceList();
       }
     }
 
@@ -782,10 +1202,23 @@ export default {
       fileInputRef.value.pickFiles();
     };
 
+    function paymentPage(id) {
+      router.push({
+        name: "paymentInfo_page",
+        params: {
+          paymentId: id,
+        },
+      });
+    }
+
     onMounted(() => {
       getInvoiceDetails(route.params.invoiceId);
       getTabEnumList();
+      getDateFilterEnumList();
+      clearInvoiceList();
       getInvoiceList();
+
+      invoiceListScrollRef.value.addEventListener("scroll", scrollHandler);
     });
 
     return {
@@ -805,14 +1238,42 @@ export default {
       vendoPage,
 
       // side list
+      invoiceListScrollRef,
+      clearInvoiceList,
+
       invoiceList,
       enumTabList,
       getInvoiceList,
       currentTab,
       getInvoiceDetails,
       search,
-      searchInput,
+      searchVendor,
+      searchOptions,
+      selectVendor,
       redirect,
+
+      // filters
+      isLoading,
+      daysEnumerationsList,
+      applyDaysFilter,
+      daysFilterValue,
+      isDateRangeFilterActive,
+      removeFilter,
+
+      // days
+      isDaysFilterActive,
+      daysFilterSelected,
+
+      isfilterPopActive,
+
+      // date filter
+      dateRange,
+      applyDateFilter,
+      isDateFilterActiveForChip,
+
+      // vendor filter
+      isVendorFilterActiveForChip,
+      vendorFilterSelected,
 
       // invoice info side
       invoiceDetail,
@@ -821,6 +1282,7 @@ export default {
       statusColor,
       router,
       formateTimeStamp,
+      paymentPage,
     };
   },
 };

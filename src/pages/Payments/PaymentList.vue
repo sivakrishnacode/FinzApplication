@@ -175,7 +175,7 @@
           no-caps
           dense
           style="border-radius: 12px; border: 1px solid silver"
-          @update:model-value="getInvoiceList(daysFilterValue.enumId)"
+          @update:model-value="getPayments(daysFilterValue.enumId)"
         >
           <q-tab
             v-for="data in enumTabList"
@@ -203,7 +203,7 @@
             ((daysFilterSelected = ''),
             (daysFilterValue = ''),
             (daysFilterValue = '')),
-            getInvoiceList()
+            getPayments()
         "
       />
 
@@ -222,7 +222,7 @@
         text-color="white"
         :label="vendorFilterSelected.name"
         @remove="
-          ((vendorFilterSelected.partyId = ''), (search = '')), getInvoiceList()
+          ((vendorFilterSelected.partyId = ''), (search = '')), getPayments()
         "
       />
     </div>
@@ -391,7 +391,7 @@ export default {
     });
 
     // get Invoices List
-    function getInvoiceList() {
+    function getPayments() {
       var params = {};
       rows.value = [];
 
@@ -431,6 +431,7 @@ export default {
             rows.value.push(data);
           });
           params = {};
+          console.log(rows.value);
         })
         .catch((err) => {
           console.log(err);
@@ -443,8 +444,7 @@ export default {
       isVendorFilterActiveForChip.value = true;
       vendorFilterSelected.value.name = name;
       vendorFilterSelected.value.partyId = id;
-
-      getInvoiceList();
+      getPayments();
     }
 
     function invoiceRedirect(id) {
@@ -509,7 +509,7 @@ export default {
     }
 
     const tabsUpdate = () => {
-      getInvoiceList(daysFilterValue.value.enumId);
+      getPayments(daysFilterValue.value.enumId);
     };
 
     // Status Color
@@ -564,7 +564,7 @@ export default {
       } else {
         isDateRangeFilterActive.value = false;
         console.log(daysFilterValue.value.enumId);
-        getInvoiceList(daysFilterValue.value.enumId);
+        getPayments(daysFilterValue.value.enumId);
 
         isfilterPopActive.value.hide();
       }
@@ -575,7 +575,7 @@ export default {
       correctDateRange.value.fromDate = reverseDate(dateRange.value.fromDate);
       correctDateRange.value.thruDate = reverseDate(dateRange.value.thruDate);
 
-      getInvoiceList();
+      getPayments();
       isfilterPopActive.value.hide();
     }
 
@@ -596,18 +596,18 @@ export default {
         isDateFilterActiveForChip.value = false;
         daysFilterValue.value = "";
         isDateRangeFilterActive.value = false;
-        getInvoiceList();
+        getPayments();
       }
     }
 
     onMounted(() => {
-      getInvoiceList();
+      getPayments();
       getTabEnumList();
       getDateFilterEnumList();
     });
 
     return {
-      getInvoiceList,
+      getPayments,
       statusColor,
       searchVendor,
 
