@@ -1,5 +1,5 @@
 <template>
-  <div class="row no-wrap overfloe-y-hidden">
+  <div class="row no-wrap">
     <!-- Side list -->
     <div
       class="q-gutter-y-sm q-pa-lg bg-warning"
@@ -355,33 +355,35 @@
     </div>
 
     <!-- Invoice Info side -->
-    <div class="row justify-center full-width bg-red">
+    <div class="full-width">
       <!-- title bar -->
-      <div class="q-px-xl" style="width: 700px">
-        <div
-          class="bg-secondary text-center q-pa-sm q-gutter-y-sm"
-          style="border-radius: 0 0 70px 70px"
-        >
-          <div class="text-primary text-h6">
-            {{ invoiceDetail.fromParty?.organization.organizationName }}
-          </div>
-          <div class="text-blue-grey-1">
-            {{ invoiceDetail.invoiceId }}
-          </div>
+      <div class="row justify-center q-px-xl full-width">
+        <div style="width: 700px">
+          <div
+            class="bg-secondary text-center q-pa-sm q-gutter-y-sm"
+            style="border-radius: 0 0 70px 70px"
+          >
+            <div class="text-primary text-h6">
+              {{ invoiceDetail.fromParty?.organization.organizationName }}
+            </div>
+            <div class="text-blue-grey-1">
+              {{ invoiceDetail.invoiceId }}
+            </div>
 
-          <!-- cancel btn -->
-          <div class="row absolute" style="top: 50px; right: 70px">
-            <div
-              class="bg-secondary"
-              style="border-radius: 0 0 70px 70px; height: 50px"
-            >
-              <q-btn
-                size="15px"
-                icon="close"
-                color="primary"
-                flat
-                @click="router.back()"
-              />
+            <!-- cancel btn -->
+            <div class="row absolute" style="top: 50px; right: 70px">
+              <div
+                class="bg-secondary"
+                style="border-radius: 0 0 70px 70px; height: 50px"
+              >
+                <q-btn
+                  size="15px"
+                  icon="close"
+                  color="primary"
+                  flat
+                  @click="router.back()"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -391,7 +393,7 @@
       <div class="row full-width">
         <!-- center body -->
         <div
-          class="row justify-center bg-info"
+          class="row justify-center"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-8'"
         >
           <div style="width: 90%" class="full-height">
@@ -616,7 +618,7 @@
 
         <!-- right side -->
         <div
-          class="row justify-center q-mt-md bg-red"
+          class="row justify-center q-mt-md"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-4'"
         >
           <div style="width: 90%" class="q-gutter-y-md">
@@ -661,16 +663,48 @@
 
               <!-- btns -->
               <div class="q-pa-md row justify-evenly">
-                <q-btn
+                <!-- <q-btn
                   label="Refund"
                   rounded
                   color="primary"
                   @click="startRefund()"
                 />
-                <div v-for="data in toStatusFlow" :key="data">
-                  <div v-if="data.transitionName == 'Unpay'">no</div>
 
-                  <div v-else-if="data.description == 'Approved'">
+                <div v-if="invoiceDetail.statusId == 'InvoiceIncoming'">
+                  <q-btn
+                    rounded
+                    outline
+                    label="Approve"
+                    color="primary"
+                    @click="changeInvoiceStatus('approve')"
+                  />
+                </div>
+
+                <q-btn
+                  v-if="invoiceDetail.statusId == 'InvoiceApproved'"
+                  rounded
+                  label="Pay"
+                  color="primary"
+                  @click="redirect('invoicePayPage')"
+                /> -->
+                <q-btn
+                  v-if="invoiceDetail.statusId == 'InvoiceApproved'"
+                  rounded
+                  label="Pay"
+                  color="primary"
+                  @click="redirect('invoicePayPage')"
+                />
+
+                <q-btn
+                  v-if="invoiceDetail.statusId == 'InvoicePmtSent'"
+                  label="Refund"
+                  rounded
+                  color="primary"
+                  @click="startRefund()"
+                />
+
+                <div v-for="data in toStatusFlow" :key="data">
+                  <div v-if="data.description == 'Approved'">
                     <q-btn
                       rounded
                       label="Approve"
@@ -678,6 +712,8 @@
                       @click="changeInvoiceStatus(data)"
                     />
                   </div>
+
+                  <div v-if="data.description === 'Approved'"></div>
 
                   <div v-else-if="data.description == 'Cancelled'">
                     <q-btn
@@ -807,11 +843,15 @@ export default {
         params["thruDate"] = correctDateRange.value.thruDate;
       }
 
-      params["pageSize"] = calcPageSizeLimit(
-        invoiceListScrollRef.value.clientHeight,
-        60
-      );
-      params["index"] = index.value;
+      // params["pageSize"] =
+      // calcPageSizeLimit(
+      //   invoiceListScrollRef.value.clientHeight,
+      //   60
+      // );
+      // params["index"] = index.value;
+
+      params["pageSize"] = 40;
+      params["index"] = 0;
 
       if (hasMoreDataToLoad.value) {
         api({
@@ -826,7 +866,6 @@ export default {
             });
 
             if (res.data.invoiceListCount < invoiceList.value.length) {
-              console.log("fit");
               hasMoreDataToLoad.value = false;
             }
           })
@@ -849,13 +888,12 @@ export default {
       let scrollHeight = invoiceListScrollRef.value.scrollHeight;
       let scrollTop = invoiceListScrollRef.value.scrollTop;
       let clientHeight = invoiceListScrollRef.value.clientHeight;
-      console.log(scrollHeight, scrollTop, clientHeight);
 
       //fetch vendors based on scroll
       if (prevScrollTop < scrollTop) {
         if (scrollTop + clientHeight + 1 > scrollHeight) {
           index.value++;
-          getInvoiceList();
+          //getInvoiceList();
           //get vendors
         }
       }
@@ -872,7 +910,7 @@ export default {
       }).then((res) => {
         invoiceDetail.value = res.data;
       });
-      console.log(invoiceDetail.value);
+      console.log(invoiceDetail.value, "invoice details");
       route.params.invoiceId = invoiceDetail.value.invoiceId;
       getInvoiceHistory(invoiceDetail.value.invoiceId);
       getToStatusFlow(invoiceDetail.value.statusId);
@@ -961,21 +999,6 @@ export default {
       });
     }
 
-    // ################################# search & filter
-    // const dateModifer = (val) => {
-    //   if (val == undefined) {
-    //     console.log("undef");
-    //     return "";
-    //   } else {
-    //     const date = new Date(val);
-    //     const options = { year: "numeric", month: "short", day: "2-digit" };
-    //     const formattedDate = new Intl.DateTimeFormat("en-US", options).format(
-    //       date
-    //     );
-    //     return formattedDate; // outputs "06 JUN, 2013"
-    //   }
-    // };
-
     function getDateFilterEnumList() {
       api({
         method: "GET",
@@ -1005,7 +1028,7 @@ export default {
         isDateRangeFilterActive.value = true;
       } else {
         isDateRangeFilterActive.value = false;
-        console.log(daysFilterValue.value.enumId);
+
         clearInvoiceList();
         getInvoiceList();
 
@@ -1145,8 +1168,6 @@ export default {
 
     //  file upload
     function invoiceFileUpload() {
-      console.log(invoiceFile.value.name);
-
       invoiceFileType.value = invoiceFile.value.type;
       invoiceFileName.value = invoiceFile.value.name;
 
@@ -1157,7 +1178,6 @@ export default {
           clientId: "2dca231a9daf4cba8ee969c8274088eb",
           divId: "pdf-viewer",
         });
-        console.log(tempFileUrl.value);
 
         adobeDCView.previewFile(
           {
@@ -1201,7 +1221,6 @@ export default {
         headers: useAuth.authKey,
       })
         .then((res) => {
-          console.log(res);
           isFileUploading.value = false;
           previewDialog.value = false;
           $q.notify({

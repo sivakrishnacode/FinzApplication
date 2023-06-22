@@ -1,7 +1,10 @@
 <template>
-  <div class="row justify-center wrap">
+  <div class="row justify-center wrap bg-orange-2">
     <!-- main -->
-    <div class="q-ma-md" style="max-width: 50vw; width: 100%; min-width: 600px">
+    <div
+      class="q-ma-md bg-white"
+      style="max-width: 50vw; width: 100%; min-width: 600px"
+    >
       <q-list bordered>
         <q-expansion-item
           icon="looks_one"
@@ -347,23 +350,41 @@
                   label="Continue"
                   color="primary"
                   type="submit"
-                  @click="showPreview()"
+                  @click="showPreviewandValidate()"
                 />
               </div>
 
-              <q-dialog v-model="showPreviewDialog" persistent>
-                <q-card>
-                  <q-card-section>
-                    <q-item clickable v-ripple>
-                      <q-item-section>
-                        <q-item-label>
-                          {{ selectedPaymentDetails }}
-                        </q-item-label>
-                        <q-item-label>{{ amount }}</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </q-card-section>
-                </q-card>
+              <q-dialog v-model="showPreviewandValidateDialog" persistent>
+                <div class="bg-white text-h6">
+                  <div class="q-ma-md">Confirm payment</div>
+                  <q-separator />
+                  <div class="q-ma-md">
+                    <div>Actual amount : {{ amount.actualAmount }}</div>
+                    <div>
+                      already paid amount amount :
+                      {{
+                        invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal
+                      }}
+                    </div>
+                    <div>
+                      currently paying amount : {{ amount.currentAmount }}
+                    </div>
+                  </div>
+                  <q-separator />
+                  <div class="q-ma-md">
+                    <div>
+                      payment method :
+                      {{ selectedPaymentDetails.paymentMethod }}
+                    </div>
+                    <div>
+                      payment mode : {{ selectedPaymentDetails.paymentMode }}
+                    </div>
+                  </div>
+                  <div class="row justify-evenly q-pa-md">
+                    <q-btn label="cancel" color="secondary" v-close-popup />
+                    <q-btn label="Pay" color="primary" @click="submitPayment" />
+                  </div>
+                </div>
               </q-dialog>
             </q-card-section>
           </q-card>
@@ -401,6 +422,7 @@
           Your Total Amount $4504 for 7 items in Invoice123.name
         </div>
       </q-card>
+
       <div>
         <q-item class="q-pa-lg">
           <q-item-section avatar>
@@ -438,7 +460,7 @@ export default {
       currentAmount: 0,
     });
 
-    const showPreviewDialog = ref(false);
+    const showPreviewandValidateDialog = ref(false);
 
     const isPayFullAmount = ref("full");
     const selectedPaymentDetails = ref({
@@ -503,7 +525,7 @@ export default {
       selectedPaymentDetails.value.paymentMethod = id.paymentMethodId;
     }
 
-    function showPreview() {
+    function showPreviewandValidate() {
       if (selectedPaymentDetails.value.paymentMethod == "") {
         $q.notify({
           position: "top-right",
@@ -522,37 +544,56 @@ export default {
           icon: "cancel",
         });
       } else {
-        showPreviewDialog.value = true;
-        const params = {};
-
-        params["invoiceId"] = route.params.invoiceId;
-        params["amount"] =
-          amount.value.currentAmount !== 0
-            ? amount.value.currentAmount
-            : amount.value.actualAmount;
-
-        params["comments"] = "demo command";
-        params["effectiveDate"] = "2023-06-22";
-
-        if (bankTypeSelect.value == "bank") {
-          params["paymentMode"] = selectedPaymentDetails.value.paymentMode;
-          params["paymentMethodId"] =
-            selectedPaymentDetails.value.paymentMethod;
-        } else {
-          params["paymentMethodId"] =
-            selectedPaymentDetails.value.paymentMethod;
-        }
-
-        console.log(params);
-        api({
-          method: "POST",
-          url: "payments/invoicePayment",
-          headers: useAuth.authKey,
-          params: params,
-        }).then((res) => {
-          console.log(res);
-        });
+        showPreviewandValidateDialog.value = true;
       }
+    }
+
+    function submitPayment() {
+      console.log("okk");
+      const params = {};
+
+      params["invoiceId"] = route.params.invoiceId;
+      params["amount"] =
+        amount.value.currentAmount !== 0
+          ? amount.value.currentAmount
+          : amount.value.actualAmount;
+
+      params["comments"] = "demo command";
+      params["effectiveDate"] = "2023-06-22";
+
+      if (bankTypeSelect.value == "bank") {
+        params["paymentMode"] = selectedPaymentDetails.value.paymentMode;
+        params["paymentMethodId"] = selectedPaymentDetails.value.paymentMethod;
+      } else {
+        params["paymentMethodId"] = selectedPaymentDetails.value.paymentMethod;
+      }
+
+      console.log(params);
+      api({
+        method: "POST",
+        url: "payments/invoicePayment",
+        headers: useAuth.authKey,
+        params: params,
+      })
+        .then((res) => {
+          console.log(res);
+          $q.notify({
+            position: "top-right",
+            message: `Succesfully payment sent - ${res.data.amount}`,
+            type: "positive",
+            icon: "done",
+          });
+          showPreviewandValidateDialog.value = false;
+          router.push({
+            name: "invoiceInfo_page",
+            params: {
+              invoiceId: route.params.invoiceId,
+            },
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
 
     const isAmountValid = computed(
@@ -578,8 +619,9 @@ export default {
       selectPaymentMethod,
 
       // dialog
-      showPreviewDialog,
-      showPreview,
+      showPreviewandValidateDialog,
+      showPreviewandValidate,
+      submitPayment,
     };
   },
 };
