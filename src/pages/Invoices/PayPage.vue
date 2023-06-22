@@ -554,7 +554,7 @@ export default {
 
       params["invoiceId"] = route.params.invoiceId;
       params["amount"] =
-        amount.value.currentAmount == 0
+        amount.value.currentAmount !== 0
           ? amount.value.actualAmount
           : amount.value.currentAmount;
 

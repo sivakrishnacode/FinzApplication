@@ -1275,7 +1275,7 @@ export default {
       clearInvoiceList();
       getInvoiceList();
 
-      invoiceListScrollRef.value.addEventListener("scroll", scrollHandler);
+      //invoiceListScrollRef.value.addEventListener("scroll", scrollHandler);
     });
 
     return {
