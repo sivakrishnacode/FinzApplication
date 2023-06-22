@@ -150,10 +150,10 @@
           header-class="text-blue text-h6"
         >
           <q-card>
-            <!-- bank options -->
-            <q-card-section class="bg-blue-3">
+            <!-- banks options -->
+            <q-card-section class="">
               <!-- upi -->
-              <div class="q-ma-sm bg-orange-2">
+              <div class="q-ma-sm">
                 <q-radio
                   v-model="bankTypeSelect"
                   val="upi"
@@ -199,7 +199,7 @@
               <q-separator size="2px" />
 
               <!-- bank -->
-              <div class="q-ma-sm bg-orange-2">
+              <div class="q-ma-sm">
                 <q-radio
                   v-model="bankTypeSelect"
                   val="bank"
@@ -273,7 +273,7 @@
             </q-card-section>
 
             <!-- edit amount -->
-            <q-card-section style="border: 1px solid silver" class="bg-pink-4">
+            <q-card-section style="border: 1px solid silver" class="">
               <!--amount  input -->
               <div class="row justify-center q-gutter-y-md">
                 <!-- fullamount -->
@@ -554,9 +554,9 @@ export default {
 
       params["invoiceId"] = route.params.invoiceId;
       params["amount"] =
-        amount.value.currentAmount !== 0
-          ? amount.value.currentAmount
-          : amount.value.actualAmount;
+        amount.value.currentAmount == 0
+          ? amount.value.actualAmount
+          : amount.value.currentAmount;
 
       params["comments"] = "demo command";
       params["effectiveDate"] = "2023-06-22";
