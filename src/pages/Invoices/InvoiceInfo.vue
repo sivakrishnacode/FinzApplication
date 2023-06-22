@@ -1,8 +1,8 @@
 <template>
-  <div class="row no-wrap">
+  <div class="row no-wrap overfloe-y-hidden">
     <!-- Side list -->
     <div
-      class="q-gutter-y-sm q-pa-lg"
+      class="q-gutter-y-sm q-pa-lg bg-warning"
       style="width: 400px"
       v-if="!$q.screen.lt.md"
     >
@@ -355,44 +355,46 @@
     </div>
 
     <!-- Invoice Info side -->
-    <div class="row justify-center full-width">
+    <div class="row justify-center full-width bg-red">
+      <!-- title bar -->
+      <div class="q-px-xl" style="width: 700px">
+        <div
+          class="bg-secondary text-center q-pa-sm q-gutter-y-sm"
+          style="border-radius: 0 0 70px 70px"
+        >
+          <div class="text-primary text-h6">
+            {{ invoiceDetail.fromParty?.organization.organizationName }}
+          </div>
+          <div class="text-blue-grey-1">
+            {{ invoiceDetail.invoiceId }}
+          </div>
+
+          <!-- cancel btn -->
+          <div class="row absolute" style="top: 50px; right: 70px">
+            <div
+              class="bg-secondary"
+              style="border-radius: 0 0 70px 70px; height: 50px"
+            >
+              <q-btn
+                size="15px"
+                icon="close"
+                color="primary"
+                flat
+                @click="router.back()"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- body -->
       <div class="row full-width">
         <!-- center body -->
         <div
           class="row justify-center bg-info"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-8'"
         >
-          <div style="width: 80%" class="full-height">
-            <!-- title -->
-            <div class="q-px-xl">
-              <div
-                class="bg-secondary text-center full-width"
-                style="border-radius: 0 0 70px 70px"
-              >
-                <div class="text-primary text-h6 q-pa-sm">
-                  {{ invoiceDetail.fromParty?.organization.organizationName }}
-                </div>
-                <div class="text-blue-grey-1 q-pb-sm">
-                  {{ invoiceDetail.invoiceId }}
-                </div>
-                <!-- cancel btn -->
-                <!-- <div class="row absolute" style="top: 59px">
-                  <div
-                    class="bg-info"
-                    style="border-radius: 0 0 70px 70px; height: 50px"
-                  >
-                    <q-btn
-                      size="15px"
-                      icon="close"
-                      color="primary"
-                      flat
-                      @click="router.back()"
-                    />
-                  </div>
-                </div> -->
-              </div>
-            </div>
-
+          <div style="width: 90%" class="full-height">
             <!-- items -->
             <div style="border-radius: 13px" class="bg-secondary q-ma-sm">
               <!-- body -->
@@ -478,7 +480,7 @@
                 </div>
 
                 <!-- items list -->
-                <div class="full-width q-pa-sm">
+                <div class="full-width q-pa-sm" style="border: 1px solid black">
                   <!-- columns -->
                   <q-item class="row justify-between">
                     <q-item-section class="col-1 text-weight-bold">
@@ -501,7 +503,7 @@
                       Price
                     </q-item-section>
                   </q-item>
-
+                  <q-separator />
                   <!-- rows -->
                   <q-item
                     class="row justify-between"
@@ -802,8 +804,6 @@ export default {
       );
       params["index"] = index.value;
 
-      console.log(params);
-
       if (hasMoreDataToLoad.value) {
         api({
           method: "GET",
@@ -1031,10 +1031,10 @@ export default {
             headers: useAuth.authKey,
           }).then((res) => {
             searchOptions.value = [];
-
-            res.data.documentList.map((data) => {
-              searchOptions.value.push(data);
-            });
+            searchOptions.value.push(...res.data.documentList);
+            // res.data.documentList.map((data) => {
+            //   searchOptions.value.push(data);
+            // });
 
             isLoading.value = false;
           });
