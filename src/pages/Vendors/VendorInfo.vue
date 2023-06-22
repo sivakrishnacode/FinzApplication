@@ -388,7 +388,7 @@
           >
             <!-- Head -->
             <div
-              class="row justify-center full-width q-gutter-x-lg"
+              class="row justify-center full-width q-gutter-x-lg q-ma-sm"
               v-if="!isBankAccountDetailsEmpty"
             >
               <q-toggle
@@ -581,7 +581,7 @@
 
               <q-item-section
                 v-if="data.paymentMethodTypeEnumId === 'PmtBankAccount'"
-                class="bg-secondary q-pa-lg"
+                class="bg-secondary q-pa-lg q-ma-sm"
                 style="border-radius: 12px; width: 280px; height: 300px"
               >
                 <div class="row justify-between">
@@ -641,7 +641,7 @@
               <!-- active upi -->
               <q-item-section
                 v-else-if="data.paymentMethodTypeEnumId === 'PmtUPI'"
-                class="bg-secondary q-pa-lg"
+                class="bg-secondary q-pa-lg q-ma-sm"
                 style="border-radius: 12px; width: 280px; height: 300px"
               >
                 <span class="q-gutter-md">

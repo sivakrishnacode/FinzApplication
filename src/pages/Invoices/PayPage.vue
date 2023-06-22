@@ -287,7 +287,11 @@
                     style="width: 50%; border: 1px solid silver"
                   >
                     <q-item-section avatar>
-                      <q-radio v-model="isPayFullAmount" val="full" />
+                      <q-radio
+                        v-model="isPayFullAmount"
+                        val="full"
+                        @update:model-value="() => (amount.currentAmount = '')"
+                      />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>
@@ -439,8 +443,8 @@ export default {
     const bankTypeSelect = ref("upi");
     const isAmountEditable = ref(false);
     const amount = ref({
-      actualAmount: null,
-      currentAmount: null,
+      actualAmount: "",
+      currentAmount: "",
     });
 
     const showPreviewDialog = ref(false);
@@ -506,6 +510,16 @@ export default {
         $q.notify({
           position: "top-right",
           message: "Select any Payment Method",
+          type: "negative",
+          icon: "cancel",
+        });
+      } else if (
+        isPayFullAmount.value == "!full" &&
+        amount.value.currentAmount == ""
+      ) {
+        $q.notify({
+          position: "top-right",
+          message: "Enter the amount or select full amount",
           type: "negative",
           icon: "cancel",
         });

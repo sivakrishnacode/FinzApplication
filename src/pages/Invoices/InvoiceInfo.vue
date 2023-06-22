@@ -9,6 +9,7 @@
       <!-- upload invoice btn -->
       <div>
         <q-btn
+          dense
           rounded
           size="16px"
           color="primary"
