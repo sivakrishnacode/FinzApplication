@@ -352,11 +352,11 @@
                   label="Continue"
                   color="primary"
                   type="submit"
-                  @click="showPreviewDialog = true"
+                  @click="showPreview()"
                 />
               </div>
 
-              <q-dialog v-model="showPreviewDialog">
+              <q-dialog v-model="showPreviewDialog" persistent>
                 <q-card>
                   <q-card-section>
                     <q-item clickable v-ripple>
@@ -426,12 +426,14 @@ import { api } from "src/boot/axios";
 import { useAuthStore } from "src/stores/useAuthStore";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useQuasar } from "quasar";
 export default {
   name: "payment_page",
   setup() {
     const route = useRoute();
     const router = useRouter();
     const useAuth = useAuthStore();
+    const $q = useQuasar();
 
     // accordian section
     const bankTypeSelect = ref("upi");
@@ -499,6 +501,19 @@ export default {
       });
     }
 
+    function showPreview() {
+      if (selectedPaymentDetails.value.paymentMethod == "") {
+        $q.notify({
+          position: "top-right",
+          message: "Select any Payment Method",
+          type: "negative",
+          icon: "cancel",
+        });
+      } else {
+        showPreviewDialog.value = true;
+      }
+    }
+
     const isAmountValid = computed(
       () => amount.value.actualAmount >= amount.value.currentAmount
     );
@@ -522,6 +537,7 @@ export default {
 
       // dialog
       showPreviewDialog,
+      showPreview,
     };
   },
 };
