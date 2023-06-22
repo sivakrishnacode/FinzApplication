@@ -6,8 +6,33 @@
       style="width: 400px"
       v-if="!$q.screen.lt.md"
     >
+      <!-- upload invoice btn -->
+      <div>
+        <q-btn
+          rounded
+          size="16px"
+          color="primary"
+          class="full-width"
+          label="Upload Invoice"
+          no-caps
+          icon="upload"
+          no-wrap
+          @click="selectFile"
+        />
+        <q-file
+          v-model="invoiceFile"
+          type="file"
+          ref="fileInputRef"
+          rounded
+          outlined
+          style="opacity: 0; position: absolute; max-width: 1px; top: 125px"
+          @update:model-value="invoiceFileUpload"
+        >
+        </q-file>
+      </div>
+
       <!-- search & date filter -->
-      <div class="row no-wrap full-width q-gutter-x-sm">
+      <div class="row no-wrap full-width">
         <!-- search input -->
         <q-select
           dense
@@ -272,8 +297,9 @@
         </q-tabs>
       </div>
 
+      <!-- SCROLL area -->
       <div
-        class="q-pa-sm scroll overflow-y-hidden scroll relative-position"
+        class="q-pa-sm scroll overflow-y-hidden scroll relative-position bg-red"
         style="border-radius: 10px; height: 100vh"
         ref="invoiceListScrollRef"
       >
@@ -324,28 +350,6 @@
             </q-item-section>
           </q-item>
         </q-list>
-
-        <!-- upload invoice btn -->
-        <div class="absolute" style="bottom: 160px; right: 30px">
-          <q-btn
-            rounded
-            size="16px"
-            color="primary"
-            icon="upload"
-            no-wrap
-            @click="selectFile"
-          />
-          <q-file
-            v-model="invoiceFile"
-            type="file"
-            ref="fileInputRef"
-            rounded
-            outlined
-            style="opacity: 0; position: absolute; max-width: 1px; top: 125px"
-            @update:model-value="invoiceFileUpload"
-          >
-          </q-file>
-        </div>
       </div>
     </div>
 
@@ -354,7 +358,7 @@
       <div class="row full-width">
         <!-- center body -->
         <div
-          class="row justify-center"
+          class="row justify-center bg-info"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-8'"
         >
           <div style="width: 80%" class="full-height">
@@ -609,10 +613,10 @@
 
         <!-- right side -->
         <div
-          class="row justify-center q-mt-md"
+          class="row justify-center q-mt-md bg-red"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-4'"
         >
-          <div style="width: 80%" class="q-gutter-y-md">
+          <div style="width: 90%" class="q-gutter-y-md">
             <!-- amount -->
             <div class="bg-secondary q-pa-lg" style="border-radius: 13px">
               <!-- total -->
@@ -858,6 +862,7 @@ export default {
       }).then((res) => {
         invoiceDetail.value = res.data;
       });
+      route.params.invoiceId = invoiceDetail.value.invoiceId;
       getInvoiceHistory(invoiceDetail.value.invoiceId);
       getToStatusFlow(invoiceDetail.value.statusId);
     }

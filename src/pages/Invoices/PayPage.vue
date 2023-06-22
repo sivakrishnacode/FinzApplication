@@ -4,11 +4,10 @@
     <div class="q-ma-md" style="max-width: 50vw; width: 100%; min-width: 600px">
       <q-list bordered>
         <q-expansion-item
-          default-opened
           icon="looks_one"
           label="Party Details"
           header-class="text-red text-h6"
-          class="q-ma-lg"
+          class="q-ma-md"
         >
           <q-card>
             <q-card-section>
@@ -78,9 +77,8 @@
         <q-separator />
 
         <q-expansion-item
-          default-opened
           icon="looks_two"
-          class="q-ma-lg"
+          class="q-ma-md"
           label="Invoice Items"
           header-class="text-green text-h6"
         >
@@ -143,81 +141,118 @@
 
         <q-expansion-item
           default-opened
-          class="q-ma-lg"
+          class="q-ma-md"
           icon="looks_3"
           label="Payment Method"
           header-class="text-blue text-h6"
         >
           <q-card>
             <!-- bank options -->
-            <q-card-section>
+            <q-card-section class="bg-blue-3">
               <!-- upi -->
-              <div class="q-ma-md" style="border: 1px solid red">
+              <div class="q-ma-sm bg-orange-2">
                 <q-radio
                   v-model="bankTypeSelect"
                   val="upi"
                   checked-icon="task_alt"
                   unchecked-icon="panorama_fish_eye"
                   label="Upi"
+                  class="text-bold"
                 />
-                <div v-if="bankTypeSelect == 'upi'">
-                  <div
-                    class="row justify-start q-ma-md"
-                    v-for="n in accountDetail.upiDetails"
-                    :key="n"
+                <div v-if="bankTypeSelect == 'upi'" class="q-pa-sm">
+                  <q-item
+                    v-for="data in accountDetail.upiDetails"
+                    :key="data"
+                    active-class="text-bold text-h6"
+                    clickable
+                    v-ripple
+                    class="bg-secondary text-primary q-ma-md"
+                    style="border-radius: 5px"
+                    @click="
+                      selectedPaymentDetails.paymentMethod =
+                        data.paymentMethodId
+                    "
+                    :active="
+                      selectedPaymentDetails.paymentMethod ==
+                      data.paymentMethodId
+                        ? true
+                        : false
+                    "
                   >
-                    <div
-                      class="q-pa-md full-width bg-secondary"
-                      style="border: 2px solid silver; border-radius: 20px"
-                    >
-                      <div>
-                        UPI ID:
-                        <span class="text-bold">{{
-                          n.upiPayment?.upiAddress
-                        }}</span>
-                      </div>
-                    </div>
-                  </div>
+                    <!-- avator -->
+                    <q-item-section avatar>
+                      <q-item-label class="text-bold">
+                        UPI Details
+                      </q-item-label>
+                    </q-item-section>
+
+                    <!-- name -->
+                    <q-item-section class="">
+                      <q-item-label class="text-bold">
+                        {{ data.upiPayment?.upiAddress }}
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
                 </div>
               </div>
 
+              <q-separator size="2px" />
+
               <!-- bank -->
-              <div class="q-ma-md" style="border: 1px solid red">
+              <div class="q-ma-sm bg-orange-2">
                 <q-radio
                   v-model="bankTypeSelect"
                   val="bank"
                   checked-icon="task_alt"
                   unchecked-icon="panorama_fish_eye"
                   label="Bank"
+                  class="text-bold"
                 />
 
-                <div v-if="bankTypeSelect == 'bank'">
-                  <div
-                    class="row justify-start q-ma-md"
-                    v-for="n in accountDetail.bankDetails"
-                    :key="n"
+                <div v-if="bankTypeSelect == 'bank'" class="q-pa-sm">
+                  <q-item
+                    v-for="data in accountDetail.bankDetails"
+                    :key="data"
+                    active-class="text-bold text-h6"
+                    clickable
+                    v-ripple
+                    class="bg-secondary text-primary q-ma-md"
+                    style="border-radius: 5px"
+                    @click="
+                      selectedPaymentDetails.paymentMethod =
+                        data.paymentMethodId
+                    "
+                    :active="
+                      selectedPaymentDetails.paymentMethod ==
+                      data.paymentMethodId
+                        ? true
+                        : false
+                    "
                   >
-                    <div
-                      class="q-pa-md full-width bg-secondary q-gutter-y-sm"
-                      style="border: 2px solid silver; border-radius: 20px"
-                    >
-                      <div>
-                        A/C Holder name:
-                        <span class="text-bold">{{
-                          n.companyNameOnAccount
-                        }}</span>
-                      </div>
-                      <div>
-                        A/C No:
-                        <span class="text-bold">{{ n.accountNumber }}</span>
-                      </div>
-                      <div>
-                        IFSC CODE:
-                        <span class="text-bold">{{ n.routingNumber }}</span>
-                      </div>
-                    </div>
-                  </div>
+                    <!-- avator -->
+                    <q-item-section avatar>
+                      <q-item-label class="text-bold">
+                        ac holder name
+                      </q-item-label>
+                      <q-item-label class="text-bold"> ac no </q-item-label>
+                      <q-item-label class="text-bold"> ifsc no </q-item-label>
+                    </q-item-section>
 
+                    <!-- name -->
+                    <q-item-section class="">
+                      <q-item-label class="text-bold">
+                        {{ data.companyNameOnAccount }}
+                      </q-item-label>
+                      <q-item-label class="text-bold">
+                        {{ data.accountNumber }}
+                      </q-item-label>
+                      <q-item-label class="text-bold">
+                        {{ data.routingNumber }}
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <!-- payment mode -->
                   <div class="q-pa-md colum content-center justify-center">
                     <div class="q-pa-md q-gutter-y-md">
                       <div class="text-bold">Payment Mode:</div>
@@ -226,8 +261,11 @@
                           dense
                           outlined
                           style="width: 300px"
-                          v-model="model"
-                          :options="[1, 2, 3, 4]"
+                          v-model="selectedPaymentDetails.paymentMode"
+                          @update:model-value="
+                            (val) => (selectedPaymentDetails.paymentMode = val)
+                          "
+                          :options="['NEFT', 'RTGS', 'IMPS']"
                           label="Filled"
                         />
                       </div>
@@ -238,7 +276,7 @@
             </q-card-section>
 
             <!-- edit amount -->
-            <q-card-section style="border: 1px solid silver">
+            <q-card-section style="border: 1px solid silver" class="bg-pink-4">
               <!--amount  input -->
               <div class="row justify-center q-gutter-y-md">
                 <!-- fullamount -->
@@ -282,21 +320,27 @@
 
                 <div
                   v-if="isPayFullAmount == '!full'"
-                  class="q-pa-none"
-                  style="
-                    width: 50%;
-                    border-radius: 30px;
-                    border: 1px solid silver;
-                  "
+                  class="q-ma-md"
+                  style="width: 50%; border-radius: 30px"
                 >
-                  <q-input rounded outlined type="number" label="Amount" />
+                  <q-input
+                    rounded
+                    outlined
+                    v-model="amount.currentAmount"
+                    type="number"
+                    label="Amount"
+                    :error="!isAmountValid"
+                    :error-message="`Enter Less then ${amount.actualAmount}`"
+                  />
                 </div>
               </div>
 
               <!-- btns -->
-              <div class="row justify-center q-gutter-x-md">
+              <div class="row justify-center q-gutter-x-md q-ma-md">
                 <q-btn
-                  :disable="isAmountValid"
+                  :disable="
+                    isAmountValid || selectedPaymentDetails.paymentMethod !== ''
+                  "
                   rounded
                   label="Reset"
                   color="red"
@@ -308,8 +352,24 @@
                   label="Continue"
                   color="primary"
                   type="submit"
+                  @click="showPreviewDialog = true"
                 />
               </div>
+
+              <q-dialog v-model="showPreviewDialog">
+                <q-card>
+                  <q-card-section>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        <q-item-label>
+                          {{ selectedPaymentDetails }}
+                        </q-item-label>
+                        <q-item-label>{{ amount }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-card-section>
+                </q-card>
+              </q-dialog>
             </q-card-section>
           </q-card>
         </q-expansion-item>
@@ -374,14 +434,20 @@ export default {
     const useAuth = useAuthStore();
 
     // accordian section
-    const bankTypeSelect = ref("bank");
+    const bankTypeSelect = ref("upi");
     const isAmountEditable = ref(false);
     const amount = ref({
       actualAmount: null,
       currentAmount: null,
     });
 
-    const isPayFullAmount = ref("!full");
+    const showPreviewDialog = ref(false);
+
+    const isPayFullAmount = ref("full");
+    const selectedPaymentDetails = ref({
+      paymentMethod: "",
+      paymentMode: "NEFT",
+    });
 
     const invoiceDetail = ref({});
     const accountDetail = ref({
@@ -422,7 +488,6 @@ export default {
           }
         });
       });
-      console.log(accountDetail.value);
     }
 
     function vendoPage(id) {
@@ -452,7 +517,20 @@ export default {
       vendoPage,
       accountDetail,
       isPayFullAmount,
+
+      selectedPaymentDetails,
+
+      // dialog
+      showPreviewDialog,
     };
   },
 };
 </script>
+
+<style>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>
