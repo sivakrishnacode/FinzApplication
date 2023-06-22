@@ -658,10 +658,19 @@
               </q-item>
 
               <q-separator spaced />
+
               <!-- btns -->
               <div class="q-pa-md row justify-evenly">
+                <q-btn
+                  label="Refund"
+                  rounded
+                  color="primary"
+                  @click="startRefund()"
+                />
                 <div v-for="data in toStatusFlow" :key="data">
-                  <div v-if="data.description == 'Approved'">
+                  <div v-if="data.transitionName == 'Unpay'">no</div>
+
+                  <div v-else-if="data.description == 'Approved'">
                     <q-btn
                       rounded
                       label="Approve"
@@ -863,6 +872,7 @@ export default {
       }).then((res) => {
         invoiceDetail.value = res.data;
       });
+      console.log(invoiceDetail.value);
       route.params.invoiceId = invoiceDetail.value.invoiceId;
       getInvoiceHistory(invoiceDetail.value.invoiceId);
       getToStatusFlow(invoiceDetail.value.statusId);
@@ -909,6 +919,7 @@ export default {
         data.data.statusDetailList.map((d) => {
           toStatusFlow.value.push(d);
         });
+        console.log(toStatusFlow.value);
       });
     }
 
@@ -1042,6 +1053,15 @@ export default {
           searchOptions.value = [];
           isLoading.value = false;
         }
+      });
+    }
+
+    function startRefund() {
+      console.log({
+        invoiceId: invoiceDetail.value.invoiceId,
+        refundAmount: 300,
+        comments: "commandss",
+        updateInvoice: "{false}",
       });
     }
 
@@ -1294,6 +1314,7 @@ export default {
       router,
       formateTimeStamp,
       paymentPage,
+      startRefund,
     };
   },
 };

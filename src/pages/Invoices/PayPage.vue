@@ -168,10 +168,7 @@
                     v-ripple
                     class="bg-secondary text-primary q-ma-md"
                     style="border-radius: 5px"
-                    @click="
-                      selectedPaymentDetails.paymentMethod =
-                        data.paymentMethodId
-                    "
+                    @click="selectPaymentMethod(data)"
                     :active="
                       selectedPaymentDetails.paymentMethod ==
                       data.paymentMethodId
@@ -218,10 +215,7 @@
                     v-ripple
                     class="bg-secondary text-primary q-ma-md"
                     style="border-radius: 5px"
-                    @click="
-                      selectedPaymentDetails.paymentMethod =
-                        data.paymentMethodId
-                    "
+                    @click="selectPaymentMethod(data)"
                     :active="
                       selectedPaymentDetails.paymentMethod ==
                       data.paymentMethodId
@@ -294,9 +288,7 @@
                       />
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label>
-                        $ {{ invoiceDetail.invoiceTotal }}
-                      </q-item-label>
+                      <q-item-label> $ {{ amount.actualAmount }} </q-item-label>
                       <q-item-label caption>Pay Full Amount</q-item-label>
                     </q-item-section>
                   </q-item>
@@ -314,10 +306,9 @@
                     </q-item-section>
                     <q-item-section>
                       <q-item-label> Edit Amount </q-item-label>
-                      <q-item-label caption
-                        >Pay less then -
-                        {{ invoiceDetail.invoiceTotal }}</q-item-label
-                      >
+                      <q-item-label caption>
+                        Pay less then - {{ amount.actualAmount }}
+                      </q-item-label>
                     </q-item-section>
                   </q-item>
                 </div>
@@ -443,8 +434,8 @@ export default {
     const bankTypeSelect = ref("upi");
     const isAmountEditable = ref(false);
     const amount = ref({
-      actualAmount: "",
-      currentAmount: "",
+      actualAmount: 0,
+      currentAmount: 0,
     });
 
     const showPreviewDialog = ref(false);
@@ -472,7 +463,10 @@ export default {
       });
 
       getAccountDetails(invoiceDetail.value.fromParty.partyId);
-      amount.value.actualAmount = invoiceDetail.value.invoiceTotal;
+
+      amount.value.actualAmount =
+        invoiceDetail.value.unpaidTotal ?? invoiceDetail.value.invoiceTotal;
+      console.log(amount.value.actualAmount);
     }
 
     function getAccountDetails(id) {
@@ -505,6 +499,10 @@ export default {
       });
     }
 
+    function selectPaymentMethod(id) {
+      selectedPaymentDetails.value.paymentMethod = id.paymentMethodId;
+    }
+
     function showPreview() {
       if (selectedPaymentDetails.value.paymentMethod == "") {
         $q.notify({
@@ -515,7 +513,7 @@ export default {
         });
       } else if (
         isPayFullAmount.value == "!full" &&
-        amount.value.currentAmount == ""
+        amount.value.currentAmount == 0
       ) {
         $q.notify({
           position: "top-right",
@@ -525,6 +523,35 @@ export default {
         });
       } else {
         showPreviewDialog.value = true;
+        const params = {};
+
+        params["invoiceId"] = route.params.invoiceId;
+        params["amount"] =
+          amount.value.currentAmount !== 0
+            ? amount.value.currentAmount
+            : amount.value.actualAmount;
+
+        params["comments"] = "demo command";
+        params["effectiveDate"] = "2023-06-22";
+
+        if (bankTypeSelect.value == "bank") {
+          params["paymentMode"] = selectedPaymentDetails.value.paymentMode;
+          params["paymentMethodId"] =
+            selectedPaymentDetails.value.paymentMethod;
+        } else {
+          params["paymentMethodId"] =
+            selectedPaymentDetails.value.paymentMethod;
+        }
+
+        console.log(params);
+        api({
+          method: "POST",
+          url: "payments/invoicePayment",
+          headers: useAuth.authKey,
+          params: params,
+        }).then((res) => {
+          console.log(res);
+        });
       }
     }
 
@@ -548,6 +575,7 @@ export default {
       isPayFullAmount,
 
       selectedPaymentDetails,
+      selectPaymentMethod,
 
       // dialog
       showPreviewDialog,
