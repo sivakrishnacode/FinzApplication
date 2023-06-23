@@ -153,122 +153,180 @@
             <!-- banks options -->
             <q-card-section class="">
               <!-- upi -->
-              <div class="q-ma-sm">
-                <q-radio
-                  v-model="bankTypeSelect"
-                  val="upi"
-                  checked-icon="task_alt"
-                  unchecked-icon="panorama_fish_eye"
-                  label="Upi"
-                  class="text-bold"
-                />
-                <div v-if="bankTypeSelect == 'upi'" class="q-pa-sm">
-                  <q-item
-                    v-for="data in accountDetail.upiDetails"
-                    :key="data"
-                    active-class="text-bold text-h6"
-                    clickable
-                    v-ripple
-                    class="bg-secondary text-primary q-ma-md"
-                    style="border-radius: 5px"
-                    @click="selectPaymentMethod(data)"
-                    :active="
-                      selectedPaymentDetails.paymentMethod ==
-                      data.paymentMethodId
-                        ? true
-                        : false
+              <div v-if="accountDetail.upiDetails.length != 0">
+                <div class="q-ma-sm">
+                  <q-radio
+                    v-model="bankTypeSelect"
+                    val="upi"
+                    checked-icon="task_alt"
+                    unchecked-icon="panorama_fish_eye"
+                    label="Upi"
+                    class="text-bold"
+                    @update:model-value="
+                      selectedPaymentDetails.paymentMethod = ''
                     "
-                  >
-                    <!-- avator -->
-                    <q-item-section avatar>
-                      <q-item-label class="text-bold">
-                        UPI Details
-                      </q-item-label>
-                    </q-item-section>
+                  />
+                  <div v-if="bankTypeSelect == 'upi'" class="q-pa-sm">
+                    <q-item
+                      tag="label"
+                      v-ripple
+                      v-for="data in accountDetail.upiDetails"
+                      :key="data"
+                      @click="selectPaymentMethod(data)"
+                    >
+                      <q-item-section avatar top>
+                        <q-radio
+                          v-model="selectedPaymentDetails.paymentMethod"
+                          :val="data.paymentMethodId"
+                        />
+                      </q-item-section>
+                      <q-item-section avatar>
+                        <q-item-label class="text-bold">
+                          UPI ID :
+                        </q-item-label>
+                      </q-item-section>
 
-                    <!-- name -->
-                    <q-item-section class="">
-                      <q-item-label class="text-bold">
-                        {{ data.upiPayment?.upiAddress }}
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
+                      <!-- name -->
+                      <q-item-section class="">
+                        <q-item-label class="text-bold">
+                          {{ data.upiPayment?.upiAddress }}
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
+
+                    <!-- <q-item
+                      v-for="data in accountDetail.upiDetails"
+                      :key="data"
+                      active-class="text-bold text-h6"
+                      clickable
+                      v-ripple
+                      class="bg-secondary text-primary q-ma-md"
+                      style="border-radius: 5px"
+                      @click="selectPaymentMethod(data)"
+                      :active="
+                        selectedPaymentDetails.paymentMethod ==
+                        data.paymentMethodId
+                          ? true
+                          : false
+                      "
+                    >
+                       avator
+                      <q-item-section avatar>
+                        <q-item-label class="text-bold">
+                          UPI Details
+                        </q-item-label>
+                      </q-item-section>
+
+                       name
+                      <q-item-section class="">
+                        <q-item-label class="text-bold">
+                          {{ data.upiPayment?.upiAddress }}
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item> -->
+                  </div>
                 </div>
               </div>
 
               <q-separator size="2px" />
 
               <!-- bank -->
-              <div class="q-ma-sm">
-                <q-radio
-                  v-model="bankTypeSelect"
-                  val="bank"
-                  checked-icon="task_alt"
-                  unchecked-icon="panorama_fish_eye"
-                  label="Bank"
-                  class="text-bold"
-                />
-
-                <div v-if="bankTypeSelect == 'bank'" class="q-pa-sm">
-                  <q-item
-                    v-for="data in accountDetail.bankDetails"
-                    :key="data"
-                    active-class="text-bold text-h6"
-                    clickable
-                    v-ripple
-                    class="bg-secondary text-primary q-ma-md"
-                    style="border-radius: 5px"
-                    @click="selectPaymentMethod(data)"
-                    :active="
-                      selectedPaymentDetails.paymentMethod ==
-                      data.paymentMethodId
-                        ? true
-                        : false
+              <div v-if="accountDetail.bankDetails.length != 0">
+                <div class="q-ma-sm">
+                  <q-radio
+                    v-model="bankTypeSelect"
+                    val="bank"
+                    checked-icon="task_alt"
+                    unchecked-icon="panorama_fish_eye"
+                    label="Bank"
+                    class="text-bold"
+                    @update:model-value="
+                      selectedPaymentDetails.paymentMethod = ''
                     "
-                  >
-                    <!-- avator -->
-                    <q-item-section avatar>
-                      <q-item-label class="text-bold">
-                        ac holder name
-                      </q-item-label>
-                      <q-item-label class="text-bold"> ac no </q-item-label>
-                      <q-item-label class="text-bold"> ifsc no </q-item-label>
-                    </q-item-section>
+                  />
 
-                    <!-- name -->
-                    <q-item-section class="">
-                      <q-item-label class="text-bold">
-                        {{ data.companyNameOnAccount }}
-                      </q-item-label>
-                      <q-item-label class="text-bold">
-                        {{ data.accountNumber }}
-                      </q-item-label>
-                      <q-item-label class="text-bold">
-                        {{ data.routingNumber }}
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <!-- payment mode -->
-                  <div class="q-pa-md colum content-center justify-center">
-                    <div class="q-pa-md q-gutter-y-md">
-                      <div class="text-bold">Payment Mode:</div>
-                      <div class="">
-                        <q-select
-                          dense
-                          outlined
-                          style="width: 300px"
-                          v-model="selectedPaymentDetails.paymentMode"
-                          @update:model-value="
-                            (val) => (selectedPaymentDetails.paymentMode = val)
-                          "
-                          :options="['NEFT', 'RTGS', 'IMPS']"
-                          label="Filled"
+                  <div v-if="bankTypeSelect == 'bank'" class="q-pa-sm">
+                    <q-item
+                      v-for="data in accountDetail.bankDetails"
+                      :key="data"
+                      active-class="text-bold text-h6"
+                      clickable
+                      v-ripple
+                      class="bg-secondary text-primary q-ma-md"
+                      style="border-radius: 5px"
+                      @click="selectPaymentMethod(data)"
+                      :active="
+                        selectedPaymentDetails.paymentMethod ==
+                        data.paymentMethodId
+                          ? true
+                          : false
+                      "
+                    >
+                      <!-- avator -->
+                      <q-item-section avatar>
+                        <q-radio
+                          v-model="selectedPaymentDetails.paymentMethod"
+                          :val="data.paymentMethodId"
                         />
+                      </q-item-section>
+
+                      <!-- name -->
+                      <q-item-section class="">
+                        <q-item-label class="text-bold">
+                          {{ data.companyNameOnAccount }}
+                        </q-item-label>
+                        <q-item-label class="text-bold">
+                          {{ data.accountNumber }}
+                        </q-item-label>
+                        <q-item-label class="text-bold">
+                          {{ data.routingNumber }}
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
+
+                    <!-- payment mode -->
+                    <div class="q-pa-md colum content-center justify-center">
+                      <div class="q-pa-md q-gutter-y-md">
+                        <div class="text-bold">Payment Mode:</div>
+                        <div class="">
+                          <q-select
+                            dense
+                            outlined
+                            style="width: 300px"
+                            v-model="selectedPaymentDetails.paymentMode"
+                            @update:model-value="
+                              (val) =>
+                                (selectedPaymentDetails.paymentMode = val)
+                            "
+                            :options="['NEFT', 'RTGS', 'IMPS']"
+                            label="Filled"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
+
+              <!-- no account found -->
+              <div
+                v-if="
+                  accountDetail.upiDetails.length == 0 &&
+                  accountDetail.bankDetails.length == 0
+                "
+                class="row justify-center"
+              >
+                <div class="text-h6 q-ma-md full-width row justify-center">
+                  Add Bank or Upi Accounts to make payment
+                </div>
+                <q-btn
+                  dense
+                  outline
+                  rounded
+                  color="primary"
+                  label="Add Payment method"
+                  @click="vendoPage(invoiceDetail.fromParty?.partyId)"
+                />
               </div>
             </q-card-section>
 
