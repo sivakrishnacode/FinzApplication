@@ -301,7 +301,7 @@
       <!-- SCROLL area -->
       <div
         class="q-pa-sm scroll"
-        style="border-radius: 10px; height: 100vh"
+        style="border-radius: 10px; height: calc(100vh - 250px)"
         ref="invoiceListScrollRef"
       >
         <!-- List -->
@@ -843,15 +843,15 @@ export default {
         params["thruDate"] = correctDateRange.value.thruDate;
       }
 
-      // params["pageSize"] =
-      // calcPageSizeLimit(
-      //   invoiceListScrollRef.value.clientHeight,
-      //   60
-      // );
-      // params["index"] = index.value;
+      params["pageSize"] = calcPageSizeLimit(
+        invoiceListScrollRef.value.clientHeight,
+        60
+      );
+      params["index"] = index.value;
 
-      params["pageSize"] = 40;
-      params["index"] = 0;
+      // params["pageSize"] = 40;
+      // params["index"] = 0;
+      console.log(params);
 
       if (hasMoreDataToLoad.value) {
         api({
@@ -885,15 +885,16 @@ export default {
 
     let prevScrollTop = 0;
     const scrollHandler = () => {
+      // invoiceListScrollRef.value.scrollHeight
       let scrollHeight = invoiceListScrollRef.value.scrollHeight;
       let scrollTop = invoiceListScrollRef.value.scrollTop;
       let clientHeight = invoiceListScrollRef.value.clientHeight;
 
       //fetch vendors based on scroll
       if (prevScrollTop < scrollTop) {
-        if (scrollTop + clientHeight + 1 > scrollHeight) {
+        if (scrollTop + clientHeight + 5 > scrollHeight) {
           index.value++;
-          //getInvoiceList();
+          getInvoiceList();
           //get vendors
         }
       }
@@ -903,6 +904,7 @@ export default {
 
     async function getInvoiceDetails(invoiseId) {
       invoiceDetail.value = "";
+
       await api({
         method: "GET",
         url: `invoices/${invoiseId}`,
@@ -910,7 +912,7 @@ export default {
       }).then((res) => {
         invoiceDetail.value = res.data;
       });
-      console.log(invoiceDetail.value, "invoice details");
+
       route.params.invoiceId = invoiceDetail.value.invoiceId;
       getInvoiceHistory(invoiceDetail.value.invoiceId);
       getToStatusFlow(invoiceDetail.value.statusId);
@@ -957,7 +959,6 @@ export default {
         data.data.statusDetailList.map((d) => {
           toStatusFlow.value.push(d);
         });
-        console.log(toStatusFlow.value);
       });
     }
 
@@ -1275,7 +1276,7 @@ export default {
       clearInvoiceList();
       getInvoiceList();
 
-      //invoiceListScrollRef.value.addEventListener("scroll", scrollHandler);
+      invoiceListScrollRef.value.addEventListener("scroll", scrollHandler);
     });
 
     return {

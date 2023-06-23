@@ -165,6 +165,7 @@
           </q-menu>
         </q-btn>
       </div>
+
       <!-- quick filter -->
       <div class="q-pa-md">
         <q-tabs
@@ -186,66 +187,76 @@
           />
         </q-tabs>
       </div>
+
+      <div>
+        <q-chip
+          v-model="isDaysFilterActive"
+          color="primary"
+          removable
+          text-color="white"
+          :label="daysFilterSelected"
+          @remove="
+            (isDaysFilterActive = false),
+              ((daysFilterSelected = ''),
+              (daysFilterValue = ''),
+              (daysFilterValue = '')),
+              getPayments()
+          "
+        />
+
+        <q-chip
+          v-model="isDateFilterActiveForChip"
+          color="primary"
+          removable
+          text-color="white"
+          :label="dateRange.fromDate + ' - ' + dateRange.thruDate"
+          @remove="removeFilter('DataFilter')"
+        />
+        <q-chip
+          v-model="isVendorFilterActiveForChip"
+          color="primary"
+          removable
+          text-color="white"
+          :label="vendorFilterSelected.name"
+          @remove="
+            ((vendorFilterSelected.partyId = ''), (search = '')), getPayments()
+          "
+        />
+      </div>
     </div>
 
     <!-- Preview box -->
 
     <!-- filter preview chip -->
-    <div class="row content-center">
-      <q-chip
-        v-model="isDaysFilterActive"
-        color="primary"
-        removable
-        text-color="white"
-        :label="daysFilterSelected"
-        @remove="
-          (isDaysFilterActive = false),
-            ((daysFilterSelected = ''),
-            (daysFilterValue = ''),
-            (daysFilterValue = '')),
-            getPayments()
-        "
-      />
-
-      <q-chip
-        v-model="isDateFilterActiveForChip"
-        color="primary"
-        removable
-        text-color="white"
-        :label="dateRange.fromDate + ' - ' + dateRange.thruDate"
-        @remove="removeFilter('DataFilter')"
-      />
-      <q-chip
-        v-model="isVendorFilterActiveForChip"
-        color="primary"
-        removable
-        text-color="white"
-        :label="vendorFilterSelected.name"
-        @remove="
-          ((vendorFilterSelected.partyId = ''), (search = '')), getPayments()
-        "
-      />
-    </div>
 
     <q-separator spaced />
 
     <!-- Table -->
-    <div class="table-container">
+    <div
+      class="table-container"
+      style="border: 2px solid silver; border-radius: 19px"
+    >
       <q-table
         :rows="rows"
+        ref="tableRef"
         :columns="columns"
+        @request="getPayments()"
         separator="horizontal"
         class="q-py-md"
+        :pagination="pagination"
         flat
         hide-bottom
+        style="border-radius: 20px"
       >
         <q-separator />
 
         <!-- header -->
         <template v-slot:header="props">
-          <q-tr :props="props" class="text-weight-bold text-h5 bg-blue-grey-1">
+          <q-tr :props="props" class="text-weight-bold text-primary">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-              {{ col.label }}
+              <div style="font-size: larger">
+                {{ col.label }}
+              </div>
             </q-th>
           </q-tr>
         </template>
@@ -255,22 +266,26 @@
           <q-tr
             :props="props"
             class="text-center cursor-pointer"
-            @click="invoiceRedirect(props.row.invoiceId)"
+            @click="paymentRedirect(props.row.paymentId)"
           >
-            <q-td key="PaymentDate"> dateModifer(props.row.invoiceDate) </q-td>
-
-            <q-td key="invoiceId"> props.row.organizationName </q-td>
-
-            <q-td key="vendorName"> Email not reseaved from server </q-td>
-
-            <q-td key="status">
-              props.row.invoiceTotal.toLocaleString("en-US", { style:
-              "currency", currency: props.row.currencyUomId, })
+            <q-td key="PaymentDate" style="font-size: 15px">
+              {{ props.row.paymentId }}
             </q-td>
 
-            <q-td key="more">
-              props.row.unpaidTotal.toLocaleString("en-US", { style: "currency",
-              currency: props.row.currencyUomId, })
+            <q-td key="invoiceId" style="font-size: 15px">
+              {{ props.row.forInvoiceId }}
+            </q-td>
+
+            <q-td key="vendorName" style="font-size: 15px"> not found </q-td>
+            <q-td key="amount" style="font-size: 15px"
+              >{{ props.row.amount }}
+            </q-td>
+            <q-td key="status" style="font-size: 15px">
+              {{ props.row.statusId }}
+            </q-td>
+
+            <q-td key="date" style="font-size: 15px">
+              {{ formateTimeStamp(props.row.effectiveDate).formattedTimestamp }}
             </q-td>
           </q-tr>
         </template>
@@ -282,6 +297,36 @@
           </div>
         </template>
       </q-table>
+
+      <div
+        class="row justify-center q-ma-md"
+        v-if="pagination.rowsNumber <= 0 ? false : true"
+      >
+        <q-pagination
+          v-model="pagination.page"
+          :max="Math.ceil(pagination.rowsNumber / pagination.rowsPerPage)"
+          max-pages="8"
+          direction-links
+          color="primary"
+          active-color="blue-8"
+          active-text-color="white"
+          :boundary-numbers="false"
+          @update:model-value="(val) => getPayments()"
+        />
+        <div class="row absolute" style="right: 56px">
+          <div class="row justify-center items-center q-pr-md">
+            Rows per page of {{ pagination.rowsNumber }} :
+          </div>
+          <q-select
+            dense
+            borderless
+            style="width: 50px"
+            @update:model-value="tableRef.requestServerInteraction()"
+            v-model="pagination.rowsPerPage"
+            :options="[5, 7, 20, 50, 100, 200, 500]"
+          />
+        </div>
+      </div>
 
       <!-- invoice info -->
     </div>
@@ -364,20 +409,31 @@ export default {
         align: "center",
       },
       {
+        name: "amount",
+        field: "amount",
+        label: "Amount",
+        align: "center",
+      },
+      {
         name: "status",
         field: " status",
         label: "Status",
         align: "center",
       },
       {
-        name: "more",
-        field: " more",
-        label: "More",
+        name: "date",
+        field: " date",
+        label: "date",
         align: "center",
       },
     ]);
+    const tableRef = ref(null);
     const pagination = ref({
+      sortBy: "column",
+      descending: false,
+      page: 1,
       rowsPerPage: 10,
+      rowsNumber: 0,
     });
 
     // get Invoices List
@@ -407,24 +463,40 @@ export default {
         params["thruDate"] = correctDateRange.value.thruDate;
       }
 
+      params["pageSize"] = pagination.value.rowsPerPage;
+      params["pageIndex"] = pagination.value.page - 1;
+
       console.log(params);
 
       api({
         method: "GET",
         headers: useAuth.authKey,
         url: "payments",
+        params: params,
       })
         .then((res) => {
+          console.log(res);
           rows.value = [];
-          res.data.map((data) => {
+          res.data.paymentList.map((data) => {
             rows.value.push(data);
           });
+          pagination.value.rowsNumber = res.data.paymentListCount;
+          pagination.value.page = page;
+          pagination.value.rowsPerPage = rowsPerPage;
           params = {};
-          console.log(rows.value);
         })
         .catch((err) => {
           console.log(err);
         });
+    }
+
+    function paymentRedirect(id) {
+      router.push({
+        name: "paymentInfo_page",
+        params: {
+          paymentId: id,
+        },
+      });
     }
 
     // invoice details
@@ -576,6 +648,24 @@ export default {
       }
     };
 
+    const formateTimeStamp = (timeStamp) => {
+      const date = new Date(timeStamp);
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
+
+      const formattedTimestamp = `${day}-${month}-${year}`;
+
+      const time = `${hours - 12}:${minutes} ${
+        hours >= 12 && hours < 0 ? "AM" : "PM"
+      }`;
+      return { formattedTimestamp, time };
+    };
+
     function removeFilter(type) {
       if ((type = "DataFilter")) {
         correctDateRange.value.fromDate = "";
@@ -590,7 +680,7 @@ export default {
     }
 
     onMounted(() => {
-      getPayments();
+      tableRef.value.requestServerInteraction();
       getTabEnumList();
       getDateFilterEnumList();
     });
@@ -602,6 +692,9 @@ export default {
 
       rows,
       columns,
+      paymentRedirect,
+      formateTimeStamp,
+      tableRef,
 
       pagination,
       selectVendor,

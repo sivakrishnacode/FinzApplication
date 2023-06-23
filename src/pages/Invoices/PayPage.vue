@@ -15,6 +15,7 @@
           <q-card>
             <q-card-section>
               <div>
+                <!-- vendor -->
                 <div class="full-width q-py-md">
                   <q-item>
                     <q-item-section>
@@ -38,6 +39,8 @@
                   </q-item>
                 </div>
 
+                <q-separator />
+
                 <!-- organization -->
                 <div class="full-width q-py-md">
                   <q-item>
@@ -51,6 +54,8 @@
                     </q-item-section>
                   </q-item>
                 </div>
+
+                <q-separator />
 
                 <!-- view invoice -->
                 <div class="full-width q-py-sm">
@@ -270,7 +275,7 @@
                           Account Holder Name : {{ data.companyNameOnAccount }}
                         </q-item-label>
                         <q-item-label class="text-bold">
-                          Account Number :{{ data.accountNumber }}
+                          Account Number : {{ data.accountNumber }}
                         </q-item-label>
                         <q-item-label class="text-bold">
                           IFSC Code : {{ data.routingNumber }}
