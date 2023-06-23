@@ -417,8 +417,6 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "src/stores/useAuthStore";
 import { api } from "src/boot/axios";
 
-// import pdf from "pdfvuer";
-
 export default {
   name: "invoiceList_page",
 

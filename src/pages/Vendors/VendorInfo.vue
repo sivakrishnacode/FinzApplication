@@ -13,7 +13,7 @@
         outlined
         label="Search"
         dense
-        @update:model-value="searchVendor(val)"
+        @update:model-value="(val) => searchVendor(val)"
       >
         <template #append>
           <q-icon name="search" />
@@ -976,7 +976,7 @@ export default {
       if (val === "") {
         rows.value = [];
 
-        vendorInfo(route.params.vendorId);
+        getVendorList();
       } else {
         rows.value = [];
         api({
@@ -987,17 +987,7 @@ export default {
           },
           headers: useAuth.authKey,
         }).then((res) => {
-          console.log(res.data);
-
-          // res.data.documentList.map((data) => {
-          //   rows.value.push({
-          //     organizationName: data.organizationName,
-          //     emailAddress: data.contactMechs[0].infoString
-          //       ? data.contactMechs[0].infoString
-          //       : "",
-          //     partyId: data.partyId,
-          //   });
-          // });
+          rows.value.push(...res.data.documentList);
         });
       }
     }

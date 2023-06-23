@@ -1,6 +1,9 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { api } from "src/boot/axios";
+import { useAuthStore } from "./useAuthStore";
 
+const useAuth = useAuthStore();
 export const useVendorStore = defineStore("vendors", () => {
   const allVendorList = ref([]);
   const tempVendorList = ref([]);
@@ -10,9 +13,23 @@ export const useVendorStore = defineStore("vendors", () => {
     allVendorList.value.push(...vendorList);
   }
 
-  function searchVendor(vendorList) {
-    tempVendorList.value = [];
-    tempVendorList.value.push(...vendorList);
+  function searchVendor(val) {
+    console.log(val);
+    if (val == "") {
+      tempVendorList.value = [];
+    } else {
+      api({
+        method: "GET",
+        url: `vendors?anyField=${val}`,
+        headers: useAuth.authKey,
+      }).then((res) => {
+        tempVendorList.value = [];
+
+        res.data.documentList.map((data) => {
+          tempVendorList.value.push(data);
+        });
+      });
+    }
   }
 
   return {
