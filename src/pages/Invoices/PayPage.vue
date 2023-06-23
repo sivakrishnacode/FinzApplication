@@ -252,15 +252,9 @@
                       active-class="text-bold text-h6"
                       clickable
                       v-ripple
-                      class="bg-secondary text-primary q-ma-md"
+                      class="q-ma-md"
                       style="border-radius: 5px"
                       @click="selectPaymentMethod(data)"
-                      :active="
-                        selectedPaymentDetails.paymentMethod ==
-                        data.paymentMethodId
-                          ? true
-                          : false
-                      "
                     >
                       <!-- avator -->
                       <q-item-section avatar>
@@ -271,21 +265,21 @@
                       </q-item-section>
 
                       <!-- name -->
-                      <q-item-section class="">
+                      <q-item-section class="q-pa-sm q-gutter-y-md">
                         <q-item-label class="text-bold">
-                          {{ data.companyNameOnAccount }}
+                          Account Holder Name : {{ data.companyNameOnAccount }}
                         </q-item-label>
                         <q-item-label class="text-bold">
-                          {{ data.accountNumber }}
+                          Account Number :{{ data.accountNumber }}
                         </q-item-label>
                         <q-item-label class="text-bold">
-                          {{ data.routingNumber }}
+                          IFSC Code : {{ data.routingNumber }}
                         </q-item-label>
                       </q-item-section>
                     </q-item>
 
                     <!-- payment mode -->
-                    <div class="q-pa-md colum content-center justify-center">
+                    <div class="q-pa-md colum">
                       <div class="q-pa-md q-gutter-y-md">
                         <div class="text-bold">Payment Mode:</div>
                         <div class="">
@@ -299,7 +293,6 @@
                                 (selectedPaymentDetails.paymentMode = val)
                             "
                             :options="['NEFT', 'RTGS', 'IMPS']"
-                            label="Filled"
                           />
                         </div>
                       </div>
