@@ -58,7 +58,6 @@
         class="bg-primary text-white"
         rounded
       >
-        <!-- @click="(addVendor_dialogBox = !addVendor_dialogBox), addCountryList()" -->
       </q-btn>
     </div>
 
@@ -139,7 +138,7 @@
                   {{
                     props.row.contactMechs.find(
                       (val) => val.contactMechTypeEnumId == "CmtEmailAddress"
-                    ).infoString
+                    )?.infoString
                   }}
                 </div>
               </q-td>
@@ -151,7 +150,7 @@
                   {{
                     props.row.contactMechs.find(
                       (val) => val.contactMechTypeEnumId == "CmtTelecomNumber"
-                    ).contactNumber
+                    )?.contactNumber
                   }}
                 </div>
               </q-td>
@@ -161,7 +160,7 @@
                   {{
                     props.row.contactMechs.find(
                       (val) => val.contactMechTypeEnumId == "CmtPostalAddress"
-                    ).city
+                    )?.city
                   }}
                 </div>
               </q-td>
@@ -306,8 +305,6 @@ export default {
     const $q = useQuasar();
 
     const moreBtn = ref(false);
-
-    const addVendor_dialogBox = ref(false);
 
     const rows = ref([]);
     const columns = [
