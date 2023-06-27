@@ -1,11 +1,7 @@
 <template>
   <div class="row no-wrap">
     <!-- Side list -->
-    <div
-      class="q-gutter-y-sm q-pa-lg"
-      style="width: 400px"
-      v-if="!$q.screen.lt.md"
-    >
+    <div class="q-gutter-y-sm q-pa-lg" style="width: 400px">
       <!-- upload invoice btn -->
       <div>
         <q-btn
@@ -320,31 +316,33 @@
             v-ripple
             class="bg-secondary text-primary"
             style="border-radius: 5px"
-            @click="getInvoiceDetails(data.invoiceId)"
-            :active="invoiceDetail.invoiceId === data.invoiceId ? true : false"
+            @click="getInvoiceinfo(data.invoiceId)"
+            :active="invoiceInfo.invoiceId === data.invoiceId ? true : false"
           >
             <!-- avator -->
             <q-item-section class="">
               <q-item-label class="text-bold">
-                {{ data.organizationName }}
+                {{ data.vendorDetails.organizationName }}
               </q-item-label>
-              <q-item-label> {{ data.invoiceId }} </q-item-label>
+              <q-item-label> {{ data.invoiceInfo.invoiceId }} </q-item-label>
               <q-item-label class="text-bold">
-                email not Received
+                {{ data.vendorDetails.emailAddress }}
               </q-item-label>
             </q-item-section>
 
             <!-- name -->
             <q-item-section avatar class="">
               <q-item-label class="text-bold">
-                Total: {{ data.invoiceTotal }}
+                Total: {{ data.invoiceInfo.invoiceTotal }}
               </q-item-label>
-              <q-item-label>Unpaid: {{ data.unpaidTotal }} </q-item-label>
+              <q-item-label
+                >Unpaid: {{ data.invoiceInfo.unpaidTotal }}
+              </q-item-label>
               <q-item-label class="text-bold">
                 <q-badge
                   rounded
-                  :color="statusColor(data.statusId)?.color"
-                  :label="statusColor(data.statusId)?.message"
+                  :color="statusColor(data.invoiceInfo.statusId)?.color"
+                  :label="statusColor(data.invoiceInfo.statusId)?.message"
                 >
                 </q-badge>
               </q-item-label>
@@ -364,10 +362,10 @@
             style="border-radius: 0 0 70px 70px"
           >
             <div class="text-primary text-h6">
-              {{ invoiceDetail.fromParty?.organization.organizationName }}
+              {{ invoiceInfo.vendorDetails.organizationName }}
             </div>
             <div class="text-blue-grey-1">
-              {{ invoiceDetail.invoiceId }}
+              {{ invoiceInfo.invoiceDetail.invoiceId }}
             </div>
 
             <!-- cancel btn -->
@@ -415,11 +413,12 @@
                       <q-item-label>
                         <q-badge
                           :color="
-                            statusColor(invoiceDetail.status?.statusId)?.color
+                            statusColor(invoiceInfo.invoiceDetail.statusId)
+                              ?.color
                           "
                           class="text-h6"
                         >
-                          {{ invoiceDetail.status?.description }}
+                          {{ invoiceInfo.invoiceDetail.description }}
                         </q-badge>
                       </q-item-label>
                     </q-item-section>
@@ -432,7 +431,7 @@
                     <q-item-section>
                       <q-item-label overline>Vendor Name:</q-item-label>
                       <q-item-label>{{
-                        invoiceDetail.fromParty?.organization.organizationName
+                        invoiceInfo.vendorDetails.organizationName
                       }}</q-item-label>
                     </q-item-section>
 
@@ -442,7 +441,7 @@
                         rounded
                         color="primary"
                         label="View Vendor"
-                        @click="vendoPage(invoiceDetail.fromParty?.partyId)"
+                        @click="vendoPage(invoiceInfo.vendorDetails.partyId)"
                       />
                     </q-item-section>
                   </q-item>
@@ -452,9 +451,9 @@
                 <div class="full-width q-py-md">
                   <q-item>
                     <q-item-section>
-                      <q-item-label overline>Organization Name:</q-item-label>
+                      <q-item-label overline>From party Name:</q-item-label>
                       <q-item-label>{{
-                        invoiceDetail.toParty?.organization.organizationName
+                        invoiceInfo.fromPartyDetails.organizationName
                       }}</q-item-label>
                     </q-item-section>
                   </q-item>
@@ -466,7 +465,7 @@
                     <q-item-section>
                       <q-item-label overline>View Invoice:</q-item-label>
                       <q-item-label>{{
-                        invoiceDetail.externalId
+                        invoiceInfo.invoiceDetail.externalId
                       }}</q-item-label>
                     </q-item-section>
 
@@ -505,11 +504,13 @@
                       Price
                     </q-item-section>
                   </q-item>
+
                   <q-separator />
+
                   <!-- rows -->
                   <q-item
                     class="row justify-between"
-                    v-for="(data, index) in invoiceDetail.items"
+                    v-for="(data, index) in invoiceInfo.items"
                     :key="index"
                   >
                     <q-item-section class="col-1 text-weight-bold">
@@ -538,7 +539,7 @@
 
             <!-- transections -->
             <div
-              v-if="invoiceDetail?.paymentApplications"
+              v-if="invoiceInfo?.paymentApplications"
               class="bg-secondary q-pa-lg q-ma-sm"
               style="border-radius: 13px"
             >
@@ -547,7 +548,7 @@
               </div>
               <q-item
                 class="q-my-sm q-pa-md"
-                v-for="data in invoiceDetail.paymentApplications"
+                v-for="data in invoiceInfo.paymentApplications"
                 :key="data"
                 clickable
                 @click="paymentPage(data.paymentId)"
@@ -582,7 +583,7 @@
               </div>
               <q-item
                 class="q-my-sm"
-                v-for="data in invoiceDetail.invoiceHistory"
+                v-for="data in invoiceInfo.invoiceHistory"
                 :key="data"
               >
                 <q-item-section>
@@ -631,7 +632,9 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label>{{ invoiceDetail.invoiceTotal }}</q-item-label>
+                  <q-item-label>
+                    {{ invoiceInfo.invoiceDetail.invoiceTotal }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -643,7 +646,10 @@
 
                 <q-item-section avatar>
                   <q-item-label>
-                    {{ invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal }}
+                    {{
+                      invoiceInfo.invoiceDetail.invoiceTotal -
+                      invoiceInfo.invoiceDetail.unpaidTotal
+                    }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -655,7 +661,9 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label>{{ invoiceDetail.unpaidTotal }}</q-item-label>
+                  <q-item-label>
+                    {{ invoiceInfo.invoiceDetail.unpaidTotal }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -670,7 +678,7 @@
                   @click="startRefund()"
                 />
 
-                <div v-if="invoiceDetail.statusId == 'InvoiceIncoming'">
+                <div v-if="invoiceInfo.statusId == 'InvoiceIncoming'">
                   <q-btn
                     rounded
                     outline
@@ -681,14 +689,14 @@
                 </div>
 
                 <q-btn
-                  v-if="invoiceDetail.statusId == 'InvoiceApproved'"
+                  v-if="invoiceInfo.statusId == 'InvoiceApproved'"
                   rounded
                   label="Pay"
                   color="primary"
                   @click="redirect('invoicePayPage')"
                 /> -->
                 <q-btn
-                  v-if="invoiceDetail.statusId == 'InvoiceApproved'"
+                  v-if="invoiceInfo.invoiceDetail.statusId == 'InvoiceApproved'"
                   rounded
                   label="Pay"
                   color="primary"
@@ -696,7 +704,7 @@
                 />
 
                 <q-btn
-                  v-if="invoiceDetail.statusId == 'InvoicePmtSent'"
+                  v-if="invoiceInfo.invoiceDetail.statusId == 'InvoicePmtSent'"
                   label="Refund"
                   rounded
                   color="primary"
@@ -800,7 +808,7 @@ export default {
     });
 
     // invoice info items
-    const invoiceDetail = ref({});
+    const invoiceInfo = ref({});
     const toStatusFlow = ref([]);
 
     // file upload
@@ -861,7 +869,7 @@ export default {
           params: params,
         })
           .then((res) => {
-            res.data.invoiceList.map((data) => {
+            res.data.invoiceLists.map((data) => {
               invoiceList.value.push(data);
             });
 
@@ -902,20 +910,20 @@ export default {
       prevScrollTop = scrollTop;
     };
 
-    async function getInvoiceDetails(invoiseId) {
-      invoiceDetail.value = "";
+    async function getInvoiceinfo(invoiseId) {
+      invoiceInfo.value = {};
 
       await api({
         method: "GET",
         url: `invoices/${invoiseId}`,
         headers: useAuth.authKey,
       }).then((res) => {
-        invoiceDetail.value = res.data;
+        invoiceInfo.value = res.data;
       });
 
-      route.params.invoiceId = invoiceDetail.value.invoiceId;
-      getInvoiceHistory(invoiceDetail.value.invoiceId);
-      getToStatusFlow(invoiceDetail.value.statusId);
+      route.params.invoiceId = invoiceInfo.value.invoiceDetail.invoiceId;
+      getInvoiceHistory(invoiceInfo.value.invoiceDetail.invoiceId);
+      getToStatusFlow(invoiceInfo.value.invoiceDetail.statusId);
     }
 
     function getInvoiceHistory(id) {
@@ -927,7 +935,7 @@ export default {
         },
         headers: useAuth.authKey,
       }).then((res) => {
-        invoiceDetail.value["invoiceHistory"] = res.data.invoiceHistoryList;
+        invoiceInfo.value["invoiceHistory"] = res.data.invoiceHistoryList;
       });
     }
 
@@ -948,6 +956,7 @@ export default {
 
     function getToStatusFlow(id) {
       toStatusFlow.value = [];
+      console.log(id);
       api({
         method: "GET",
         headers: useAuth.authKey,
@@ -968,14 +977,14 @@ export default {
         headers: useAuth.authKey,
         url: "invoices/invoiceStatusUpdate",
         params: {
-          invoiceId: invoiceDetail.value.invoiceId,
+          invoiceId: invoiceInfo.value.invoiceDetail.invoiceId,
           vendorStatusId: statusIds.statusId,
           toStatusId: statusIds.toStatusId,
         },
       }).then((data) => {
         console.log(data);
       });
-      getInvoiceDetails(route.params.invoiceId);
+      getInvoiceinfo(route.params.invoiceId);
       clearInvoiceList();
       getInvoiceList();
     }
@@ -1082,7 +1091,7 @@ export default {
 
     function startRefund() {
       const params = {
-        invoiceId: invoiceDetail.value.invoiceId,
+        invoiceId: invoiceInfo.value.invoiceInfo.invoiceId,
         refundAmount: 300,
         comments: "commandss",
         updateInvoice: "{false}",
@@ -1270,7 +1279,7 @@ export default {
     }
 
     onMounted(() => {
-      getInvoiceDetails(route.params.invoiceId);
+      getInvoiceinfo(route.params.invoiceId);
       getTabEnumList();
       getDateFilterEnumList();
       clearInvoiceList();
@@ -1303,7 +1312,7 @@ export default {
       enumTabList,
       getInvoiceList,
       currentTab,
-      getInvoiceDetails,
+      getInvoiceinfo,
       search,
       searchVendor,
       searchOptions,
@@ -1334,7 +1343,7 @@ export default {
       vendorFilterSelected,
 
       // invoice info side
-      invoiceDetail,
+      invoiceInfo,
       toStatusFlow,
       changeInvoiceStatus,
       statusColor,

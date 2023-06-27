@@ -314,29 +314,36 @@
             <q-tr
               :props="props"
               class="text-center cursor-pointer"
-              @click="invoiceRedirect(props.row.invoiceId)"
+              @click="invoiceRedirect(props.row.invoiceDetail.invoiceId)"
             >
               <q-td key="Invoice_date">
                 <div style="font-size: 15px">
-                  {{ dateModifer(props.row.invoiceDate) }}
+                  {{ dateModifer(props.row.invoiceDetail.invoiceDate) }}
                 </div>
               </q-td>
 
               <q-td key="Vendor">
                 <div style="font-size: 15px">
-                  {{ props.row.organizationName }}
+                  {{ props.row.vendorDetails.organizationName }}
                 </div>
               </q-td>
 
-              <q-td key="Email"> Email not reseaved from server </q-td>
+              <q-td key="Email">
+                <div style="font-size: 15px">
+                  {{ props.row.vendorDetails.emailAddress }}
+                </div>
+              </q-td>
 
               <q-td key="Amount">
                 <div style="font-size: 15px">
                   {{
-                    props.row.invoiceTotal.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: props.row.currencyUomId,
-                    })
+                    props.row.invoiceDetail.invoiceTotal.toLocaleString(
+                      "en-US",
+                      {
+                        style: "currency",
+                        currency: props.row.invoiceDetail.currencyUomId,
+                      }
+                    )
                   }}
                 </div>
               </q-td>
@@ -344,22 +351,29 @@
               <q-td key="Due_Date">
                 <div style="font-size: 15px">
                   {{
-                    props.row.unpaidTotal.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: props.row.currencyUomId,
-                    })
+                    props.row.invoiceDetail.unpaidTotal.toLocaleString(
+                      "en-US",
+                      {
+                        style: "currency",
+                        currency: props.row?.invoiceDetail.currencyUomId,
+                      }
+                    )
                   }}
                 </div>
               </q-td>
               <q-td key="Status">
-                <q-chip :class="'text-' + statusColor(props.row.statusId)">
+                <q-chip
+                  :class="
+                    'text-' + statusColor(props.row.invoiceDetail.statusId)
+                  "
+                >
                   <q-badge
                     rounded
-                    :color="statusColor(props.row.statusId).color"
+                    :color="statusColor(props.row.invoiceDetail.statusId).color"
                     class="q-mr-sm"
                   />
                   <div style="font-size: 15px">
-                    {{ props.row.statusId }}
+                    {{ props.row.invoiceDetail.statusId }}
                   </div>
                 </q-chip>
               </q-td>
@@ -562,6 +576,7 @@ export default {
       params["pageSize"] = pagination.value.rowsPerPage;
       params["pageIndex"] = pagination.value.page - 1;
 
+      console.log(params);
       await api({
         method: "GET",
         headers: useAuth.authKey,
@@ -572,7 +587,7 @@ export default {
           rows.value = [];
           pagination.value.rowsNumber = res.data.invoiceListCount;
 
-          res.data.invoiceList.map((data) => {
+          res.data.invoiceLists.map((data) => {
             rows.value.push(data);
           });
           params = {};
