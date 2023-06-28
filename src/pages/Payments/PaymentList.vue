@@ -229,8 +229,6 @@
 
     <!-- filter preview chip -->
 
-    <q-separator spaced />
-
     <!-- Table -->
     <div
       class="table-container"
@@ -248,8 +246,6 @@
         hide-bottom
         style="border-radius: 20px"
       >
-        <q-separator />
-
         <!-- header -->
         <template v-slot:header="props">
           <q-tr :props="props" class="text-weight-bold text-primary">
@@ -266,26 +262,31 @@
           <q-tr
             :props="props"
             class="text-center cursor-pointer"
-            @click="paymentRedirect(props.row.paymentId)"
+            @click="paymentRedirect(props.row.paymentDetail.paymentId)"
           >
+            <q-td key="date" style="font-size: 15px">
+              {{
+                formateTimeStamp(props.row.paymentDetail.effectiveDate)
+                  .formattedTimestamp
+              }}
+            </q-td>
+
             <q-td key="PaymentDate" style="font-size: 15px">
-              {{ props.row.paymentId }}
+              {{ props.row.paymentDetail.paymentId }}
             </q-td>
 
             <q-td key="invoiceId" style="font-size: 15px">
-              {{ props.row.forInvoiceId }}
+              {{ props.row.paymentDetail.fromPartyId }}
             </q-td>
 
-            <q-td key="vendorName" style="font-size: 15px"> not found </q-td>
+            <q-td key="vendorName" style="font-size: 15px">
+              {{ props.row.vendorDetails.organizationName }}
+            </q-td>
             <q-td key="amount" style="font-size: 15px"
-              >{{ props.row.amount }}
+              >{{ props.row.paymentDetail.amount }}
             </q-td>
             <q-td key="status" style="font-size: 15px">
-              {{ props.row.statusId }}
-            </q-td>
-
-            <q-td key="date" style="font-size: 15px">
-              {{ formateTimeStamp(props.row.effectiveDate).formattedTimestamp }}
+              {{ props.row.paymentDetail.statusId }}
             </q-td>
           </q-tr>
         </template>
@@ -387,6 +388,12 @@ export default {
     const rows = ref([]);
     const columns = ref([
       {
+        name: "date",
+        field: " date",
+        label: "Date",
+        align: "center",
+      },
+      {
         name: "PaymentDate",
         required: true,
         field: " PaymentDate",
@@ -418,12 +425,6 @@ export default {
         name: "status",
         field: " status",
         label: "Status",
-        align: "center",
-      },
-      {
-        name: "date",
-        field: " date",
-        label: "date",
         align: "center",
       },
     ]);
@@ -463,8 +464,10 @@ export default {
         params["thruDate"] = correctDateRange.value.thruDate;
       }
 
-      params["pageSize"] = pagination.value.rowsPerPage;
-      params["pageIndex"] = pagination.value.page - 1;
+      // params["pageSize"] = pagination.value.rowsPerPage;
+      // params["pageIndex"] = pagination.value.page - 1;
+      params["pageSize"] = 50;
+      params["pageIndex"] = 0;
 
       console.log(params);
 
@@ -477,12 +480,12 @@ export default {
         .then((res) => {
           console.log(res);
           rows.value = [];
-          res.data.paymentList.map((data) => {
+          res.data.paymentLists.map((data) => {
             rows.value.push(data);
           });
-          pagination.value.rowsNumber = res.data.paymentListCount;
-          pagination.value.page = page;
-          pagination.value.rowsPerPage = rowsPerPage;
+          // pagination.value.rowsNumber = res.data.paymentListCount;
+          // pagination.value.page = page;
+          // pagination.value.rowsPerPage = rowsPerPage;
           params = {};
         })
         .catch((err) => {

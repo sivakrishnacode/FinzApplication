@@ -181,6 +181,7 @@
                 </q-chip>
               </q-td>
 
+              <!-- more -->
               <q-td key="more">
                 <q-btn
                   round

@@ -343,7 +343,7 @@
                       <q-radio
                         v-model="isPayFullAmount"
                         val="full"
-                        @update:model-value="() => (amount.currentAmount = '')"
+                        @update:model-value="() => (amount.currentAmount = 0)"
                       />
                     </q-item-section>
                     <q-item-section>
@@ -605,14 +605,15 @@ export default {
     }
 
     function submitPayment() {
-      console.log("okk");
       const params = {};
 
       params["invoiceId"] = route.params.invoiceId;
-      params["amount"] =
-        amount.value.currentAmount !== 0
-          ? amount.value.actualAmount
-          : amount.value.currentAmount;
+
+      if (isPayFullAmount.value == "full") {
+        params["amount"] = amount.value.actualAmount;
+      } else {
+        params["amount"] = amount.value.currentAmount;
+      }
 
       params["comments"] = "demo command";
       params["effectiveDate"] = "2023-06-22";
@@ -622,6 +623,11 @@ export default {
         params["paymentMethodId"] = selectedPaymentDetails.value.paymentMethod;
       } else {
         params["paymentMethodId"] = selectedPaymentDetails.value.paymentMethod;
+      }
+      if (isPayFullAmount.value == "full") {
+        console.log("fullamt");
+      } else {
+        console.log("notfull");
       }
 
       console.log(params);

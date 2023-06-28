@@ -14,7 +14,7 @@
           no-caps
           icon="upload"
           no-wrap
-          @click="selectFile"
+          @click="fileInputRef.pickFiles()"
         />
         <q-file
           v-model="invoiceFile"
@@ -210,7 +210,11 @@
               label="Cancel"
               color="red"
               v-close-popup
-              @click="closePreview()"
+              @click="
+                (previewDialog = false),
+                  (tempFileUrl = ''),
+                  (invoiceFile = null)
+              "
             ></q-btn>
             <q-btn
               rounded
@@ -316,33 +320,35 @@
             v-ripple
             class="bg-secondary text-primary"
             style="border-radius: 5px"
-            @click="getInvoiceinfo(data.invoiceId)"
-            :active="invoiceInfo.invoiceId === data.invoiceId ? true : false"
+            @click="getInvoiceDetails(data.invoiceDetail.invoiceId)"
+            :active="invoiceDetail.invoiceId === data.invoiceId ? true : false"
           >
             <!-- avator -->
             <q-item-section class="">
-              <q-item-label class="text-bold">
-                {{ data.vendorDetails.organizationName }}
+              <q-item-label>
+                Invoice ID: {{ data.invoiceDetail.invoiceId }}
               </q-item-label>
-              <q-item-label> {{ data.invoiceInfo.invoiceId }} </q-item-label>
               <q-item-label class="text-bold">
-                {{ data.vendorDetails.emailAddress }}
+                {{ data.vendorDetails?.organizationName }}
+              </q-item-label>
+              <q-item-label class="text-bold">
+                {{ data.vendorDetails?.emailAddress }}
               </q-item-label>
             </q-item-section>
 
             <!-- name -->
             <q-item-section avatar class="">
               <q-item-label class="text-bold">
-                Total: {{ data.invoiceInfo.invoiceTotal }}
+                Total: {{ data.invoiceDetail?.invoiceTotal }}
               </q-item-label>
-              <q-item-label
-                >Unpaid: {{ data.invoiceInfo.unpaidTotal }}
+              <q-item-label>
+                Unpaid: {{ data.invoiceDetail?.unpaidTotal }}
               </q-item-label>
               <q-item-label class="text-bold">
                 <q-badge
                   rounded
-                  :color="statusColor(data.invoiceInfo.statusId)?.color"
-                  :label="statusColor(data.invoiceInfo.statusId)?.message"
+                  :color="statusColor(data.invoiceDetail.statusId)?.color"
+                  :label="statusColor(data.invoiceDetail.statusId)?.message"
                 >
                 </q-badge>
               </q-item-label>
@@ -362,10 +368,10 @@
             style="border-radius: 0 0 70px 70px"
           >
             <div class="text-primary text-h6">
-              {{ invoiceInfo.vendorDetails.organizationName }}
+              {{ invoiceDetail.fromParty?.organization.organizationName }}
             </div>
             <div class="text-blue-grey-1">
-              {{ invoiceInfo.invoiceDetail.invoiceId }}
+              {{ invoiceDetail.invoiceId }}
             </div>
 
             <!-- cancel btn -->
@@ -413,12 +419,11 @@
                       <q-item-label>
                         <q-badge
                           :color="
-                            statusColor(invoiceInfo.invoiceDetail.statusId)
-                              ?.color
+                            statusColor(invoiceDetail.status?.statusId)?.color
                           "
                           class="text-h6"
                         >
-                          {{ invoiceInfo.invoiceDetail.description }}
+                          {{ invoiceDetail.status?.description }}
                         </q-badge>
                       </q-item-label>
                     </q-item-section>
@@ -431,7 +436,7 @@
                     <q-item-section>
                       <q-item-label overline>Vendor Name:</q-item-label>
                       <q-item-label>{{
-                        invoiceInfo.vendorDetails.organizationName
+                        invoiceDetail.fromParty?.organization.organizationName
                       }}</q-item-label>
                     </q-item-section>
 
@@ -441,7 +446,7 @@
                         rounded
                         color="primary"
                         label="View Vendor"
-                        @click="vendoPage(invoiceInfo.vendorDetails.partyId)"
+                        @click="vendoPage(invoiceDetail.fromParty?.partyId)"
                       />
                     </q-item-section>
                   </q-item>
@@ -451,9 +456,9 @@
                 <div class="full-width q-py-md">
                   <q-item>
                     <q-item-section>
-                      <q-item-label overline>From party Name:</q-item-label>
+                      <q-item-label overline>Organization Name:</q-item-label>
                       <q-item-label>{{
-                        invoiceInfo.fromPartyDetails.organizationName
+                        invoiceDetail.toParty?.organization.organizationName
                       }}</q-item-label>
                     </q-item-section>
                   </q-item>
@@ -465,7 +470,7 @@
                     <q-item-section>
                       <q-item-label overline>View Invoice:</q-item-label>
                       <q-item-label>{{
-                        invoiceInfo.invoiceDetail.externalId
+                        invoiceDetail.externalId
                       }}</q-item-label>
                     </q-item-section>
 
@@ -504,13 +509,11 @@
                       Price
                     </q-item-section>
                   </q-item>
-
                   <q-separator />
-
                   <!-- rows -->
                   <q-item
                     class="row justify-between"
-                    v-for="(data, index) in invoiceInfo.items"
+                    v-for="(data, index) in invoiceDetail.items"
                     :key="index"
                   >
                     <q-item-section class="col-1 text-weight-bold">
@@ -539,7 +542,7 @@
 
             <!-- transections -->
             <div
-              v-if="invoiceInfo?.paymentApplications"
+              v-if="invoiceDetail?.paymentApplications"
               class="bg-secondary q-pa-lg q-ma-sm"
               style="border-radius: 13px"
             >
@@ -548,7 +551,7 @@
               </div>
               <q-item
                 class="q-my-sm q-pa-md"
-                v-for="data in invoiceInfo.paymentApplications"
+                v-for="data in invoiceDetail.paymentApplications"
                 :key="data"
                 clickable
                 @click="paymentPage(data.paymentId)"
@@ -583,18 +586,18 @@
               </div>
               <q-item
                 class="q-my-sm"
-                v-for="data in invoiceInfo.invoiceHistory"
+                v-for="data in invoiceDetail.invoiceHistory"
                 :key="data"
               >
                 <q-item-section>
-                  <q-item-label
-                    >Date :
+                  <q-item-label>
+                    Date :
                     {{
                       formateTimeStamp(data.changedDate).formattedTimestamp
                     }}</q-item-label
                   >
-                  <q-item-label overline
-                    >Time :{{
+                  <q-item-label overline>
+                    Time :{{
                       formateTimeStamp(data.changedDate).time
                     }}</q-item-label
                   >
@@ -632,9 +635,7 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label>
-                    {{ invoiceInfo.invoiceDetail.invoiceTotal }}
-                  </q-item-label>
+                  <q-item-label>{{ invoiceDetail.invoiceTotal }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -646,10 +647,7 @@
 
                 <q-item-section avatar>
                   <q-item-label>
-                    {{
-                      invoiceInfo.invoiceDetail.invoiceTotal -
-                      invoiceInfo.invoiceDetail.unpaidTotal
-                    }}
+                    {{ invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -661,9 +659,7 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label>
-                    {{ invoiceInfo.invoiceDetail.unpaidTotal }}
-                  </q-item-label>
+                  <q-item-label>{{ invoiceDetail.unpaidTotal }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -678,7 +674,7 @@
                   @click="startRefund()"
                 />
 
-                <div v-if="invoiceInfo.statusId == 'InvoiceIncoming'">
+                <div v-if="invoiceDetail.statusId == 'InvoiceIncoming'">
                   <q-btn
                     rounded
                     outline
@@ -689,14 +685,14 @@
                 </div>
 
                 <q-btn
-                  v-if="invoiceInfo.statusId == 'InvoiceApproved'"
+                  v-if="invoiceDetail.statusId == 'InvoiceApproved'"
                   rounded
                   label="Pay"
                   color="primary"
                   @click="redirect('invoicePayPage')"
                 /> -->
                 <q-btn
-                  v-if="invoiceInfo.invoiceDetail.statusId == 'InvoiceApproved'"
+                  v-if="invoiceDetail.statusId == 'InvoiceApproved'"
                   rounded
                   label="Pay"
                   color="primary"
@@ -704,7 +700,7 @@
                 />
 
                 <q-btn
-                  v-if="invoiceInfo.invoiceDetail.statusId == 'InvoicePmtSent'"
+                  v-if="invoiceDetail.statusId == 'InvoicePmtSent'"
                   label="Refund"
                   rounded
                   color="primary"
@@ -808,7 +804,7 @@ export default {
     });
 
     // invoice info items
-    const invoiceInfo = ref({});
+    const invoiceDetail = ref({});
     const toStatusFlow = ref([]);
 
     // file upload
@@ -859,7 +855,6 @@ export default {
 
       // params["pageSize"] = 40;
       // params["index"] = 0;
-      console.log(params);
 
       if (hasMoreDataToLoad.value) {
         api({
@@ -910,20 +905,20 @@ export default {
       prevScrollTop = scrollTop;
     };
 
-    async function getInvoiceinfo(invoiseId) {
-      invoiceInfo.value = {};
+    async function getInvoiceDetails(invoiseId) {
+      invoiceDetail.value = "";
 
       await api({
         method: "GET",
         url: `invoices/${invoiseId}`,
         headers: useAuth.authKey,
       }).then((res) => {
-        invoiceInfo.value = res.data;
+        invoiceDetail.value = res.data;
       });
 
-      route.params.invoiceId = invoiceInfo.value.invoiceDetail.invoiceId;
-      getInvoiceHistory(invoiceInfo.value.invoiceDetail.invoiceId);
-      getToStatusFlow(invoiceInfo.value.invoiceDetail.statusId);
+      route.params.invoiceId = invoiceDetail.value.invoiceId;
+      getInvoiceHistory(invoiceDetail.value.invoiceId);
+      getToStatusFlow(invoiceDetail?.value.statusId);
     }
 
     function getInvoiceHistory(id) {
@@ -935,7 +930,22 @@ export default {
         },
         headers: useAuth.authKey,
       }).then((res) => {
-        invoiceInfo.value["invoiceHistory"] = res.data.invoiceHistoryList;
+        invoiceDetail.value["invoiceHistory"] = res.data.reverseList;
+      });
+    }
+
+    async function getToStatusFlow(id) {
+      toStatusFlow.value = [];
+
+      await api({
+        method: "GET",
+        headers: useAuth.authKey,
+        url: "status/StatusFlowTransitionToDetail",
+        params: {
+          statusId: id,
+        },
+      }).then((res) => {
+        toStatusFlow.value.push(...res.data.statusDetailList);
       });
     }
 
@@ -954,37 +964,20 @@ export default {
       });
     }
 
-    function getToStatusFlow(id) {
-      toStatusFlow.value = [];
-      console.log(id);
-      api({
-        method: "GET",
-        headers: useAuth.authKey,
-        url: "status/StatusFlowTransitionToDetail",
-        params: {
-          statusId: id,
-        },
-      }).then((data) => {
-        data.data.statusDetailList.map((d) => {
-          toStatusFlow.value.push(d);
-        });
-      });
-    }
-
     async function changeInvoiceStatus(statusIds) {
       await api({
         method: "POST",
         headers: useAuth.authKey,
         url: "invoices/invoiceStatusUpdate",
         params: {
-          invoiceId: invoiceInfo.value.invoiceDetail.invoiceId,
+          invoiceId: invoiceDetail.value.invoiceId,
           vendorStatusId: statusIds.statusId,
           toStatusId: statusIds.toStatusId,
         },
       }).then((data) => {
-        console.log(data);
+        // console.log(data);
       });
-      getInvoiceinfo(route.params.invoiceId);
+      getInvoiceDetails(route.params.invoiceId);
       clearInvoiceList();
       getInvoiceList();
     }
@@ -1091,7 +1084,7 @@ export default {
 
     function startRefund() {
       const params = {
-        invoiceId: invoiceInfo.value.invoiceInfo.invoiceId,
+        invoiceId: invoiceDetail.value.invoiceId,
         refundAmount: 300,
         comments: "commandss",
         updateInvoice: "{false}",
@@ -1259,16 +1252,6 @@ export default {
       getInvoiceList();
     };
 
-    const closePreview = () => {
-      previewDialog.value = false;
-      tempFileUrl.value = "";
-      invoiceFile.value = null;
-    };
-
-    const selectFile = () => {
-      fileInputRef.value.pickFiles();
-    };
-
     function paymentPage(id) {
       router.push({
         name: "paymentInfo_page",
@@ -1279,7 +1262,7 @@ export default {
     }
 
     onMounted(() => {
-      getInvoiceinfo(route.params.invoiceId);
+      getInvoiceDetails(route.params.invoiceId);
       getTabEnumList();
       getDateFilterEnumList();
       clearInvoiceList();
@@ -1292,8 +1275,7 @@ export default {
       // file upload
       invoiceFileUpload,
       fileUploadHandler,
-      closePreview,
-      selectFile,
+
       isFileUploading,
       invoiceFile,
       approveConfirmDailog,
@@ -1312,7 +1294,7 @@ export default {
       enumTabList,
       getInvoiceList,
       currentTab,
-      getInvoiceinfo,
+      getInvoiceDetails,
       search,
       searchVendor,
       searchOptions,
@@ -1343,7 +1325,7 @@ export default {
       vendorFilterSelected,
 
       // invoice info side
-      invoiceInfo,
+      invoiceDetail,
       toStatusFlow,
       changeInvoiceStatus,
       statusColor,

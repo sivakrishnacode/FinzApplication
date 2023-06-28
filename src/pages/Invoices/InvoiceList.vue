@@ -454,8 +454,6 @@ export default {
     const tempFileUrl = ref("");
 
     const isLoading = ref(false);
-    const searchOptions = ref([]);
-    const search = ref("");
 
     // date filter enum section
     const daysEnumerationsList = ref([]);
@@ -465,6 +463,9 @@ export default {
     const isDaysFilterActive = ref(false);
     const isDateFilterActiveForChip = ref(false);
     const daysFilterSelected = ref("");
+
+    const searchOptions = ref([]);
+    const search = ref("");
 
     // vendor filter
     const isVendorFilterActiveForChip = ref(false);
@@ -483,6 +484,10 @@ export default {
       fromDate: "",
       thruDate: "",
     });
+
+    const currentTab = ref("allInvoice");
+
+    const enumTabList = ref([]);
 
     const rows = ref([]);
     const columns = ref([
@@ -531,10 +536,6 @@ export default {
       },
     ]);
     const tableRef = ref(null);
-
-    const currentTab = ref("allInvoice");
-
-    const enumTabList = ref([]);
 
     const pagination = ref({
       sortBy: "column",
