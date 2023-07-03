@@ -329,10 +329,10 @@
                 Invoice ID: {{ data.invoiceDetail.invoiceId }}
               </q-item-label>
               <q-item-label class="text-bold">
-                {{ data.vendorDetails?.organizationName }}
+                {{ data.fromParty.organizationName }}
               </q-item-label>
               <q-item-label class="text-bold">
-                {{ data.vendorDetails?.emailAddress }}
+                {{ data.fromParty.emailAddress }}
               </q-item-label>
             </q-item-section>
 
@@ -864,7 +864,8 @@ export default {
           params: params,
         })
           .then((res) => {
-            res.data.invoiceLists.map((data) => {
+            console.log(res.data);
+            res.data.invoiceInfoList.map((data) => {
               invoiceList.value.push(data);
             });
 

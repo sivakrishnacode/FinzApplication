@@ -257,27 +257,27 @@
             <q-tr
               :props="props"
               class="text-center cursor-pointer"
-              @click="accountingInfo(props.row.accountingDetail.paymentId)"
+              @click="accountingInfo(props.row.transactionDetail.paymentId)"
               style="border: 2px solid gray"
             >
               <!-- date -->
               <q-td key="date">
                 <div style="font-size: 15px">
-                  {{ dateModifer(props.row.accountingDetail.transactionDate) }}
+                  {{ dateModifer(props.row.transactionDetail.transactionDate) }}
                 </div>
               </q-td>
 
               <!-- trans id -->
               <q-td key="transectionId">
                 <div style="font-size: 15px">
-                  {{ props.row.accountingDetail.acctgTransId }}
+                  {{ props.row.transactionDetail.acctgTransId }}
                 </div>
               </q-td>
 
               <!-- org name -->
               <q-td key="paymentId">
                 <div style="font-size: 15px">
-                  {{ props.row.accountingDetail.paymentId }}
+                  {{ props.row.transactionDetail.paymentId }}
                 </div>
               </q-td>
 
@@ -289,7 +289,7 @@
               <!-- contact num -->
               <q-td key="amount">
                 <div style="font-size: 15px">
-                  {{ props.row.accountingDetail.amount }}
+                  {{ props.row.transactionDetail.amount }}
                 </div>
               </q-td>
             </q-tr>
@@ -442,7 +442,7 @@ export default {
       sortBy: "column",
       descending: false,
       page: 1,
-      rowsPerPage: 5,
+      rowsPerPage: 10,
       rowsNumber: 0,
     });
 
@@ -484,11 +484,12 @@ export default {
         params: params,
       })
         .then((res) => {
-          pagination.value.rowsNumber = res.data.entryListsPageSize;
+          console.log(res.data);
+          pagination.value.rowsNumber = res.data.acctgTransAndEntryListCount;
           pagination.value.page = page;
           pagination.value.rowsPerPage = rowsPerPage;
 
-          rows.value.push(...res.data.accountingLists);
+          rows.value.push(...res.data.transactionInfoList);
           isLoading.value = false;
         })
         .catch((err) => {

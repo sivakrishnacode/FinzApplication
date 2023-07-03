@@ -271,16 +271,16 @@
               }}
             </q-td>
 
-            <q-td key="PaymentDate" style="font-size: 15px">
+            <q-td key="PaymentId" style="font-size: 15px">
               {{ props.row.paymentDetail.paymentId }}
             </q-td>
 
             <q-td key="invoiceId" style="font-size: 15px">
-              {{ props.row.paymentDetail.fromPartyId }}
+              {{ props.row.toParty.partyId }}
             </q-td>
 
             <q-td key="vendorName" style="font-size: 15px">
-              {{ props.row.vendorDetails.organizationName }}
+              {{ props.row.toParty.organizationName }}
             </q-td>
             <q-td key="amount" style="font-size: 15px"
               >{{ props.row.paymentDetail.amount }}
@@ -394,11 +394,11 @@ export default {
         align: "center",
       },
       {
-        name: "PaymentDate",
+        name: "PaymentId",
         required: true,
-        field: " PaymentDate",
+        field: " PaymentId",
         required: true,
-        label: "Payment Date",
+        label: "Payment ID",
         align: "center",
       },
       {
@@ -464,12 +464,8 @@ export default {
         params["thruDate"] = correctDateRange.value.thruDate;
       }
 
-      // params["pageSize"] = pagination.value.rowsPerPage;
-      // params["pageIndex"] = pagination.value.page - 1;
-      params["pageSize"] = 50;
-      params["pageIndex"] = 0;
-
-      console.log(params);
+      params["pageSize"] = pagination.value.rowsPerPage;
+      params["pageIndex"] = pagination.value.page - 1;
 
       api({
         method: "GET",
@@ -478,14 +474,13 @@ export default {
         params: params,
       })
         .then((res) => {
-          console.log(res);
           rows.value = [];
-          res.data.paymentLists.map((data) => {
+          res.data.paymentInfoList.map((data) => {
             rows.value.push(data);
           });
-          // pagination.value.rowsNumber = res.data.paymentListCount;
-          // pagination.value.page = page;
-          // pagination.value.rowsPerPage = rowsPerPage;
+          pagination.value.rowsNumber = res.data.paymentListCount;
+          pagination.value.page = pagination.value.page;
+          pagination.value.rowsPerPage = pagination.value.rowsPerPage;
           params = {};
         })
         .catch((err) => {

@@ -324,13 +324,13 @@
 
               <q-td key="Vendor">
                 <div style="font-size: 15px">
-                  {{ props.row.vendorDetails.organizationName }}
+                  {{ props.row.fromParty.organizationName }}
                 </div>
               </q-td>
 
               <q-td key="Email">
                 <div style="font-size: 15px">
-                  {{ props.row.vendorDetails.emailAddress }}
+                  {{ props.row.fromParty.emailAddress }}
                 </div>
               </q-td>
 
@@ -577,7 +577,6 @@ export default {
       params["pageSize"] = pagination.value.rowsPerPage;
       params["pageIndex"] = pagination.value.page - 1;
 
-      console.log(params);
       await api({
         method: "GET",
         headers: useAuth.authKey,
@@ -588,7 +587,7 @@ export default {
           rows.value = [];
           pagination.value.rowsNumber = res.data.invoiceListCount;
 
-          res.data.invoiceLists.map((data) => {
+          res.data.invoiceInfoList.map((data) => {
             rows.value.push(data);
           });
           params = {};
