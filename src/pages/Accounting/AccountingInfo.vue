@@ -42,6 +42,7 @@
               v-ripple
               class="bg-secondary text-primary"
               style="border-radius: 5px"
+              @click="getAccountingInfo(data.transactionDetail.acctgTransId)"
             >
               <!-- avator -->
               <q-item-section class="">
@@ -316,10 +317,12 @@ export default {
       getAccountingInfo(paymentId);
       getAccountingList();
     });
+
     return {
       paymentId,
       accountingList,
       dateModifer,
+      getAccountingInfo,
     };
   },
 };
