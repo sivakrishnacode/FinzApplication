@@ -5,7 +5,7 @@
       <div class="q-pa-md q-gutter-y-md">
         <!-- search and date -->
         <div class="row no-wrap">
-          <q-select
+          <!-- <q-select
             dense
             outlined
             rounded
@@ -16,7 +16,7 @@
             fill-input
             input-debounce="0"
           >
-          </q-select>
+          </q-select> -->
 
           <!-- date filter -->
           <q-btn color="primary" icon="filter_alt" rounded> </q-btn>
@@ -42,7 +42,7 @@
               v-ripple
               class="bg-secondary text-primary"
               style="border-radius: 5px"
-              @click="getAccountingInfo(data.transactionDetail.acctgTransId)"
+              @click="getAccountingInfo(data.transactionDetail.paymentId)"
             >
               <!-- avator -->
               <q-item-section class="">
@@ -81,8 +81,12 @@
             class="bg-secondary text-center q-pa-sm q-gutter-y-sm"
             style="border-radius: 0 0 70px 70px"
           >
-            <div class="text-primary text-h6">invoiceDetail.fromParty</div>
-            <div class="text-blue-grey-1">{{ paymentId }}</div>
+            <div class="text-primary text-h6">
+              {{ accountingDetails[0]?.otherPartyName }}
+            </div>
+            <div class="text-blue-grey-1">
+              {{ accountingDetails[0]?.paymentId }}
+            </div>
 
             <!-- cancel btn -->
             <div class="row absolute" style="top: 50px; right: 70px">
@@ -111,7 +115,7 @@
                   Transection ID
                 </q-item-label>
                 <q-item-label class="row justify-center text-h6">
-                  1836390
+                  {{ accountingDetails[0]?.acctgTransId }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -121,11 +125,11 @@
           <div class="col-4">
             <q-item>
               <q-item-section>
-                <q-item-label class="row justify-center"
-                  >payment ID</q-item-label
-                >
+                <q-item-label class="row justify-center">
+                  payment ID
+                </q-item-label>
                 <q-item-label class="row justify-center text-h6">
-                  1836390
+                  {{ accountingDetails[0]?.paymentId }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -136,11 +140,11 @@
             <q-item>
               <q-item-section>
                 <q-item-label class="row justify-center">
-                  invoice ID
+                  Party ID
                 </q-item-label>
-                <q-item-label class="row justify-center text-h6"
-                  >1836390</q-item-label
-                >
+                <q-item-label class="row justify-center text-h6">
+                  {{ accountingDetails[0]?.otherPartyId }}
+                </q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -156,25 +160,38 @@
             style="height: 600px; width: 40%; border-radius: 15px"
           >
             <div class="column justify-center full-height q-pa-md">
-              <q-item clickable v-ripple>
+              <q-item>
                 <q-item-section>
                   <q-item-label caption>Organization:</q-item-label>
-                  <q-item-label>Integrin Enterprice Solution</q-item-label>
+                  <q-item-label>{{
+                    accountingDetails[0]?.organizationName
+                  }}</q-item-label>
                 </q-item-section>
               </q-item>
 
-              <q-item clickable v-ripple class="q-my-lg">
+              <q-item class="q-my-lg">
                 <q-item-section>
                   <q-item-label caption>Vendor:</q-item-label>
-                  <q-item-label>Sivakrishna</q-item-label>
-                  <q-item-label>sivakrishnacoc@gmail.com</q-item-label>
+                  <q-item-label>
+                    {{ accountingDetails[0]?.otherPartyName }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
 
-              <q-item clickable v-ripple>
+              <q-item>
                 <q-item-section>
                   <q-item-label caption>Posted date:</q-item-label>
-                  <q-item-label>03-06-2023 12:45AM</q-item-label>
+                  <q-item-label>
+                    {{
+                      formateTimeStamp(accountingDetails[0]?.postedDate)
+                        .formattedTimestamp
+                    }}
+                  </q-item-label>
+                  <q-item-label>
+                    {{
+                      formateTimeStamp(accountingDetails[0]?.postedDate).time
+                    }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </div>
@@ -183,16 +200,19 @@
           <!-- right -->
           <div
             class="bg-secondary q-ma-md full-width"
-            style="border-radius: 15px"
+            style="border-radius: 15px; height: 600px"
           >
-            <div class="q-pa-lg q-gutter-y-md">
+            <div class="column justify-center q-pa-lg full-height">
               <!-- title -->
               <div class="text-h6">
                 General Ledger account transection details
               </div>
 
               <!-- items list -->
-              <div class="q-pa-sm" style="border: 1px solid black">
+              <div
+                class="q-pa-sm"
+                style="border: 1px solid gray; border-radius: 20px"
+              >
                 <!-- columns -->
                 <q-item>
                   <q-item-section class="col-4 text-weight-bold text-h6">
@@ -212,20 +232,34 @@
                     Total
                   </q-item-section>
                 </q-item>
+
                 <q-separator />
+
                 <!-- rows -->
-                <q-item v-for="data in 2" :key="data">
+                <q-item v-for="data in accountingDetails" :key="data">
                   <q-item-section class="col-4 text-weight-bold">
-                    tenent1234
+                    {{ data.accountName }}
                   </q-item-section>
-                  <q-item-section class="col-3 text-weight-bold">
-                    + $2340
+                  <q-item-section
+                    v-if="data.debitCreditFlag == 'C'"
+                    class="col-3 text-weight-bold"
+                  >
+                    {{ data.amount }}
                   </q-item-section>
-                  <q-item-section class="col-3 text-weight-bold">
-                    - $2340
+                  <q-item-section v-else class="col-3 text-weight-bold">
                   </q-item-section>
+                  <q-item-section
+                    v-if="data.debitCreditFlag == 'D'"
+                    class="col-3 text-weight-bold"
+                  >
+                    {{ data.amount }}
+                  </q-item-section>
+                  <q-item-section
+                    v-else
+                    class="col-3 text-weight-bold"
+                  ></q-item-section>
                   <q-item-section class="col-2 text-weight-bold">
-                    $2340
+                    ${{ data.amount }}
                   </q-item-section>
                 </q-item>
               </div>
@@ -235,12 +269,27 @@
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Currency</q-item-label>
-                    <q-item-label>INR</q-item-label>
+                    <q-item-label>
+                      {{ accountingDetails[0]?.amountUomId }}
+                    </q-item-label>
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label overline>Accounting System:</q-item-label>
-                    <q-item-label>Posted</q-item-label>
-                    <q-item-label>03-02-2023</q-item-label>
+                    <q-item-label overline> Accounting System: </q-item-label>
+                    <q-item-label>
+                      Posted:
+                      {{ accountingDetails[0]?.isPosted }}
+                    </q-item-label>
+                    <q-item-label>
+                      {{
+                        formateTimeStamp(accountingDetails[0]?.postedDate)
+                          .formattedTimestamp
+                      }}
+                    </q-item-label>
+                    <q-item-label>
+                      {{
+                        formateTimeStamp(accountingDetails[0]?.postedDate).time
+                      }}
+                    </q-item-label>
                   </q-item-section>
                 </q-item>
               </div>
@@ -265,8 +314,7 @@ export default {
     const useAuth = useAuthStore();
 
     const accountingList = ref([]);
-
-    var paymentId = route.params.paymentId;
+    const accountingDetails = ref({});
 
     // getaccounting list
     function getAccountingList() {
@@ -276,7 +324,6 @@ export default {
         url: "accounting",
       })
         .then((res) => {
-          console.log(res);
           accountingList.value.push(...res.data.transactionInfoList);
         })
         .catch((err) => {
@@ -291,7 +338,7 @@ export default {
         url: `accounting/${id}`,
       })
         .then((res) => {
-          // console.log(res);
+          accountingDetails.value = res.data.entryLists;
         })
         .catch((err) => {
           console.log(err);
@@ -301,7 +348,7 @@ export default {
     // date formater 22 jun 2023
     const dateModifer = (val) => {
       if (val == undefined) {
-        console.log("undef");
+        console.log("date not valid");
         return "";
       } else {
         const date = new Date(val);
@@ -313,16 +360,35 @@ export default {
       }
     };
 
+    const formateTimeStamp = (timeStamp) => {
+      const date = new Date(timeStamp);
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
+
+      const formattedTimestamp = `${day}-${month}-${year}`;
+
+      const time = `${hours - 12}:${minutes} ${
+        hours >= 12 && hours < 0 ? "AM" : "PM"
+      }`;
+      return { formattedTimestamp, time };
+    };
+
     onMounted(() => {
-      getAccountingInfo(paymentId);
+      getAccountingInfo(route.params.paymentId);
       getAccountingList();
     });
 
     return {
-      paymentId,
       accountingList,
+      formateTimeStamp,
       dateModifer,
       getAccountingInfo,
+      accountingDetails,
     };
   },
 };
