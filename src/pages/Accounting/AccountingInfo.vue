@@ -1,7 +1,7 @@
 <template>
   <div class="row no-wrap">
     <!-- sidelist -->
-    <div style="min-width: 400px" v-if="!$q.screen.lt.md">
+    <div style="min-width: 400px">
       <div class="q-pa-md q-gutter-y-md">
         <!-- search and date -->
         <div class="row no-wrap">
@@ -46,23 +46,23 @@
               <!-- avator -->
               <q-item-section class="">
                 <q-item-label class="text-bold">
-                  {{ data.accountingDetail.acctgTransId }}
+                  {{ data.transactionDetail.acctgTransId }}
                 </q-item-label>
                 <q-item-label class="text-bold">
-                  {{ data.vendorDetails.organizationName }}
+                  {{ data.otherParty.organizationName }}
                 </q-item-label>
                 <q-item-label>
-                  {{ data.vendorDetails.emailAddress }}
+                  {{ data.otherParty.emailAddress }}
                 </q-item-label>
               </q-item-section>
 
               <!-- name -->
               <q-item-section avatar>
                 <q-item-label class="text-bold">
-                  $ {{ data.accountingDetail.amount }}
+                  $ {{ data.transactionDetail.amount }}
                 </q-item-label>
                 <q-item-label>
-                  {{ dateModifer(data.accountingDetail.transactionDate) }}
+                  {{ dateModifer(data.transactionDetail.transactionDate) }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -275,7 +275,8 @@ export default {
         url: "accounting",
       })
         .then((res) => {
-          accountingList.value.push(...res.data.accountingLists);
+          console.log(res);
+          accountingList.value.push(...res.data.transactionInfoList);
         })
         .catch((err) => {
           console.log(err);
@@ -289,7 +290,7 @@ export default {
         url: `accounting/${id}`,
       })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
         })
         .catch((err) => {
           console.log(err);
