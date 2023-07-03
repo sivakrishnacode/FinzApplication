@@ -1,7 +1,7 @@
 <template>
   <div class="row no-wrap">
     <!-- sidelist -->
-    <div class="bg-red" style="min-width: 400px" v-if="!$q.screen.lt.md">
+    <div style="min-width: 400px" v-if="!$q.screen.lt.md">
       <div class="q-pa-md q-gutter-y-md">
         <!-- search and date -->
         <div class="row no-wrap">
@@ -35,7 +35,7 @@
             No data
           </div> -->
             <q-item
-              v-for="data in 12"
+              v-for="data in accountingList"
               :key="data"
               active-class="text-bold "
               clickable
@@ -45,19 +45,24 @@
             >
               <!-- avator -->
               <q-item-section class="">
-                <q-item-label> {{ acctgTransId }} </q-item-label>
-                <q-item-label class="text-bold"> Sivakrishna </q-item-label>
                 <q-item-label class="text-bold">
-                  sivakrishnacoc@gmail.com
+                  {{ data.accountingDetail.acctgTransId }}
+                </q-item-label>
+                <q-item-label class="text-bold">
+                  {{ data.vendorDetails.organizationName }}
+                </q-item-label>
+                <q-item-label>
+                  {{ data.vendorDetails.emailAddress }}
                 </q-item-label>
               </q-item-section>
 
               <!-- name -->
-              <q-item-section avatar class="">
-                <q-item-label class="text-bold"> $ 4668 </q-item-label>
-
+              <q-item-section avatar>
                 <q-item-label class="text-bold">
-                  <q-badge rounded color="green">Paid </q-badge>
+                  $ {{ data.accountingDetail.amount }}
+                </q-item-label>
+                <q-item-label>
+                  {{ dateModifer(data.accountingDetail.transactionDate) }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -76,7 +81,7 @@
             style="border-radius: 0 0 70px 70px"
           >
             <div class="text-primary text-h6">invoiceDetail.fromParty</div>
-            <div class="text-blue-grey-1">{{ acctgTransId }}</div>
+            <div class="text-blue-grey-1">{{ paymentId }}</div>
 
             <!-- cancel btn -->
             <div class="row absolute" style="top: 50px; right: 70px">
@@ -179,9 +184,64 @@
             class="bg-secondary q-ma-md full-width"
             style="border-radius: 15px"
           >
-            <div class="q-pa-lg">
+            <div class="q-pa-lg q-gutter-y-md">
+              <!-- title -->
               <div class="text-h6">
                 General Ledger account transection details
+              </div>
+
+              <!-- items list -->
+              <div class="q-pa-sm" style="border: 1px solid black">
+                <!-- columns -->
+                <q-item>
+                  <q-item-section class="col-4 text-weight-bold text-h6">
+                    Name
+                  </q-item-section>
+                  <q-item-section
+                    class="col-3 text-weight-bold text-h6 text-green"
+                  >
+                    Credit
+                  </q-item-section>
+                  <q-item-section
+                    class="col-3 text-weight-bold text-h6 text-red"
+                  >
+                    Debit
+                  </q-item-section>
+                  <q-item-section class="col-2 text-weight-bold text-h6">
+                    Total
+                  </q-item-section>
+                </q-item>
+                <q-separator />
+                <!-- rows -->
+                <q-item v-for="data in 2" :key="data">
+                  <q-item-section class="col-4 text-weight-bold">
+                    tenent1234
+                  </q-item-section>
+                  <q-item-section class="col-3 text-weight-bold">
+                    + $2340
+                  </q-item-section>
+                  <q-item-section class="col-3 text-weight-bold">
+                    - $2340
+                  </q-item-section>
+                  <q-item-section class="col-2 text-weight-bold">
+                    $2340
+                  </q-item-section>
+                </q-item>
+              </div>
+
+              <!-- details -->
+              <div>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label overline>Currency</q-item-label>
+                    <q-item-label>INR</q-item-label>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label overline>Accounting System:</q-item-label>
+                    <q-item-label>Posted</q-item-label>
+                    <q-item-label>03-02-2023</q-item-label>
+                  </q-item-section>
+                </q-item>
               </div>
             </div>
           </div>
@@ -192,23 +252,80 @@
 </template>
 
 <script>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import { api } from "src/boot/axios";
+import { useAuthStore } from "src/stores/useAuthStore";
 
 export default {
   name: "accountingInfo_page",
   setup() {
     const route = useRoute();
+    const useAuth = useAuthStore();
 
-    var acctgTransId = route.params.acctgTransId;
+    const accountingList = ref([]);
+
+    var paymentId = route.params.paymentId;
+
+    // getaccounting list
+    function getAccountingList() {
+      api({
+        method: "GET",
+        headers: useAuth.authKey,
+        url: "accounting",
+      })
+        .then((res) => {
+          accountingList.value.push(...res.data.accountingLists);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    function getAccountingInfo(id) {
+      api({
+        method: "GET",
+        headers: useAuth.authKey,
+        url: `accounting/${id}`,
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    // date formater 22 jun 2023
+    const dateModifer = (val) => {
+      if (val == undefined) {
+        console.log("undef");
+        return "";
+      } else {
+        const date = new Date(val);
+        const options = { year: "numeric", month: "short", day: "2-digit" };
+        const formattedDate = new Intl.DateTimeFormat("en-US", options).format(
+          date
+        );
+        return formattedDate; // outputs "06 JUN, 2013"
+      }
+    };
+
     onMounted(() => {
-      console.log(acctgTransId);
+      getAccountingInfo(paymentId);
+      getAccountingList();
     });
     return {
-      acctgTransId,
+      paymentId,
+      accountingList,
+      dateModifer,
     };
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+::-webkit-scrollbar {
+  display: none;
+}
+</style>

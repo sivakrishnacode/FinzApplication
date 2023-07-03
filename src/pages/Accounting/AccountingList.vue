@@ -169,30 +169,8 @@
         </q-btn>
       </div>
 
-      <!-- quick filter -->
-      <div class="q-pa-md">
-        <q-tabs
-          v-model="currentTab"
-          active-color="white bg-primary"
-          class="q-mx-md bg-grey-2 q-pa-sm"
-          indicator-color="transparent"
-          no-caps
-          dense
-          style="border-radius: 12px; border: 1px solid silver"
-          @update:model-value="getAccountingList({ pagination: pagination })"
-        >
-          <q-tab
-            v-for="data in enumTabList"
-            :key="data"
-            :label="data.description"
-            :name="data.enumId"
-            style="border-radius: 20px"
-          />
-        </q-tabs>
-      </div>
-
       <!-- filteers -->
-      <div class="row justify-center">
+      <div class="row justify-center q-my-sm">
         <q-chip
           v-model="isDaysFilterActive"
           color="primary"
@@ -243,7 +221,6 @@
           :loading="isLoading"
           separator="horizontal"
           style="border-radius: 20px"
-          class="q-py-md"
           flat
           hide-bottom
         >
@@ -280,7 +257,7 @@
             <q-tr
               :props="props"
               class="text-center cursor-pointer"
-              @click="accountingInfo(props.row.accountingDetail.acctgTransId)"
+              @click="accountingInfo(props.row.accountingDetail.paymentId)"
               style="border: 2px solid gray"
             >
               <!-- date -->
@@ -368,7 +345,7 @@
 </template>
 
 <script>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref } from "vue";
 import { useQuasar } from "quasar";
 import { api } from "src/boot/axios";
 import { useRouter } from "vue-router";
@@ -436,7 +413,7 @@ export default {
         required: true,
         field: "transectionId",
         required: true,
-        label: "transectionId",
+        label: "Transection Id",
         align: "center",
       },
       {
@@ -444,7 +421,7 @@ export default {
         required: true,
         field: " paymentId",
         required: true,
-        label: "paymentId Id",
+        label: "PaymentId Id",
         align: "center",
       },
       {
@@ -525,7 +502,7 @@ export default {
       router.push({
         name: "accountingInfo_page",
         params: {
-          acctgTransId: id,
+          paymentId: id,
         },
       });
     }
@@ -546,22 +523,6 @@ export default {
     };
 
     // filter functionss .......................................
-
-    // enums
-    function getTabEnumList() {
-      api({
-        method: "GET",
-        url: "enumeration",
-        headers: useAuth.authKey,
-        params: {
-          enumTypeId: "UIInvoiceStatus",
-        },
-      }).then(async (res) => {
-        res.data.enumerationList.map((data) => {
-          enumTabList.value.push(data);
-        });
-      });
-    }
 
     // invoice search
     async function searchVendor(val, update) {
@@ -669,7 +630,6 @@ export default {
 
     onMounted(() => {
       tableRef.value.requestServerInteraction();
-      getTabEnumList();
       getDateFilterEnumList();
     });
 
