@@ -1,11 +1,11 @@
 <template>
   <div class="row no-wrap">
     <!-- sidelist -->
-    <div style="min-width: 400px">
+    <div style="min-width: 400px" v-if="!$q.screen.lt.md">
       <div class="q-pa-md q-gutter-y-md">
         <!-- search and date -->
         <div class="row no-wrap">
-          <!-- <q-select
+          <q-select
             dense
             outlined
             rounded
@@ -15,8 +15,9 @@
             hide-selected
             fill-input
             input-debounce="0"
+            v-model="searchInput"
           >
-          </q-select> -->
+          </q-select>
 
           <!-- date filter -->
           <q-btn color="primary" icon="filter_alt" rounded> </q-btn>
@@ -37,12 +38,18 @@
             <q-item
               v-for="data in accountingList"
               :key="data"
-              active-class="text-bold "
               clickable
               v-ripple
               class="bg-secondary text-primary"
               style="border-radius: 5px"
               @click="getAccountingInfo(data.transactionDetail.paymentId)"
+              :active="
+                data.transactionDetail.paymentId ==
+                accountingDetails[0]?.paymentId
+                  ? true
+                  : false
+              "
+              active-class="text-bold"
             >
               <!-- avator -->
               <q-item-section class="">
@@ -102,7 +109,7 @@
       </div>
 
       <!-- ids row -->
-      <div class="row justify-center q-mt-md">
+      <div class="row justify-center q-my-lg">
         <div
           class="row bg-secondary q-pa-md"
           style="width: 80%; border-radius: 15px"
@@ -153,13 +160,13 @@
 
       <!-- body -->
       <div class="row justify-center">
-        <div class="row no-wrap justify-center" style="width: 80%">
+        <div
+          class="bg-secondary row q-ma-md full-height"
+          style="width: 80%; height: 68vh; border-radius: 20px"
+        >
           <!-- left -->
-          <div
-            class="bg-secondary q-my-md q-mr-md"
-            style="height: 600px; width: 40%; border-radius: 15px"
-          >
-            <div class="column justify-center full-height q-pa-md">
+          <div :class="!$q.screen.lt.md ? 'col-3' : 'col-12'">
+            <div class="column justify-center q-pa-md full-height">
               <q-item>
                 <q-item-section>
                   <q-item-label caption>Organization:</q-item-label>
@@ -169,12 +176,22 @@
                 </q-item-section>
               </q-item>
 
-              <q-item class="q-my-lg">
+              <q-item class="q-my-lg row wrap">
                 <q-item-section>
                   <q-item-label caption>Vendor:</q-item-label>
                   <q-item-label>
                     {{ accountingDetails[0]?.otherPartyName }}
                   </q-item-label>
+                </q-item-section>
+                <q-item-section avatar>
+                  <q-btn
+                    @click="vendoPage(accountingDetails[0]?.otherPartyId)"
+                    outline
+                    rounded
+                    no-caps
+                    color="primary"
+                    label="View"
+                  />
                 </q-item-section>
               </q-item>
 
@@ -197,102 +214,97 @@
             </div>
           </div>
 
+          <q-separator vertical dark />
           <!-- right -->
-          <div
-            class="bg-secondary q-ma-md full-width"
-            style="border-radius: 15px; height: 600px"
-          >
-            <div class="column justify-center q-pa-lg full-height">
-              <!-- title -->
-              <div class="text-h6">
-                General Ledger account transection details
-              </div>
+          <div class="q-pa-lg" :class="!$q.screen.lt.md ? 'col' : 'col-12'">
+            <!-- title -->
+            <div class="text-h6 full-width">
+              General Ledger account transection details
+            </div>
 
-              <!-- items list -->
-              <div
-                class="q-pa-sm"
-                style="border: 1px solid gray; border-radius: 20px"
-              >
-                <!-- columns -->
-                <q-item>
-                  <q-item-section class="col-4 text-weight-bold text-h6">
-                    Name
-                  </q-item-section>
-                  <q-item-section
-                    class="col-3 text-weight-bold text-h6 text-green"
-                  >
-                    Credit
-                  </q-item-section>
-                  <q-item-section
-                    class="col-3 text-weight-bold text-h6 text-red"
-                  >
-                    Debit
-                  </q-item-section>
-                  <q-item-section class="col-2 text-weight-bold text-h6">
-                    Total
-                  </q-item-section>
-                </q-item>
+            <!-- items list -->
+            <div
+              class="q-pa-sm full-width q-my-md"
+              style="border: 1px solid gray; border-radius: 20px"
+            >
+              <!-- columns -->
+              <q-item>
+                <q-item-section class="col-4 text-weight-bold text-h6">
+                  Name
+                </q-item-section>
+                <q-item-section
+                  class="col-3 text-weight-bold text-h6 text-green"
+                >
+                  Credit
+                </q-item-section>
+                <q-item-section class="col-3 text-weight-bold text-h6 text-red">
+                  Debit
+                </q-item-section>
+                <q-item-section class="col-2 text-weight-bold text-h6">
+                  Total
+                </q-item-section>
+              </q-item>
 
-                <q-separator />
+              <q-separator />
 
-                <!-- rows -->
-                <q-item v-for="data in accountingDetails" :key="data">
-                  <q-item-section class="col-4 text-weight-bold">
-                    {{ data.accountName }}
-                  </q-item-section>
-                  <q-item-section
-                    v-if="data.debitCreditFlag == 'C'"
-                    class="col-3 text-weight-bold"
-                  >
-                    {{ data.amount }}
-                  </q-item-section>
-                  <q-item-section v-else class="col-3 text-weight-bold">
-                  </q-item-section>
-                  <q-item-section
-                    v-if="data.debitCreditFlag == 'D'"
-                    class="col-3 text-weight-bold"
-                  >
-                    {{ data.amount }}
-                  </q-item-section>
-                  <q-item-section
-                    v-else
-                    class="col-3 text-weight-bold"
-                  ></q-item-section>
-                  <q-item-section class="col-2 text-weight-bold">
-                    ${{ data.amount }}
-                  </q-item-section>
-                </q-item>
-              </div>
+              <!-- rows -->
+              <q-item v-for="data in accountingDetails" :key="data">
+                <q-item-section class="col-4 text-weight-bold">
+                  {{ data.accountName }}
+                </q-item-section>
 
-              <!-- details -->
-              <div>
-                <q-item>
-                  <q-item-section>
-                    <q-item-label overline>Currency</q-item-label>
-                    <q-item-label>
-                      {{ accountingDetails[0]?.amountUomId }}
-                    </q-item-label>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label overline> Accounting System: </q-item-label>
-                    <q-item-label>
-                      Posted:
-                      {{ accountingDetails[0]?.isPosted }}
-                    </q-item-label>
-                    <q-item-label>
-                      {{
-                        formateTimeStamp(accountingDetails[0]?.postedDate)
-                          .formattedTimestamp
-                      }}
-                    </q-item-label>
-                    <q-item-label>
-                      {{
-                        formateTimeStamp(accountingDetails[0]?.postedDate).time
-                      }}
-                    </q-item-label>
-                  </q-item-section>
-                </q-item>
-              </div>
+                <q-item-section
+                  v-if="data.debitCreditFlag == 'C'"
+                  class="col-3 text-weight-bold"
+                >
+                  {{ data.amount }}
+                </q-item-section>
+                <q-item-section v-else class="col-3 text-weight-bold">
+                </q-item-section>
+                <q-item-section
+                  v-if="data.debitCreditFlag == 'D'"
+                  class="col-3 text-weight-bold"
+                >
+                  {{ data.amount }}
+                </q-item-section>
+                <q-item-section
+                  v-else
+                  class="col-3 text-weight-bold"
+                ></q-item-section>
+                <q-item-section class="col-2 text-weight-bold">
+                  ${{ data.amount }}
+                </q-item-section>
+              </q-item>
+            </div>
+
+            <!-- details -->
+            <div class="full-width">
+              <q-item>
+                <q-item-section>
+                  <q-item-label overline>Currency</q-item-label>
+                  <q-item-label>
+                    {{ accountingDetails[0]?.amountUomId }}
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label overline> Accounting System: </q-item-label>
+                  <q-item-label>
+                    Posted:
+                    {{ accountingDetails[0]?.isPosted }}
+                  </q-item-label>
+                  <q-item-label>
+                    {{
+                      formateTimeStamp(accountingDetails[0]?.postedDate)
+                        .formattedTimestamp
+                    }}
+                  </q-item-label>
+                  <q-item-label>
+                    {{
+                      formateTimeStamp(accountingDetails[0]?.postedDate).time
+                    }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
             </div>
           </div>
         </div>
@@ -303,7 +315,7 @@
 
 <script>
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { api } from "src/boot/axios";
 import { useAuthStore } from "src/stores/useAuthStore";
 
@@ -311,17 +323,26 @@ export default {
   name: "accountingInfo_page",
   setup() {
     const route = useRoute();
+    const router = useRouter();
     const useAuth = useAuthStore();
 
     const accountingList = ref([]);
     const accountingDetails = ref({});
 
+    // side list
+    const searchInput = ref("");
+
     // getaccounting list
     function getAccountingList() {
+      const params = {};
+
+      params["pageSize"] = 40;
+      params["pageIndex"] = 0;
       api({
         method: "GET",
         headers: useAuth.authKey,
         url: "accounting",
+        params: params,
       })
         .then((res) => {
           accountingList.value.push(...res.data.transactionInfoList);
@@ -378,17 +399,31 @@ export default {
       return { formattedTimestamp, time };
     };
 
+    function vendoPage(id) {
+      router.push({
+        name: "vendorInfo_page",
+        params: {
+          vendorId: id,
+        },
+      });
+    }
+
     onMounted(() => {
       getAccountingInfo(route.params.paymentId);
       getAccountingList();
     });
 
     return {
-      accountingList,
       formateTimeStamp,
       dateModifer,
       getAccountingInfo,
       accountingDetails,
+
+      vendoPage,
+
+      // sidelist
+      searchInput,
+      accountingList,
     };
   },
 };

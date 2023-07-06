@@ -265,10 +265,7 @@
             @click="paymentRedirect(props.row.paymentDetail.paymentId)"
           >
             <q-td key="date" style="font-size: 15px">
-              {{
-                formateTimeStamp(props.row.paymentDetail.effectiveDate)
-                  .formattedTimestamp
-              }}
+              {{ dateModifer(props.row.paymentDetail.effectiveDate) }}
             </q-td>
 
             <q-td key="PaymentId" style="font-size: 15px">

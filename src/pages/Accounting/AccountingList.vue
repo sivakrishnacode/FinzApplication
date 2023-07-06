@@ -1,7 +1,7 @@
 <template>
-  <div class="q-mx-sm q-my-md q-gutter-y-md q-px-xl">
+  <div class="q-mx-sm q-my-md q-gutter-y-sm q-px-xl">
     <!-- search section  -->
-    <div class="column items-center q-pt-md">
+    <div class="column items-center">
       <!-- search and days filter -->
       <div class="row">
         <q-select
@@ -221,6 +221,7 @@
           :loading="isLoading"
           separator="horizontal"
           style="border-radius: 20px"
+          class="q-py-md"
           flat
           hide-bottom
         >

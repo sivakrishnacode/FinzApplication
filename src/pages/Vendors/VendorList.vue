@@ -13,7 +13,7 @@
         option-value="partyId"
         :options="searchOptions"
         @filter="searchFun"
-        :style="$q.screen.lt.sm ? { width: '350px' } : { width: '450px' }"
+        :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
       >
         <template #append>
           <q-icon name="search" />

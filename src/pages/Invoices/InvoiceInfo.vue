@@ -1,7 +1,11 @@
 <template>
   <div class="row no-wrap">
     <!-- Side list -->
-    <div class="q-gutter-y-sm q-pa-lg" style="width: 400px">
+    <div
+      class="q-gutter-y-sm q-pa-lg"
+      style="width: 400px"
+      v-if="!$q.screen.lt.md"
+    >
       <!-- upload invoice btn -->
       <div>
         <q-btn
