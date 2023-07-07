@@ -176,7 +176,7 @@
           no-caps
           dense
           style="border-radius: 12px; border: 1px solid silver"
-          @update:model-value="getPayments(daysFilterValue.enumId)"
+          @update:model-value="getPayments()"
         >
           <q-tab
             v-for="data in enumTabList"
@@ -446,6 +446,8 @@ export default {
       if (vendorFilterSelected.value.partyId != "") {
         params["partyId"] = vendorFilterSelected.value.partyId;
       }
+
+      params["dateFilterId"] = currentTab.value;
 
       if (daysFilterValue.value.enumId == "DATE_RANGE") {
         params["dateFilterId"] = "DATE_RANGE";

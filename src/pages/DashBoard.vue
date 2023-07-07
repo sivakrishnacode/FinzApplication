@@ -122,7 +122,140 @@
 
         <!-- graph 1-->
 
-        <div class="row justify-center full-width">
+        <div class="row justify- full-width">
+          <div class="relative-position">
+            <q-tabs
+              v-model="invoiceSelected"
+              active-color="white bg-primary"
+              class="q-mx-md bg-grey-2"
+              indicator-color="transparent"
+              no-caps
+              switch-indicator
+              :mobile-arrows="false"
+              dense
+              outside-arrows
+              style="border-radius: 12px; border: 1px solid silver"
+              @update:model-value="
+                invoiceSelected !== 'custom' ? getFrequencyData() : ''
+              "
+            >
+              <q-tab
+                v-for="data in invoiceOptions"
+                :key="data"
+                :label="data.name"
+                :name="data.val"
+                style="border-radius: 19px"
+              >
+              </q-tab>
+            </q-tabs>
+
+            <q-tab-panels
+              v-if="invoiceSelected == 'custom'"
+              v-model="invoiceSelected"
+              class="shadow-4 q-pa-sm"
+              style="
+                position: absolute;
+                max-width: 300px;
+                height: auto;
+                z-index: 1;
+                right: 0;
+                border-radius: 12px;
+              "
+            >
+              <q-tab-panel name="custom">
+                <div class="q-mx-sm q-mb-sm q-gutter-y-sm column items-center">
+                  <div class="text-primary">Date Range</div>
+
+                  <!-- get from date -->
+                  <q-input
+                    v-model="invoiceSelectedCustomeDate.from"
+                    outlined
+                    mask="##-##-####"
+                    dense
+                    label="DD-MM-YYYY"
+                    readonly
+                    hint="From date"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        name="event"
+                        class="cursor-pointer"
+                        color="primary"
+                      >
+                        <q-popup-proxy
+                          cover
+                          ref="fromDatePopUpRef"
+                          transition-show="scale"
+                          transition-hide="scale"
+                        >
+                          <q-date
+                            mask="DD-MM-YYYY"
+                            v-model="invoiceSelectedCustomeDate.from"
+                          >
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Close"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-date>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+
+                  <!-- get to date -->
+                  <q-input
+                    v-model="invoiceSelectedCustomeDate.to"
+                    outlined
+                    mask="##-##-####"
+                    dense
+                    label="DD-MM-YYYY"
+                    readonly
+                    hint="To Date"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        name="event"
+                        class="cursor-pointer"
+                        color="primary"
+                      >
+                        <q-popup-proxy
+                          cover
+                          ref="toDatePopUpRef"
+                          transition-show="scale"
+                          transition-hide="scale"
+                        >
+                          <q-date
+                            mask="DD-MM-YYYY"
+                            v-model="invoiceSelectedCustomeDate.to"
+                          >
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Close"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-date>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+
+                  <q-btn
+                    @click="getFrequencyData()"
+                    label="Apply"
+                    color="primary"
+                  />
+                </div>
+              </q-tab-panel>
+            </q-tab-panels>
+          </div>
+
           <div class="text-h5 text-weight-bold text-primary">
             Invoice Details
           </div>
@@ -172,75 +305,12 @@
               width="500"
               height="500"
               type="donut"
-              :options="options3"
-              :series="options3.series"
+              :options="pieChart"
+              :series="pieChart.series"
             />
             <div class="row text-h6 justify-center">Total Invoice Status</div>
           </q-card>
-
-          <q-card class="q-pa-sm">
-            <apexchart
-              width="800"
-              type="bar"
-              :options="options2"
-              :series="options2.series"
-            />
-            <div class="row text-h6 justify-center">Payment Amount</div>
-          </q-card>
         </div>
-      </div>
-
-      <!-- right -->
-
-      <div
-        class="col-3 q-gutter-y-sm q-px-md"
-        v-if="!$q.screen.lt.lg"
-        style="width: 450px"
-      >
-        <!-- Search bar -->
-        <div class="text-h5 text-weight-bold text-primary">
-          Recent Transection
-          <q-icon name="trending_up" />
-        </div>
-
-        <q-separator />
-
-        <q-scroll-area class="fit">
-          <!-- List -->
-          <q-list class="q-gutter-sm">
-            <q-item
-              v-for="data in 20"
-              :key="data"
-              active-class="bg-blue"
-              clickable
-              v-ripple
-              class="bg-secondary text-primary"
-              style="border-radius: 5px"
-            >
-              <!-- avator -->
-              <q-item-section avatar>
-                <q-avatar text-color="yellow">
-                  <q-icon name="star" />
-                </q-avatar>
-              </q-item-section>
-
-              <!-- name -->
-              <q-item-section>
-                <q-item-label> To SumithraDevi </q-item-label>
-                <q-item-label class="text-white text-caption">
-                  sumithrasd13@gmail.com
-                </q-item-label>
-              </q-item-section>
-
-              <q-item-section class="row justify-end" avatar>
-                <q-item-label class="text-primary"> USD 7865 </q-item-label>
-                <q-item-label class="text-white text-caption">
-                  June 15, 2022
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-scroll-area>
       </div>
     </div>
   </div>
@@ -248,6 +318,10 @@
 
 <script>
 import VueApexCharts from "vue3-apexcharts";
+import { api } from "src/boot/axios";
+import { useAuthStore } from "src/stores/useAuthStore";
+import { onMounted } from "vue";
+import { ref } from "vue";
 
 export default {
   name: "dashboard_page",
@@ -255,66 +329,157 @@ export default {
     apexchart: VueApexCharts,
   },
   setup() {
-    const options = {
+    const useAuth = useAuthStore();
+
+    const invoiceOptions = ref([
+      {
+        name: "30 Days",
+        val: "30",
+      },
+      {
+        name: "60 Days",
+        val: "60",
+      },
+      {
+        name: "90 Days",
+        val: "90",
+      },
+      {
+        val: "custom",
+        name: "Custom Date Range",
+      },
+    ]);
+    const invoiceSelected = ref("30");
+    const invoiceSelectedCustomeDate = ref({
+      from: "",
+      to: "",
+    });
+
+    function getFrequencyData() {
+      const params = {};
+      console.log(invoiceSelected.value);
+
+      // date filter
+      if (invoiceSelected.value !== "custom") {
+        const daysAgo = new Date();
+        daysAgo.setDate(daysAgo.getDate() - invoiceSelected.value);
+
+        var year = daysAgo.getFullYear();
+        var month = String(daysAgo.getMonth() + 1).padStart(2, "0");
+        var day = String(daysAgo.getDate()).padStart(2, "0");
+
+        var formattedDate = year + "-" + month + "-" + day;
+
+        params["fromDate"] = formattedDate;
+        params["thruDate"] = new Date().toISOString().split("T")[0];
+      } else {
+        function convertDateFormat(dateString) {
+          var parts = dateString.split("-");
+          var year = parts[0];
+          var month = parts[1];
+          var day = parts[2];
+
+          return day + "-" + month + "-" + year;
+        }
+
+        params["fromDate"] = convertDateFormat(
+          invoiceSelectedCustomeDate.value.from
+        );
+        params["thruDate"] = convertDateFormat(
+          invoiceSelectedCustomeDate.value.to
+        );
+      }
+
+      params["moduleName"] = "invoice";
+      params["frequency"] = "daily";
+
+      console.log(params);
+
+      api({
+        method: "GET",
+        url: "dashboard/FrequencyWiseData",
+        params: params,
+        headers: useAuth.authKey,
+      }).then((res) => {
+        res.data.frequencyList.map((data, i) => {
+          options.value.xaxis.categories.push(data.invoiceFrequencyObject);
+          options.value.series[0].data.push(i * 12);
+          options.value.series[1].data.push(i * 5);
+          options.value.series[2].data.push(i * 7);
+        });
+
+        // options.value.series[0].data = [];
+        // options.value.labels = [];
+        // res.data.frequencyList.map((data, i) => {
+        //   const daysText = `${data.fromDate.split("-")[2]} - ${
+        //     data.fromDate.split("-")[1]
+        //   }`;
+        //   options.value.series[0].data.push(i * 90);
+        //   //options.value.labels.push(daysText);
+        // });
+        // console.log("options", options.value);
+      });
+    }
+
+    const options = ref({
       series: [
         {
-          name: "Paid Invoices",
-          type: "column",
-          color: "#9a99dd",
-
-          data: [230, 130, 320, 390, 200, 150, 80, 120, 600, 120, 180, 90],
+          name: "Approved",
+          data: [],
         },
         {
-          name: "Total Invoices",
-          type: "column",
-          color: "#3f3faf",
-          data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160],
+          name: "not approed",
+          data: [],
+        },
+        {
+          name: "cancelled",
+          data: [],
         },
       ],
-
       chart: {
+        type: "bar",
         height: 350,
-        type: "line",
       },
-      stroke: {
-        width: [0, 0],
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: "55%",
+          endingShape: "rounded",
+        },
       },
-
       dataLabels: {
         enabled: false,
-        enabledOnSeries: [0],
       },
-      labels: [
-        "01 Jan 2001",
-        "02 Jan 2001",
-        "03 Jan 2001",
-        "04 Jan 2001",
-        "05 Jan 2001",
-        "06 Jan 2001",
-        "07 Jan 2001",
-        "08 Jan 2001",
-        "09 Jan 2001",
-        "10 Jan 2001",
-        "11 Jan 2001",
-        "12 Jan 2001",
-      ],
+      stroke: {
+        show: true,
+        width: 2,
+        colors: ["transparent"],
+      },
       xaxis: {
-        type: "datetime",
+        categories: [],
       },
-      yaxis: [
-        {
-          title: {
-            text: "No of Invoice",
+      yaxis: {
+        title: {
+          text: "$ (thousands)",
+        },
+      },
+      fill: {
+        opacity: 1,
+      },
+      tooltip: {
+        y: {
+          formatter: function (val) {
+            return "$ " + val + " thousands";
           },
         },
-      ],
-    };
+      },
+    });
 
     const options2 = {
       series: [
         {
           name: "series1",
-          data: [82, 39, 28, 51, 42, 109, 100, 45, 87, 72, 43, 65],
+          data: [1, 434, 4334, 454, 543, 5354],
           color: "#3f3faf",
         },
       ],
@@ -330,26 +495,13 @@ export default {
         curve: "smooth",
       },
 
-      xaxis: {
-        type: "datetime",
-      },
-      labels: [
-        "01 Jan 2001",
-        "02 Jan 2001",
-        "03 Jan 2001",
-        "04 Jan 2001",
-        "05 Jan 2001",
-        "06 Jan 2001",
-        "07 Jan 2001",
-        "08 Jan 2001",
-        "09 Jan 2001",
-        "10 Jan 2001",
-        "11 Jan 2001",
-        "12 Jan 2001",
-      ],
+      // xaxis: {
+      //   type: "datetime",
+      // },
+      labels: [1, 2, 3, 4, 5, "last"],
     };
 
-    const options3 = {
+    const pieChart = {
       series: [44, 55, 41, 17, 15],
       labels: ["Paid ", "Approved ", "UnPaid", "Cancelled", "Refunded"],
       chart: {
@@ -370,10 +522,21 @@ export default {
       ],
     };
 
+    onMounted(() => {
+      getFrequencyData();
+    });
+
     return {
       options,
       options2,
-      options3,
+      pieChart,
+
+      getFrequencyData,
+
+      invoiceSelected,
+      invoiceOptions,
+
+      invoiceSelectedCustomeDate,
     };
   },
 };

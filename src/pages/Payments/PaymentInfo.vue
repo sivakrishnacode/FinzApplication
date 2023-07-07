@@ -1,7 +1,7 @@
 <template>
   <div class="row no-wrap">
     <!-- sidelist -->
-    <div style="width: 400px" v-if="!$q.screen.lt.md" class="fixed bg-red">
+    <div style="width: 400px" v-if="!$q.screen.lt.md" class="fixed">
       <div class="q-pa-md q-gutter-y-md">
         <!-- search and date -->
         <div class="row no-wrap">
@@ -21,6 +21,26 @@
 
           <!-- date filter -->
           <q-btn color="primary" icon="filter_alt" rounded> </q-btn>
+        </div>
+        <div>
+          <q-tabs
+            v-model="currentTab"
+            active-color="white bg-primary"
+            class="q-mx-md bg-grey-2 q-pa-sm"
+            indicator-color="transparent"
+            no-caps
+            dense
+            style="border-radius: 12px; border: 1px solid silver"
+            @update:model-value="getPaymentList()"
+          >
+            <q-tab
+              v-for="data in enumTabList"
+              :key="data"
+              :label="data.description"
+              :name="data.enumId"
+              style="border-radius: 20px"
+            />
+          </q-tabs>
         </div>
 
         <!-- scroll area -->
@@ -77,10 +97,10 @@
         </div>
       </div>
     </div>
-    <div style="width: 400px"></div>
+    <div style="width: 400px" v-if="!$q.screen.lt.md"></div>
 
     <!-- main -->
-    <div class="full-width scroll bg-green">
+    <div class="full-width scroll">
       <!-- title bar -->
       <div class="row justify-center q-px-xl full-width">
         <div style="width: 700px">
@@ -89,9 +109,11 @@
             style="border-radius: 0 0 70px 70px"
           >
             <div class="text-primary text-h6">
-              invoiceDetail.fromParty?.organization.organizationName
+              {{ paymentDetails.paymentId }}
             </div>
-            <div class="text-blue-grey-1">invoiceDetail.invoiceId</div>
+            <div class="text-blue-grey-1">
+              {{ paymentDetails.toParty?.organization.organizationName }}
+            </div>
 
             <!-- cancel btn -->
             <div class="row absolute" style="top: 50px; right: 70px">
@@ -120,13 +142,13 @@
             <div class="full-width q-py-md">
               <q-item>
                 <q-item-section>
-                  <q-item-label>Invoice Status:</q-item-label>
+                  <q-item-label>Payment Status:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
                   <q-item-label>
                     <q-badge class="text-h6">
-                      invoiceDetail.status?.description
+                      {{ paymentDetails.statusId }}
                     </q-badge>
                   </q-item-label>
                 </q-item-section>
@@ -137,14 +159,12 @@
             <div class="full-width q-py-md">
               <q-item>
                 <q-item-section>
-                  <q-item-label overline>Vendor Name:</q-item-label>
+                  <q-item-label overline>From Party Name:</q-item-label>
                   <q-item-label>
-                    invoiceDetail.fromParty?.organization.organizationName
+                    {{
+                      paymentDetails.fromParty?.organization.organizationName
+                    }}
                   </q-item-label>
-                </q-item-section>
-
-                <q-item-section avatar>
-                  <q-btn outline rounded color="primary" label="View Vendor" />
                 </q-item-section>
               </q-item>
             </div>
@@ -153,10 +173,20 @@
             <div class="full-width q-py-md">
               <q-item>
                 <q-item-section>
-                  <q-item-label overline>Organization Name:</q-item-label>
+                  <q-item-label overline>To Party Name:</q-item-label>
                   <q-item-label>
-                    invoiceDetail.toParty?.organization.organizationName
+                    {{ paymentDetails.toParty?.organization.organizationName }}
                   </q-item-label>
+                </q-item-section>
+
+                <q-item-section avatar>
+                  <q-btn
+                    @click="vendoPage(paymentDetails.toParty?.partyId)"
+                    outline
+                    rounded
+                    color="primary"
+                    label="View Vendor"
+                  />
                 </q-item-section>
               </q-item>
             </div>
@@ -166,11 +196,19 @@
               <q-item>
                 <q-item-section>
                   <q-item-label overline>View Invoice:</q-item-label>
-                  <q-item-label> invoiceDetail.externalId </q-item-label>
+                  <q-item-label>
+                    {{ paymentDetails.forInvoiceId }}
+                  </q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-btn outline rounded color="primary" label="View Invoice" />
+                  <q-btn
+                    @click="invoicePage(paymentDetails.forInvoiceId)"
+                    outline
+                    rounded
+                    color="primary"
+                    label="View Invoice"
+                  />
                 </q-item-section>
               </q-item>
             </div>
@@ -181,17 +219,15 @@
             class="row justify-center q-my-md q-pa-lg bg-secondary"
             style="border-radius: 20px"
           >
-            <!-- refunded amt -->
+            <!--  amt -->
             <div class="full-width q-py-md">
               <q-item>
                 <q-item-section>
-                  <q-item-label>Refunded Amount:</q-item-label>
+                  <q-item-label>Paid Amount:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label>
-                    <q-badge class="text-h6"> $7690 </q-badge>
-                  </q-item-label>
+                  <q-item-label> ${{ paymentDetails.amount }} </q-item-label>
                 </q-item-section>
               </q-item>
             </div>
@@ -204,24 +240,28 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label> INR </q-item-label>
+                  <q-item-label>
+                    {{ paymentDetails.amountUomId }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </div>
 
-            <!-- organization -->
+            <!-- utr -->
             <div class="full-width q-py-md">
               <q-item>
                 <q-item-section>
                   <q-item-label overline>UTR Number:</q-item-label>
                 </q-item-section>
                 <q-item-section avatar>
-                  <q-item-label> 64645654656 </q-item-label>
+                  <q-item-label>
+                    {{ paymentDetails.method?.externalId }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </div>
 
-            <!-- view invoice -->
+            <!--method  -->
             <div class="full-width q-py-sm">
               <q-item>
                 <q-item-section>
@@ -229,19 +269,40 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label> UPI </q-item-label>
+                  <q-item-label>
+                    {{ paymentDetails.method?.description }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </div>
 
-            <div class="full-width q-py-sm">
+            <div
+              class="full-width q-py-sm"
+              v-if="paymentDetails.method?.paymentMethodTypeEnumId == 'PmtUPI'"
+            >
               <q-item>
                 <q-item-section>
                   <q-item-label overline>UPI ID:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label> UPIhdfc34336 </q-item-label>
+                  <q-item-label>
+                    {{ paymentDetails.method?.upiPayment.upiAddress }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </div>
+
+            <div class="full-width q-py-sm" v-else>
+              <q-item>
+                <q-item-section>
+                  <q-item-label overline>Account Name:</q-item-label>
+                </q-item-section>
+
+                <q-item-section avatar>
+                  <q-item-label>
+                    {{ paymentDetails.method?.companyNameOnAccount }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </div>
@@ -252,80 +313,40 @@
                   <q-item-label overline>Comments:</q-item-label>
                 </q-item-section>
 
-                <q-item-section>
-                  <q-item-label>
-                    To get the first N characters of a string in JavaScript,
-                    call the slice() method on the string, passing 0 as the
-                    first argument and N as the second. For example, str.
-                    slice(0, 2) returns a new string containing the first 2
-                    characters of str .
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-            </div>
-          </div>
-
-          <!-- body 3 -->
-          <div
-            class="row justify-center q-my-md q-pa-lg bg-secondary"
-            style="border-radius: 20px"
-          >
-            <!-- status -->
-            <div class="full-width q-py-md">
-              <q-item>
-                <q-item-section>
-                  <q-item-label>Invoice Status:</q-item-label>
-                </q-item-section>
-
                 <q-item-section avatar>
                   <q-item-label>
-                    <q-badge class="text-h6">
-                      invoiceDetail.status?.description
-                    </q-badge>
+                    {{ paymentDetails.comments }}
                   </q-item-label>
-                </q-item-section>
-              </q-item>
-            </div>
-
-            <!-- vendor -->
-            <div class="full-width q-py-md">
-              <q-item>
-                <q-item-section>
-                  <q-item-label overline>Vendor Name:</q-item-label>
-                  <q-item-label>
-                    invoiceDetail.fromParty?.organization.organizationName
-                  </q-item-label>
-                </q-item-section>
-
-                <q-item-section avatar>
-                  <q-btn outline rounded color="primary" label="View Vendor" />
                 </q-item-section>
               </q-item>
             </div>
           </div>
 
           <!--payment history -->
-          <div class="bg-secondary q-pa-lg" style="border-radius: 13px">
+          <div class="bg-secondary q-pa-lg q-mb-md" style="border-radius: 13px">
             <div class="text-h5 q-pa-md" style="text-decoration: underline">
               Payment History:
             </div>
-            <q-item class="q-my-sm" v-for="data in 4" :key="data">
+            <q-item
+              class="q-my-sm"
+              v-for="data in paymentDetails.applications"
+              :key="data"
+            >
               <q-item-section>
                 <q-item-label>
-                  Date : formateTimeStamp(data.changedDate).formattedTimestamp
+                  {{ data.paymentApplicationId }}
                 </q-item-label>
                 <q-item-label overline>
-                  Time : formateTimeStamp(data.changedDate).time
+                  {{ data.appliedDate }}
                 </q-item-label>
               </q-item-section>
 
               <q-item-section avatar>
                 <q-item-label class="text-h6 text-green">
-                  <q-badge class="text-body1" color="secondary">
-                    data.description
+                  <q-badge class="text-body1">
+                    {{ data.amountApplied }}
                   </q-badge>
                 </q-item-label>
-                <q-item-label overline> by data.username </q-item-label>
               </q-item-section>
             </q-item>
           </div>
@@ -383,15 +404,21 @@ export default {
     const paymentList = ref([]);
     const paymentDetails = ref({});
 
+    const currentTab = ref("allPayment");
+    const enumTabList = ref([]);
+
     // side list
     const searchInput = ref("");
 
     // getaccounting list
     function getPaymentList() {
+      paymentList.value = [];
       const params = {};
 
       params["pageSize"] = 40;
       params["pageIndex"] = 0;
+
+      params["dateFilterId"] = currentTab.value;
       api({
         method: "GET",
         headers: useAuth.authKey,
@@ -413,11 +440,28 @@ export default {
         url: `payments/${id}`,
       })
         .then((res) => {
-          paymentDetails.value = res.data.entryLists;
+          console.log(res);
+          paymentDetails.value = res.data;
+          console.log(paymentDetails.value);
         })
         .catch((err) => {
           console.log(err);
         });
+    }
+
+    function getTabEnumList() {
+      api({
+        method: "GET",
+        url: "enumeration",
+        headers: useAuth.authKey,
+        params: {
+          enumTypeId: "UIPaymentStatus",
+        },
+      }).then(async (res) => {
+        res.data.enumerationList.map((data) => {
+          enumTabList.value.push(data);
+        });
+      });
     }
 
     // date formater 22 jun 2023
@@ -462,8 +506,18 @@ export default {
       });
     }
 
+    function invoicePage(id) {
+      router.push({
+        name: "invoiceInfo_page",
+        params: {
+          invoiceId: id,
+        },
+      });
+    }
+
     onMounted(() => {
       getPaymentInfo(route.params.paymentId);
+      getTabEnumList();
       getPaymentList();
     });
 
@@ -474,6 +528,10 @@ export default {
       paymentDetails,
 
       vendoPage,
+      invoicePage,
+      currentTab,
+      getPaymentList,
+      enumTabList,
 
       // sidelist
       searchInput,
