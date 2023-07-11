@@ -355,9 +355,10 @@ export default {
       to: "",
     });
 
+    const invoiceChartReady = ref(false);
+
     function getFrequencyData() {
       const params = {};
-      console.log(invoiceSelected.value);
 
       // date filter
       if (invoiceSelected.value !== "custom") {
@@ -401,75 +402,44 @@ export default {
         params: params,
         headers: useAuth.authKey,
       }).then((res) => {
+        options.value.series[0].data = [];
         res.data.frequencyList.map((data, i) => {
-          options.value.xaxis.categories.push(data.invoiceFrequencyObject);
-          options.value.series[0].data.push(i * 12);
-          options.value.series[1].data.push(i * 5);
-          options.value.series[2].data.push(i * 7);
+          const obj = {
+            x: data.fromDate,
+            y: i * 2,
+          };
+          options.value.series[0].data.push(obj);
         });
-
-        // options.value.series[0].data = [];
-        // options.value.labels = [];
-        // res.data.frequencyList.map((data, i) => {
-        //   const daysText = `${data.fromDate.split("-")[2]} - ${
-        //     data.fromDate.split("-")[1]
-        //   }`;
-        //   options.value.series[0].data.push(i * 90);
-        //   //options.value.labels.push(daysText);
-        // });
-        // console.log("options", options.value);
       });
     }
 
     const options = ref({
       series: [
         {
-          name: "Approved",
-          data: [],
-        },
-        {
-          name: "not approed",
-          data: [],
-        },
-        {
-          name: "cancelled",
+          name: "Invoices",
           data: [],
         },
       ],
-      chart: {
-        type: "bar",
-        height: 350,
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: "55%",
-          endingShape: "rounded",
-        },
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      stroke: {
-        show: true,
-        width: 2,
-        colors: ["transparent"],
-      },
+
       xaxis: {
-        categories: [],
-      },
-      yaxis: {
-        title: {
-          text: "$ (thousands)",
+        type: "Date",
+        labels: {
+          formatter: (val) => {
+            console.log(val);
+            //   const daysText = `${data.fromDate.split("-")[2]} - ${
+            //   data.fromDate.split("-")[1]
+            // }`;
+            return val;
+          },
         },
       },
-      fill: {
-        opacity: 1,
+      title: {
+        text: "Invoice",
       },
       tooltip: {
-        y: {
-          formatter: function (val) {
-            return "$ " + val + " thousands";
+        x: {
+          formatter: (val) => {
+            return val;
           },
         },
       },
@@ -535,7 +505,7 @@ export default {
 
       invoiceSelected,
       invoiceOptions,
-
+      invoiceChartReady,
       invoiceSelectedCustomeDate,
     };
   },
