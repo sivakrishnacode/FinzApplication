@@ -2,30 +2,21 @@
   <div class="q-mx-sm q-my-md q-gutter-y-md q-px-xl">
     <!-- search and add btn -->
     <div class="row justify-center q-gutter-x-md no-wrap">
-      <q-select
+      <q-input
         dense
         outlined
         rounded
-        v-model="model"
-        use-input
-        fill-input
+        v-model="searchInput"
         option-label="organizationName"
         option-value="partyId"
-        :options="searchOptions"
-        @filter="searchFun"
+        @update:model-value="getVendors({ pagination })"
         :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
       >
         <template #append>
           <q-icon name="search" />
         </template>
 
-        <template v-slot:no-option>
-          <q-item class="text-center">
-            <q-item-section class="text-grey"> No results </q-item-section>
-          </q-item>
-        </template>
-
-        <template v-slot:option="scope">
+        <!-- <template v-slot:option="scope">
           <div
             :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
           >
@@ -43,8 +34,8 @@
               </q-item-section>
             </q-item>
           </div>
-        </template>
-      </q-select>
+        </template> -->
+      </q-input>
 
       <!-- add vendor btn -->
       <q-btn
@@ -207,7 +198,19 @@
                       <q-item-section>View Profile</q-item-section>
                     </q-item>
 
-                    <q-item clickable v-ripple>
+                    <q-item
+                      clickable
+                      v-ripple
+                      @click="
+                        router.push({
+                          name: 'invoiceList_page',
+                          query: {
+                            vendorName: props.row.organizationName,
+                            partyId: props.row.partyId,
+                          },
+                        })
+                      "
+                    >
                       <q-item-section avatar>
                         <q-icon name="receipt_long" />
                       </q-item-section>
@@ -237,7 +240,7 @@
           </template>
 
           <!-- no-data -->
-          <template v-slot:no-data>NO Data</template>
+          <template v-slot:no-data> <h1>NO Data</h1></template>
 
           <!-- Loading Page -->
           <template v-slot:loading>
@@ -269,7 +272,7 @@
         />
         <div class="row absolute" style="right: 56px">
           <div class="row justify-center items-center q-pr-md">
-            Rows per page :
+            Rows per page of {{ pagination.rowsNumber }} :
           </div>
           <q-select
             dense
@@ -286,19 +289,17 @@
 </template>
 
 <script>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref } from "vue";
 import { useQuasar } from "quasar";
 import { api } from "src/boot/axios";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "src/stores/useAuthStore";
-import { useVendorStore } from "src/stores/UseVendorStore";
 
 export default {
   name: "vendorsList_page",
   setup() {
     const router = useRouter();
     const useAuth = useAuthStore();
-    const useVendor = useVendorStore();
 
     const tableRef = ref(null);
     const isLoading = ref(false);
@@ -366,7 +367,7 @@ export default {
       partyId: "",
     });
 
-    const searchOptions = ref([]);
+    const searchInput = ref("");
 
     const pagination = ref({
       sortBy: "column",
@@ -378,27 +379,30 @@ export default {
 
     // get vendor
     function getVendors(props) {
-      isLoading.value = true;
       rows.value = [];
-
+      isLoading.value = true;
       const { page, rowsPerPage } = props.pagination;
+
+      const params = {};
+      params["pageIndex"] = page - 1;
+      params["pageSize"] = rowsPerPage;
+      params["pageNoLimit"] = false;
+
+      if (searchInput.value !== "") {
+        params["anyField"] = searchInput.value;
+      }
 
       api({
         method: "GET",
         url: "vendors",
         headers: useAuth.authKey,
-        params: {
-          pageIndex: page - 1,
-          pageSize: rowsPerPage,
-          pageNoLimit: false,
-        },
+        params: params,
       })
         .then((res) => {
           const vendorsList = res.data.documentList;
           pagination.value.rowsNumber = res.data.documentListCount;
 
-          useVendor.getVendors(vendorsList);
-          rows.value = useVendor.allVendorList;
+          rows.value.push(...res.data.documentList);
 
           pagination.value.page = page;
           pagination.value.rowsPerPage = rowsPerPage;
@@ -418,39 +422,12 @@ export default {
       return firstLetter1 + firstLetter2;
     }
 
-    // search vendor
-    async function searchFun(val, update) {
-      isLoading.value = true;
-
-      await update(() => {
-        if (val != "") {
-          api({
-            method: "GET",
-            url: `vendors?anyField=${val}`,
-            headers: useAuth.authKey,
-          }).then((res) => {
-            searchOptions.value = [];
-
-            useVendor.searchVendor(res.data.documentList);
-
-            searchOptions.value = useVendor.tempVendorList;
-
-            isLoading.value = false;
-          });
-        } else {
-          searchOptions.value = [];
-          isLoading.value = false;
-        }
-      });
-    }
-
     // edit vendor
     function vendorInfo(id) {
       router.push({
         name: "vendorInfo_page",
-        params: {
-          vendorId: id,
-        },
+        params: { vendorId: id },
+        query: { name: "sivaa" },
       });
     }
 
@@ -467,12 +444,14 @@ export default {
       newVendorDetails,
       pagination,
       getVendors,
-      searchFun,
+      searchInput,
+
       vendorInfo,
+      router,
 
       tableRef,
       isLoading,
-      searchOptions,
+
       model: ref(""),
 
       // paginationMaxPages

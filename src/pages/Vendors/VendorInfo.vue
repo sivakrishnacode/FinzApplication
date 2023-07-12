@@ -909,7 +909,6 @@ export default {
 
     // get vendor info
     function vendorInfo(id) {
-      router.push({ name: "vendorInfo_page", params: { vendorId: id } });
       api({
         method: "GET",
         url: `vendors/${id}/contactInfo`,

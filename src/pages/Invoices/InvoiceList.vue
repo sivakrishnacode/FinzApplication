@@ -275,9 +275,7 @@
         removable
         text-color="white"
         :label="vendorFilterSelected.name"
-        @remove="
-          ((vendorFilterSelected.partyId = ''), (search = '')), getInvoiceList()
-        "
+        @remove="removeFilter, router.replace({ name: 'invoiceList_page' })"
       />
     </div>
 
@@ -427,7 +425,7 @@
 <script>
 import { nextTick, onMounted, ref } from "vue";
 import { useQuasar } from "quasar";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "src/stores/useAuthStore";
 import { api } from "src/boot/axios";
 
@@ -437,6 +435,7 @@ export default {
   setup() {
     const $q = useQuasar();
     const router = useRouter();
+    const route = useRoute();
     const useAuth = useAuthStore();
 
     // upload section
@@ -865,23 +864,27 @@ export default {
       }
     };
 
-    function removeFilter(type) {
-      if ((type = "DataFilter")) {
-        correctDateRange.value.fromDate = "";
-        correctDateRange.value.toDate = "";
-        dateRange.value.fromDate = "";
-        dateRange.value.toDate = "";
-        isDateFilterActiveForChip.value = false;
-        daysFilterValue.value = "";
-        isDateRangeFilterActive.value = false;
-        getInvoiceList();
-      }
+    function removeFilter() {
+      console.log("remove");
+      correctDateRange.value.fromDate = "";
+      correctDateRange.value.toDate = "";
+      dateRange.value.fromDate = "";
+      dateRange.value.toDate = "";
+      isDateFilterActiveForChip.value = false;
+      daysFilterValue.value = "";
+      isDateRangeFilterActive.value = false;
+      getInvoiceList();
     }
 
     onMounted(() => {
-      tableRef.value.requestServerInteraction();
       getTabEnumList();
       getDateFilterEnumList();
+
+      if (route.query.partyId) {
+        selectVendor(route.query.partyId, route.query.vendorName);
+      } else {
+        tableRef.value.requestServerInteraction();
+      }
     });
 
     return {
@@ -902,6 +905,8 @@ export default {
       rows,
       columns,
       tableRef,
+      route,
+      router,
 
       pagination,
       selectVendor,
