@@ -971,7 +971,7 @@ export default {
 
     async function changeInvoiceStatus(statusIds) {
       await api({
-        method: "POST",
+        method: "PATCH",
         headers: useAuth.authKey,
         url: "invoices/invoiceStatusUpdate",
         params: {
@@ -1343,4 +1343,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+::-webkit-scrollbar {
+  display: none;
+}
+</style>

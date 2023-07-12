@@ -154,9 +154,9 @@
           <!-- left -->
           <div :class="!$q.screen.lt.md ? 'col-3' : 'col-12'">
             <div
-              class="bg-red q-gutter-y-md column justify-center q-pa-md full-height"
+              class="q-gutter-y-md column justify-center q-pa-md full-height"
             >
-              <q-item class="bg-green full-width">
+              <q-item class="full-width">
                 <q-item-section>
                   <q-item-label caption>Organization:</q-item-label>
                   <q-item-label>
@@ -165,7 +165,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item class="bg-green row wrap full-width">
+              <q-item class="row wrap full-width">
                 <q-item-section>
                   <q-item-label caption>Vendor:</q-item-label>
                   <q-item-label>
@@ -184,7 +184,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item class="bg-green row wrap full-width">
+              <q-item class="row wrap full-width">
                 <q-item-section>
                   <q-item-label caption>Invoice:</q-item-label>
                   <q-item-label>
@@ -203,7 +203,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item class="bg-green row wrap full-width">
+              <q-item class="row wrap full-width">
                 <q-item-section>
                   <q-item-label caption>Posted date:</q-item-label>
                   <q-item-label>
@@ -214,16 +214,7 @@
                     {{ formateTimeStamp(accountingDetails[0].postedDate).time }}
                   </q-item-label>
                 </q-item-section>
-                <q-item-section avatar>
-                  <q-btn
-                    @click="invoicePage(accountingDetails[2].invoiceId)"
-                    outline
-                    rounded
-                    no-caps
-                    color="primary"
-                    label="View"
-                  />
-                </q-item-section>
+                <q-item-section avatar> </q-item-section>
               </q-item>
             </div>
           </div>

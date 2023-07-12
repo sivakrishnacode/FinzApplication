@@ -9,15 +9,12 @@
           rounded
           v-model="search"
           class="q-pr-md"
-          clearable
           use-input
-          hide-selected
           fill-input
-          input-debounce="0"
           option-label="organizationName"
           option-value="partyId"
           :options="searchOptions"
-          @filter="searchVendor"
+          @input-value="searchVendor"
           :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
         >
           <template #append>
@@ -42,12 +39,15 @@
                 <q-item-section
                   class="full-width"
                   @click="
-                    selectVendor(scope.opt.partyId, scope.opt.organizationName),
-                      (search = '')
+                    selectVendor(scope.opt.partyId, scope.opt.organizationName)
                   "
                 >
                   <q-item-label>{{ scope.opt.organizationName }}</q-item-label>
-                  <q-item-label caption>{{ scope.opt.partyId }}</q-item-label>
+                  <q-item-label caption>{{
+                    scope.opt.contactMechs.find(
+                      (val) => val.contactMechTypeEnumId == "CmtEmailAddress"
+                    )?.infoString
+                  }}</q-item-label>
                 </q-item-section>
               </q-item>
             </div>
@@ -219,9 +219,9 @@
           text-color="white"
           :label="vendorFilterSelected.name"
           @remove="
-            removeFilter,
-              router.replace({ name: 'paymentList_page' }),
-              (vendorFilterSelected = ''),
+            router.replace({ name: 'paymentList_page' }),
+              (search = ''),
+              (vendorFilterSelected.partyId = ''),
               getPayments()
           "
         />
@@ -286,7 +286,23 @@
               >{{ props.row.paymentDetail.amount }}
             </q-td>
             <q-td key="status" style="font-size: 15px">
-              {{ props.row.paymentDetail.statusId }}
+              <div>
+                <q-chip>
+                  <q-badge
+                    rounded
+                    :color="statusColor(props.row.paymentDetail.statusId).color"
+                    class="q-mr-sm"
+                  />
+                  <div style="font-size: 15px">
+                    {{
+                      usePayment.paymentStatusProp.find(
+                        (data) =>
+                          data.statusId == props.row.paymentDetail.statusId
+                      ).description
+                    }}
+                  </div>
+                </q-chip>
+              </div>
             </q-td>
           </q-tr>
         </template>
@@ -339,6 +355,7 @@ import { onMounted, ref } from "vue";
 import { useQuasar } from "quasar";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "src/stores/useAuthStore";
+import { usePaymentStore } from "src/stores/usePaymentStore";
 import { api } from "src/boot/axios";
 
 export default {
@@ -349,6 +366,7 @@ export default {
     const router = useRouter();
     const route = useRoute();
     const useAuth = useAuthStore();
+    const usePayment = usePaymentStore();
 
     // vendor Search section
 
@@ -502,11 +520,19 @@ export default {
 
     // invoice details
     async function selectVendor(id, name) {
-      search.value = "";
+      await router.replace({
+        name: "paymentList_page",
+        query: {
+          vendorName: name,
+          partyId: id,
+        },
+      });
+
       isVendorFilterActiveForChip.value = true;
       vendorFilterSelected.value.name = name;
       vendorFilterSelected.value.partyId = id;
       getPayments();
+      search.value = "";
     }
 
     function invoiceRedirect(id) {
@@ -521,24 +547,23 @@ export default {
     }
 
     // invoice search
-    async function searchVendor(val, update) {
-      await update(() => {
-        if (val != "") {
-          api({
-            method: "GET",
-            url: `vendors?anyField=${val}`,
-            headers: useAuth.authKey,
-          }).then((res) => {
-            searchOptions.value = [];
-
-            res.data.documentList.map((data) => {
-              searchOptions.value.push(data);
-            });
-          });
-        } else {
+    async function searchVendor(val) {
+      console.log(val);
+      if (val != "") {
+        api({
+          method: "GET",
+          url: `vendors?anyField=${val}`,
+          headers: useAuth.authKey,
+        }).then((res) => {
           searchOptions.value = [];
-        }
-      });
+
+          res.data.documentList.map((data) => {
+            searchOptions.value.push(data);
+          });
+        });
+      } else {
+        searchOptions.value = [];
+      }
     }
 
     const dateModifer = (val) => {
@@ -577,8 +602,8 @@ export default {
     // Status Color
     const statusColor = (statusId) => {
       const colors = [
-        { statusId: "InvoiceReceived", color: "light-blue-9" },
-        { statusId: "InvoiceIncoming", color: "orange-10" },
+        { statusId: "PmntDelivered", color: "light-blue-9" },
+        { statusId: "PmntConfirmed", color: "orange-10" },
         { statusId: "InvoicePmtSent", color: "green-8" },
         { statusId: "InvoiceCancelled", color: "red-8" },
         { statusId: "InvoiceApproved", color: "indigo-10" },
@@ -716,6 +741,7 @@ export default {
       search,
 
       invoiceRedirect,
+      usePayment,
 
       // filter sections
       daysEnumerationsList,

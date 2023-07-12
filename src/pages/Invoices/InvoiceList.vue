@@ -375,7 +375,12 @@
                     class="q-mr-sm"
                   />
                   <div style="font-size: 15px">
-                    {{ props.row.invoiceDetail.statusId }}
+                    {{
+                      useInvoices.invoiceStatusProp.find(
+                        (data) =>
+                          data.statusId == props.row.invoiceDetail.statusId
+                      )?.description
+                    }}
                   </div>
                 </q-chip>
               </q-td>
@@ -431,6 +436,7 @@ import { nextTick, onMounted, ref } from "vue";
 import { useQuasar } from "quasar";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "src/stores/useAuthStore";
+import { useInvoicesStore } from "src/stores/useInvoiceStore";
 import { api } from "src/boot/axios";
 
 export default {
@@ -441,6 +447,7 @@ export default {
     const router = useRouter();
     const route = useRoute();
     const useAuth = useAuthStore();
+    const useInvoices = useInvoicesStore();
 
     // upload section
     const invoiceFile = ref(null);
@@ -606,6 +613,13 @@ export default {
 
     // invoice details
     async function selectVendor(id, name) {
+      router.replace({
+        name: "invoiceList_page",
+        query: {
+          vendorName: name,
+          partyId: id,
+        },
+      });
       search.value = "";
 
       vendorFilterSelected.value.name = name;
@@ -911,6 +925,7 @@ export default {
       tableRef,
       route,
       router,
+      useInvoices,
 
       pagination,
       selectVendor,
