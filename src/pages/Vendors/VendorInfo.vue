@@ -998,7 +998,7 @@ export default {
       let tempUrl = "";
       let data = {};
       if (addBankAccountTab.value == "bank") {
-        tempUrl = "PaymentMethods/addBankAccount";
+        tempUrl = "paymentMethods/addBankAccount";
         data = {
           partyId: id,
           companyName: newBankAccountDetails.value.companyName,
@@ -1006,7 +1006,7 @@ export default {
           ifscCode: newBankAccountDetails.value.ifscCode,
         };
       } else {
-        tempUrl = "PaymentMethods/addUPIAccount";
+        tempUrl = "paymentMethods/addUPIAccount";
         data = {
           partyId: id,
           upiId: newBankAccountDetails.value.upiId,
@@ -1052,7 +1052,7 @@ export default {
       if (id == "accountDetails") {
         api({
           method: "GET",
-          url: "PaymentMethods/bankAccountInfoList",
+          url: "paymentMethods/bankAccountInfoList",
           headers: useAuth.authKey,
           params: {
             partyId: route.params.vendorId,
@@ -1080,9 +1080,9 @@ export default {
     async function bankAccountStatus(id, status) {
       let tempUrl = "";
       if (status == "true") {
-        tempUrl = "PaymentMethods/fundAccountDeactivate";
+        tempUrl = "paymentMethods/fundAccountDeactivate";
       } else if (status == "false") {
-        tempUrl = "PaymentMethods/fundAccountActivate";
+        tempUrl = "paymentMethods/fundAccountActivate";
       }
       await api({
         method: "PATCH",

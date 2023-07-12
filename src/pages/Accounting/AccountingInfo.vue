@@ -29,12 +29,6 @@
           style="border-radius: 10px; height: calc(100vh - 150px)"
         >
           <q-list class="q-gutter-sm">
-            <!-- <div
-            v-if="invoiceList.length == 0"
-            class="row justify-center q-pa-lg text-bold text-h6 text-primary"
-          >
-            No data
-          </div> -->
             <q-item
               v-for="data in accountingList"
               :key="data"
@@ -43,13 +37,6 @@
               class="bg-secondary text-primary"
               style="border-radius: 5px"
               @click="getAccountingInfo(data.transactionDetail.paymentId)"
-              :active="
-                data.transactionDetail.paymentId ==
-                accountingDetails[0]?.paymentId
-                  ? true
-                  : false
-              "
-              active-class="text-bold"
             >
               <!-- avator -->
               <q-item-section class="">
@@ -80,7 +67,7 @@
     </div>
 
     <!-- main -->
-    <div class="full-width">
+    <div class="full-width" v-if="accountingDetails[0]?.acctgTransId">
       <!-- title bar -->
       <div class="row justify-center q-px-xl full-width">
         <div style="width: 700px">
@@ -89,10 +76,10 @@
             style="border-radius: 0 0 70px 70px"
           >
             <div class="text-primary text-h6">
-              {{ accountingDetails[0]?.otherPartyName }}
+              {{ accountingDetails[0].otherPartyName }}
             </div>
             <div class="text-blue-grey-1">
-              {{ accountingDetails[0]?.paymentId }}
+              {{ accountingDetails[0].paymentId }}
             </div>
 
             <!-- cancel btn -->
@@ -122,7 +109,7 @@
                   Transection ID
                 </q-item-label>
                 <q-item-label class="row justify-center text-h6">
-                  {{ accountingDetails[0]?.acctgTransId }}
+                  {{ accountingDetails[0].acctgTransId }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -133,10 +120,10 @@
             <q-item>
               <q-item-section>
                 <q-item-label class="row justify-center">
-                  payment ID
+                  Payment ID
                 </q-item-label>
                 <q-item-label class="row justify-center text-h6">
-                  {{ accountingDetails[0]?.paymentId }}
+                  {{ accountingDetails[0].paymentId }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -147,10 +134,10 @@
             <q-item>
               <q-item-section>
                 <q-item-label class="row justify-center">
-                  Party ID
+                  Invoice ID
                 </q-item-label>
                 <q-item-label class="row justify-center text-h6">
-                  {{ accountingDetails[0]?.otherPartyId }}
+                  {{ accountingDetails[2].invoiceId }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -166,26 +153,28 @@
         >
           <!-- left -->
           <div :class="!$q.screen.lt.md ? 'col-3' : 'col-12'">
-            <div class="column justify-center q-pa-md full-height">
-              <q-item>
+            <div
+              class="bg-red q-gutter-y-md column justify-center q-pa-md full-height"
+            >
+              <q-item class="bg-green full-width">
                 <q-item-section>
                   <q-item-label caption>Organization:</q-item-label>
-                  <q-item-label>{{
-                    accountingDetails[0]?.organizationName
-                  }}</q-item-label>
+                  <q-item-label>
+                    {{ accountingDetails[0].organizationName }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
 
-              <q-item class="q-my-lg row wrap">
+              <q-item class="bg-green row wrap full-width">
                 <q-item-section>
                   <q-item-label caption>Vendor:</q-item-label>
                   <q-item-label>
-                    {{ accountingDetails[0]?.otherPartyName }}
+                    {{ accountingDetails[0].otherPartyName }}
                   </q-item-label>
                 </q-item-section>
                 <q-item-section avatar>
                   <q-btn
-                    @click="vendoPage(accountingDetails[0]?.otherPartyId)"
+                    @click="vendoPage(accountingDetails[0].otherPartyId)"
                     outline
                     rounded
                     no-caps
@@ -195,20 +184,45 @@
                 </q-item-section>
               </q-item>
 
-              <q-item>
+              <q-item class="bg-green row wrap full-width">
+                <q-item-section>
+                  <q-item-label caption>Invoice:</q-item-label>
+                  <q-item-label>
+                    {{ accountingDetails[2].invoiceId }}
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section avatar>
+                  <q-btn
+                    @click="invoicePage(accountingDetails[2].invoiceId)"
+                    outline
+                    rounded
+                    no-caps
+                    color="primary"
+                    label="View"
+                  />
+                </q-item-section>
+              </q-item>
+
+              <q-item class="bg-green row wrap full-width">
                 <q-item-section>
                   <q-item-label caption>Posted date:</q-item-label>
                   <q-item-label>
                     {{
-                      formateTimeStamp(accountingDetails[0]?.postedDate)
+                      formateTimeStamp(accountingDetails[0].postedDate)
                         .formattedTimestamp
                     }}
+                    {{ formateTimeStamp(accountingDetails[0].postedDate).time }}
                   </q-item-label>
-                  <q-item-label>
-                    {{
-                      formateTimeStamp(accountingDetails[0]?.postedDate).time
-                    }}
-                  </q-item-label>
+                </q-item-section>
+                <q-item-section avatar>
+                  <q-btn
+                    @click="invoicePage(accountingDetails[2].invoiceId)"
+                    outline
+                    rounded
+                    no-caps
+                    color="primary"
+                    label="View"
+                  />
                 </q-item-section>
               </q-item>
             </div>
@@ -259,8 +273,10 @@
                 >
                   {{ data.amount }}
                 </q-item-section>
+
                 <q-item-section v-else class="col-3 text-weight-bold">
                 </q-item-section>
+
                 <q-item-section
                   v-if="data.debitCreditFlag == 'D'"
                   class="col-3 text-weight-bold"
@@ -271,7 +287,10 @@
                   v-else
                   class="col-3 text-weight-bold"
                 ></q-item-section>
-                <q-item-section class="col-2 text-weight-bold">
+                <q-item-section
+                  v-if="data.debitCreditFlag"
+                  class="col-2 text-weight-bold"
+                >
                   ${{ data.amount }}
                 </q-item-section>
               </q-item>
@@ -283,25 +302,22 @@
                 <q-item-section>
                   <q-item-label overline>Currency</q-item-label>
                   <q-item-label>
-                    {{ accountingDetails[0]?.amountUomId }}
+                    {{ accountingDetails[0].amountUomId }}
                   </q-item-label>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label overline> Accounting System: </q-item-label>
                   <q-item-label>
-                    Posted:
-                    {{ accountingDetails[0]?.isPosted }}
+                    Posted: {{ accountingDetails[0].isPosted }}
                   </q-item-label>
                   <q-item-label>
                     {{
-                      formateTimeStamp(accountingDetails[0]?.postedDate)
+                      formateTimeStamp(accountingDetails[0].postedDate)
                         .formattedTimestamp
                     }}
                   </q-item-label>
                   <q-item-label>
-                    {{
-                      formateTimeStamp(accountingDetails[0]?.postedDate).time
-                    }}
+                    {{ formateTimeStamp(accountingDetails[0].postedDate).time }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -323,11 +339,12 @@ export default {
   name: "accountingInfo_page",
   setup() {
     const route = useRoute();
+
     const router = useRouter();
     const useAuth = useAuthStore();
 
     const accountingList = ref([]);
-    const accountingDetails = ref({});
+    const accountingDetails = ref([]);
 
     // side list
     const searchInput = ref("");
@@ -359,7 +376,17 @@ export default {
         url: `accounting/${id}`,
       })
         .then((res) => {
-          accountingDetails.value = res.data.entryLists;
+          accountingDetails.value.push(
+            ...res.data.transactionList[0].entryList
+          );
+
+          accountingDetails.value.push({
+            invoiceDate: res.data.transactionList[0].invoiceDate,
+            invoiceId: res.data.transactionList[0].invoiceId,
+            invoiceTotal: res.data.transactionList[0].invoiceTotal,
+            paymentDate: res.data.transactionList[0].paymentDate,
+          });
+          console.log(accountingDetails.value);
         })
         .catch((err) => {
           console.log(err);
@@ -408,6 +435,15 @@ export default {
       });
     }
 
+    function invoicePage(id) {
+      router.push({
+        name: "invoiceInfo_page",
+        params: {
+          invoiceId: id,
+        },
+      });
+    }
+
     onMounted(() => {
       getAccountingInfo(route.params.paymentId);
       getAccountingList();
@@ -420,6 +456,7 @@ export default {
       accountingDetails,
 
       vendoPage,
+      invoicePage,
 
       // sidelist
       searchInput,

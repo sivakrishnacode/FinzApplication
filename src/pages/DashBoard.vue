@@ -392,7 +392,7 @@ export default {
       }
 
       params["moduleName"] = "invoice";
-      params["frequency"] = "daily";
+      params["frequency"] = "weekly";
 
       console.log(params);
 
