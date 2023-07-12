@@ -43,8 +43,7 @@
                 <q-item-section
                   class="full-width"
                   @click="
-                    selectVendor(scope.opt.partyId, scope.opt.organizationName),
-                      (search = '')
+                    selectVendor(scope.opt.partyId, scope.opt.organizationName)
                   "
                 >
                   <q-item-label>{{ scope.opt.organizationName }}</q-item-label>
@@ -275,7 +274,12 @@
         removable
         text-color="white"
         :label="vendorFilterSelected.name"
-        @remove="removeFilter, router.replace({ name: 'invoiceList_page' })"
+        @remove="
+          router.replace({ name: 'invoiceList_page' }),
+            (search = ''),
+            (vendorFilterSelected.partyId = ''),
+            getInvoiceList()
+        "
       />
     </div>
 
@@ -603,9 +607,10 @@ export default {
     // invoice details
     async function selectVendor(id, name) {
       search.value = "";
-      isVendorFilterActiveForChip.value = true;
+
       vendorFilterSelected.value.name = name;
       vendorFilterSelected.value.partyId = id;
+      isVendorFilterActiveForChip.value = true;
 
       getInvoiceList({ pagination: pagination.value });
     }
@@ -865,7 +870,6 @@ export default {
     };
 
     function removeFilter() {
-      console.log("remove");
       correctDateRange.value.fromDate = "";
       correctDateRange.value.toDate = "";
       dateRange.value.fromDate = "";

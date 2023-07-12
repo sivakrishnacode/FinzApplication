@@ -219,7 +219,10 @@
           text-color="white"
           :label="vendorFilterSelected.name"
           @remove="
-            ((vendorFilterSelected.partyId = ''), (search = '')), getPayments()
+            removeFilter,
+              router.replace({ name: 'paymentList_page' }),
+              (vendorFilterSelected = ''),
+              getPayments()
           "
         />
       </div>
@@ -334,16 +337,17 @@
 <script>
 import { onMounted, ref } from "vue";
 import { useQuasar } from "quasar";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "src/stores/useAuthStore";
 import { api } from "src/boot/axios";
 
 export default {
-  name: "invoiceList_page",
+  name: "paymentList_page",
 
   setup() {
     const $q = useQuasar();
     const router = useRouter();
+    const route = useRoute();
     const useAuth = useAuthStore();
 
     // vendor Search section
@@ -680,6 +684,12 @@ export default {
       tableRef.value.requestServerInteraction();
       getTabEnumList();
       getDateFilterEnumList();
+
+      if (route.query.partyId) {
+        selectVendor(route.query.partyId, route.query.vendorName);
+      } else {
+        tableRef.value.requestServerInteraction();
+      }
     });
 
     return {
@@ -692,6 +702,7 @@ export default {
       paymentRedirect,
       formateTimeStamp,
       tableRef,
+      router,
 
       pagination,
       selectVendor,
