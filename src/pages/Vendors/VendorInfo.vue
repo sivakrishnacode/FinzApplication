@@ -36,7 +36,7 @@
 
       <q-scroll-area
         class="q-pa-sm"
-        style="border: 1px solid gray; border-radius: 10px; height: 680px"
+        style="border: 1px solid gray; border-radius: 10px; height: 75vh"
       >
         <!-- List -->
         <q-list class="q-gutter-sm">
@@ -53,8 +53,10 @@
           >
             <!-- avator -->
             <q-item-section avatar>
-              <q-avatar text-color="yellow">
-                <q-icon name="star" />
+              <q-avatar class="bg-primary text-white" size="lg">
+                <div>
+                  {{ firstLetters(data.organizationName).toUpperCase() }}
+                </div>
               </q-avatar>
             </q-item-section>
 
@@ -115,26 +117,41 @@
         <q-tabs no-caps content-class="row justify-evenly">
           <q-btn
             label="Invoices"
-            to="/invoice"
             icon="receipt_long"
             class="bg-primary text-white q-pa-md"
             style="border-radius: 30px; width: 160px"
             no-caps
             flat
+            @click="
+              router.push({
+                name: 'invoiceList_page',
+                query: {
+                  vendorName: vendorInfoData.organizationName,
+                  partyId: vendorInfoData.partyId,
+                },
+              })
+            "
           />
           <q-btn
             label="Payments"
-            to="/payment"
             icon="payments"
             class="bg-primary text-white q-pa-md"
             style="border-radius: 30px; width: 160px"
             no-caps
             flat
+            @click="
+              router.push({
+                name: 'paymentList_page',
+                query: {
+                  vendorName: vendorInfoData.organizationName,
+                  partyId: vendorInfoData.partyId,
+                },
+              })
+            "
           />
 
           <q-btn
             label="Accounting"
-            to="/accounting"
             icon="account_balance"
             class="bg-primary text-white q-pa-md"
             style="border-radius: 30px; width: 160px"
@@ -909,6 +926,11 @@ export default {
 
     // get vendor info
     function vendorInfo(id) {
+      router.replace({
+        params: {
+          vendorId: id,
+        },
+      });
       api({
         method: "GET",
         url: `vendors/${id}/contactInfo`,
@@ -933,6 +955,14 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    }
+
+    //first letter of a world
+    function firstLetters(str) {
+      let words = str.split(" ");
+      let firstLetter1 = words[0].charAt(0).toUpperCase();
+      let firstLetter2 = words.length > 1 ? words[1].charAt(0) : "";
+      return firstLetter1 + firstLetter2;
     }
 
     // edit vendor
@@ -1136,6 +1166,7 @@ export default {
       useGeos,
 
       newVendorDetails,
+      firstLetters,
 
       isCountryValid,
 

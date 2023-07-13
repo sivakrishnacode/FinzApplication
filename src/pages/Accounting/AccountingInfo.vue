@@ -88,7 +88,13 @@
                 class="bg-secondary"
                 style="border-radius: 0 0 70px 70px; height: 50px"
               >
-                <q-btn size="15px" icon="close" color="primary" flat />
+                <q-btn
+                  @click="router.back"
+                  size="15px"
+                  icon="close"
+                  color="primary"
+                  flat
+                />
               </div>
             </div>
           </div>
@@ -361,6 +367,7 @@ export default {
     }
 
     function getAccountingInfo(id) {
+      accountingDetails.value = [];
       api({
         method: "GET",
         headers: useAuth.authKey,
@@ -448,6 +455,7 @@ export default {
 
       vendoPage,
       invoicePage,
+      router,
 
       // sidelist
       searchInput,

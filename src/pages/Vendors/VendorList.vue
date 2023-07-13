@@ -7,34 +7,13 @@
         outlined
         rounded
         v-model="searchInput"
-        option-label="organizationName"
-        option-value="partyId"
+        placeholder="Search"
         @update:model-value="getVendors({ pagination })"
         :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
       >
         <template #append>
           <q-icon name="search" />
         </template>
-
-        <!-- <template v-slot:option="scope">
-          <div
-            :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
-          >
-            <q-item
-              clickable
-              class="full-width q-pa-md text-center"
-              v-bind="scope.itemProps"
-            >
-              <q-item-section
-                class="full-width"
-                @click="vendorInfo(scope.opt.partyId)"
-              >
-                <q-item-label>{{ scope.opt.organizationName }}</q-item-label>
-                <q-item-label caption>{{ scope.opt.partyId }}</q-item-label>
-              </q-item-section>
-            </q-item>
-          </div>
-        </template> -->
       </q-input>
 
       <!-- add vendor btn -->
