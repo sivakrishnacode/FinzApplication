@@ -235,7 +235,7 @@
     <!-- Table -->
     <div
       class="table-container"
-      style="border: 2px solid silver; border-radius: 19px"
+      style="border: 1px solid #858585; border-radius: 19px"
     >
       <q-table
         :rows="rows"
@@ -251,9 +251,9 @@
       >
         <!-- header -->
         <template v-slot:header="props">
-          <q-tr :props="props" class="text-weight-bold text-primary">
+          <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-              <div style="font-size: larger">
+              <div style="font-size: 14px" class="text-bold text-primary">
                 {{ col.label }}
               </div>
             </q-th>
@@ -266,27 +266,38 @@
             :props="props"
             class="text-center cursor-pointer"
             @click="paymentRedirect(props.row.paymentDetail.paymentId)"
+            style="height: 80px"
           >
-            <q-td key="date" style="font-size: 15px">
+            <q-td key="date" style="font-size: 16px">
               {{ dateModifer(props.row.paymentDetail.effectiveDate) }}
             </q-td>
 
-            <q-td key="PaymentId" style="font-size: 15px">
+            <q-td key="PaymentId" class="text-left" style="font-size: 16px">
               {{ props.row.paymentDetail.paymentId }}
             </q-td>
 
-            <q-td key="invoiceId" style="font-size: 15px">
+            <q-td key="invoiceId" class="text-left" style="font-size: 16px">
               {{ props.row.toParty.partyId }}
             </q-td>
 
-            <q-td key="vendorName" style="font-size: 15px">
+            <q-td key="vendorName" class="text-left" style="font-size: 16px">
               {{ props.row.toParty.organizationName }}
             </q-td>
-            <q-td key="amount" style="font-size: 15px"
+            <q-td key="amount" class="text-left" style="font-size: 16px"
               >{{ props.row.paymentDetail.amount }}
             </q-td>
-            <q-td key="status" style="font-size: 15px">
-              <div>
+            <q-td key="status" class="text-left" style="font-size: 16px">
+              <div
+                style="font-size: 16px"
+                :class="'text-' + statusColor(props.row.paymentDetail.statusId)"
+              >
+                {{
+                  usePayment.paymentStatusProp.find(
+                    (data) => data.statusId == props.row.paymentDetail.statusId
+                  ).description
+                }}
+              </div>
+              <!-- <div>
                 <q-chip>
                   <q-badge
                     rounded
@@ -302,7 +313,7 @@
                     }}
                   </div>
                 </q-chip>
-              </div>
+              </div> -->
             </q-td>
           </q-tr>
         </template>
@@ -409,7 +420,7 @@ export default {
       {
         name: "date",
         field: " date",
-        label: "Date",
+        label: "DATE",
         align: "center",
       },
       {
@@ -418,7 +429,7 @@ export default {
         field: " PaymentId",
         required: true,
         label: "Payment ID",
-        align: "center",
+        align: "left",
       },
       {
         name: "invoiceId",
@@ -426,25 +437,25 @@ export default {
         field: " invoiceId",
         required: true,
         label: "Invoice Id",
-        align: "center",
+        align: "left",
       },
       {
         name: "vendorName",
         field: "vendorName",
         label: "Vendor Name",
-        align: "center",
+        align: "left",
       },
       {
         name: "amount",
         field: "amount",
         label: "Amount",
-        align: "center",
+        align: "left",
       },
       {
         name: "status",
         field: " status",
         label: "Status",
-        align: "center",
+        align: "left",
       },
     ]);
     const tableRef = ref(null);
@@ -603,7 +614,7 @@ export default {
     const statusColor = (statusId) => {
       const colors = [
         { statusId: "PmntDelivered", color: "light-blue-9" },
-        { statusId: "PmntConfirmed", color: "orange-10" },
+        { statusId: "PmntConfirmed", color: "green-8" },
         { statusId: "InvoicePmtSent", color: "green-8" },
         { statusId: "InvoiceCancelled", color: "red-8" },
         { statusId: "InvoiceApproved", color: "indigo-10" },

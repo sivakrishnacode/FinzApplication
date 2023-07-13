@@ -1,1 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,300&display=swap");
 
+input {
+  caret-color: blue;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+  color: #000814;
+  font: normal normal normal 14px/19px Open Sans;
+}

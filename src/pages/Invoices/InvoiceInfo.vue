@@ -374,7 +374,7 @@
             <div class="text-primary text-h6">
               {{ invoiceDetail.fromParty?.organization.organizationName }}
             </div>
-            <div class="text-blue-grey-1">
+            <div class="text-primary">
               {{ invoiceDetail.invoiceId }}
             </div>
 
@@ -480,6 +480,7 @@
 
                     <q-item-section avatar>
                       <q-btn
+                        @click="getInvoiceFile(invoiceDetail.invoiceId)"
                         outline
                         rounded
                         color="primary"
@@ -926,6 +927,19 @@ export default {
       getToStatusFlow(invoiceDetail?.value.statusId);
     }
 
+    function getInvoiceFile(id) {
+      api({
+        method: "GET",
+        headers: useAuth.authKey,
+        url: "invoices/viewUploadInvoice",
+        params: {
+          invoiceId: id,
+        },
+      }).then((res) => {
+        window.location.href = res.data.uploadedInvoiceLink;
+      });
+    }
+
     function getInvoiceHistory(id) {
       api({
         method: "GET",
@@ -1290,6 +1304,7 @@ export default {
 
       id,
       vendoPage,
+      getInvoiceFile,
 
       // side list
       invoiceListScrollRef,

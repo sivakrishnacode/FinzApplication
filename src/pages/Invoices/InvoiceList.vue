@@ -285,7 +285,7 @@
 
     <!-- Table -->
     <div class="table-container">
-      <div style="border: 2px solid silver; border-radius: 19px">
+      <div style="border: 1px solid #858585; border-radius: 19px">
         <q-table
           ref="tableRef"
           v-model:pagination="pagination"
@@ -302,9 +302,9 @@
 
           <!-- header -->
           <template v-slot:header="props">
-            <q-tr :props="props" class="text-weight-bold text-primary">
+            <q-tr :props="props">
               <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div style="font-size: larger">
+                <div style="font-size: 14px" class="text-bold text-primary">
                   {{ col.label }}
                 </div>
               </q-th>
@@ -316,28 +316,41 @@
             <q-tr
               :props="props"
               class="text-center cursor-pointer"
+              style="height: 80px"
               @click="invoiceRedirect(props.row.invoiceDetail.invoiceId)"
             >
-              <q-td key="Invoice_date">
-                <div style="font-size: 15px">
+              <q-td key="Invoice_date" class="text-center">
+                <div style="font-size: 16px; color: #858585">
                   {{ dateModifer(props.row.invoiceDetail.invoiceDate) }}
                 </div>
               </q-td>
 
-              <q-td key="Vendor">
-                <div style="font-size: 15px">
-                  {{ props.row.fromParty.organizationName }}
+              <q-td key="invoiceID" class="text-left">
+                <div style="font-size: 18px">
+                  {{ props.row.invoiceDetail.invoiceId }}
                 </div>
               </q-td>
 
-              <q-td key="Email">
+              <q-td key="Vendor" class="text-left">
+                <div class="q-pl-xl">
+                  <span style="font-size: 18px">
+                    {{ props.row.fromParty.organizationName }}
+                  </span>
+                  <br />
+                  <span style="font-size: 16px">
+                    {{ props.row.fromParty.emailAddress }}
+                  </span>
+                </div>
+              </q-td>
+
+              <!-- <q-td key="Email">
                 <div style="font-size: 15px">
                   {{ props.row.fromParty.emailAddress }}
                 </div>
-              </q-td>
+              </q-td> -->
 
-              <q-td key="Amount">
-                <div style="font-size: 15px">
+              <q-td key="Amount" class="text-left">
+                <div style="font-size: 16px">
                   {{
                     props.row.invoiceDetail.invoiceTotal.toLocaleString(
                       "en-US",
@@ -350,8 +363,8 @@
                 </div>
               </q-td>
 
-              <q-td key="Due_Date">
-                <div style="font-size: 15px">
+              <q-td key="Due_Date" class="text-left">
+                <div style="font-size: 16px">
                   {{
                     props.row.invoiceDetail.unpaidTotal.toLocaleString(
                       "en-US",
@@ -363,8 +376,23 @@
                   }}
                 </div>
               </q-td>
-              <q-td key="Status">
-                <q-chip
+
+              <q-td key="Status" class="text-left">
+                <div
+                  style="font-size: 18px"
+                  :class="
+                    'text-' +
+                    statusColor(props.row.invoiceDetail.statusId).color
+                  "
+                >
+                  {{
+                    useInvoices.invoiceStatusProp.find(
+                      (data) =>
+                        data.statusId == props.row.invoiceDetail.statusId
+                    )?.description
+                  }}
+                </div>
+                <!-- <q-chip
                   :class="
                     'text-' + statusColor(props.row.invoiceDetail.statusId)
                   "
@@ -374,7 +402,7 @@
                     :color="statusColor(props.row.invoiceDetail.statusId).color"
                     class="q-mr-sm"
                   />
-                  <div style="font-size: 15px">
+                  <div style="font-size: 18px">
                     {{
                       useInvoices.invoiceStatusProp.find(
                         (data) =>
@@ -382,7 +410,7 @@
                       )?.description
                     }}
                   </div>
-                </q-chip>
+                </q-chip> -->
               </q-td>
             </q-tr>
           </template>
@@ -506,34 +534,42 @@ export default {
         required: true,
         field: " Invoice_date",
         required: true,
-        label: "Invoice Date",
+        label: "INVOICE DATE",
         align: "center",
+      },
+      {
+        name: "invoiceID",
+        required: true,
+        field: " invoiceID",
+        required: true,
+        label: "INVOICE ID",
+        align: "left",
       },
       {
         name: "Vendor",
         required: true,
         field: " Vendor",
         required: true,
-        label: "Vendor Name",
+        label: "VENDOR",
         align: "center",
       },
-      {
-        name: "Email",
-        field: "Email",
-        label: "Email Address",
-        align: "center",
-      },
+      // {
+      //   name: "Email",
+      //   field: "Email",
+      //   label: "Email Address",
+      //   align: "center",
+      // },
       {
         name: "Amount",
         field: " Amount",
-        label: "Amount",
-        align: "center",
+        label: "AMOUNT",
+        align: "left",
       },
       {
         name: "UnPaidAmount",
         field: " UnPaidAmount",
-        label: "UnPaid Amount",
-        align: "center",
+        label: "UNPAID AMOUNT",
+        align: "left",
       },
 
       {
@@ -541,8 +577,8 @@ export default {
         required: true,
         field: " Status",
         required: true,
-        label: "Status",
-        align: "center",
+        label: "STATUS",
+        align: "left",
       },
     ]);
     const tableRef = ref(null);
@@ -967,4 +1003,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.cursor-pointer:hover {
+  background-color: #c2daff;
+}
+</style>

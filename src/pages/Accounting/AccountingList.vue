@@ -210,7 +210,7 @@
 
     <!-- table Container -->
     <div class="table-container">
-      <div style="border: 2px solid silver; border-radius: 19px">
+      <div style="border: 1px solid #858585; border-radius: 19px">
         <q-table
           ref="tableRef"
           :pagination="pagination"
@@ -244,9 +244,9 @@
 
           <!-- header -->
           <template v-slot:header="props">
-            <q-tr :props="props" class="text-weight-bold text-primary">
+            <q-tr :props="props">
               <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div style="font-size: larger">
+                <div style="font-size: 14px" class="text-bold text-primary">
                   {{ col.label }}
                 </div>
               </q-th>
@@ -259,37 +259,37 @@
               :props="props"
               class="text-center cursor-pointer"
               @click="accountingInfo(props.row.transactionDetail.paymentId)"
-              style="border: 2px solid gray"
+              style="height: 80px"
             >
               <!-- date -->
               <q-td key="date">
-                <div style="font-size: 15px">
+                <div style="font-size: 16px">
                   {{ dateModifer(props.row.transactionDetail.transactionDate) }}
                 </div>
               </q-td>
 
               <!-- trans id -->
               <q-td key="transectionId">
-                <div style="font-size: 15px">
+                <div style="font-size: 16px">
                   {{ props.row.transactionDetail.acctgTransId }}
                 </div>
               </q-td>
 
               <!-- org name -->
               <q-td key="paymentId">
-                <div style="font-size: 15px">
+                <div style="font-size: 16px">
                   {{ props.row.transactionDetail.paymentId }}
                 </div>
               </q-td>
 
               <!-- email -->
               <q-td key="invoiceId">
-                <div style="font-size: 15px">not get</div>
+                <div style="font-size: 16px">not get</div>
               </q-td>
 
               <!-- contact num -->
               <q-td key="amount">
-                <div style="font-size: 15px">
+                <div style="font-size: 16px">
                   {{ props.row.transactionDetail.amount }}
                 </div>
               </q-td>

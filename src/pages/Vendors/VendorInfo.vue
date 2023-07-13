@@ -65,7 +65,7 @@
               <q-item-label>
                 {{ data.organizationName }}
               </q-item-label>
-              <q-item-label class="text-white text-caption" caption>
+              <q-item-label class="text-caption" caption>
                 {{
                   data.contactMechs.find(
                     (val) => val.contactMechTypeEnumId == "CmtEmailAddress"
