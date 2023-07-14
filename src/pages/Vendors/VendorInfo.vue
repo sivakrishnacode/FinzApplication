@@ -65,7 +65,11 @@
               <q-item-label style="font-size: 18px;">
                 {{ data.organizationName }}
               </q-item-label>
+<<<<<<< HEAD
               <q-item-label class="text-caption" caption style="font-size: 16px;">
+=======
+              <q-item-label class="text-caption" caption>
+>>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
                 {{
                   data.contactMechs.find(
                     (val) => val.contactMechTypeEnumId == "CmtEmailAddress"

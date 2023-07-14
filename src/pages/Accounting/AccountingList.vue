@@ -284,9 +284,13 @@
 
               <!-- email -->
               <q-td key="invoiceId">
+<<<<<<< HEAD
                 <div style="font-size: 16px">
                   {{ props.row.transactionDetail.invoiceId }}
                 </div>
+=======
+                <div style="font-size: 16px">not get</div>
+>>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
               </q-td>
 
               <!-- contact num -->

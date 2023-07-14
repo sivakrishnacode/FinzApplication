@@ -18,7 +18,11 @@
       </q-input>
 
       <!-- upload btn -->
+<<<<<<< HEAD
 
+=======
+      <div class="row absolute" style="right: 56px; top: 78px">
+>>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
         <!-- add vendor btn -->
         <q-btn
           flat
@@ -28,11 +32,19 @@
           icon="add"
           @click="$router.push({ name: 'createVendor_page' })"
           :round="$q.screen.lt.sm ? true : false"
+<<<<<<< HEAD
           class="bg-primary text-white text3"
           rounded
         >
         </q-btn>
 
+=======
+          class="bg-primary text-white"
+          rounded
+        >
+        </q-btn>
+      </div>
+>>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
     </div>
 
     <!-- <q-separator /> -->

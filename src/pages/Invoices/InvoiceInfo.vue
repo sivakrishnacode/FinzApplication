@@ -384,6 +384,12 @@
             style="border-radius: 0 0 70px 70px"
           >
             <div class="text-primary text-h6">
+<<<<<<< HEAD
+=======
+              {{ invoiceDetail.fromParty?.organization.organizationName }}
+            </div>
+            <div class="text-primary">
+>>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
               {{ invoiceDetail.invoiceId }}
             </div>
             <div class="text-primary">
@@ -937,7 +943,11 @@ export default {
           invoiceId: id,
         },
       }).then((res) => {
+<<<<<<< HEAD
         window.open(res.data.uploadedInvoiceLink, "_blank");
+=======
+        window.location.href = res.data.uploadedInvoiceLink;
+>>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
       });
     }
 

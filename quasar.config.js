@@ -87,8 +87,12 @@ module.exports = configure(function (ctx) {
       config: {
         brand: {
           primary: "#0066FF",
+<<<<<<< HEAD
           secondary: "#C2DAFF"
 
+=======
+          secondary: "#C2DAFF",
+>>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
         },
       },
 
