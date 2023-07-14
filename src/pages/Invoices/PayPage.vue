@@ -1,12 +1,21 @@
 <template>
-  <div class="row justify-center wrap bg-orange-2">
+  <div
+    class="scroll row justify-center wrap bg-secondary"
+    style="height: calc(100vh - 80px)"
+  >
     <!-- main -->
     <div
       class="q-ma-md bg-white"
-      style="max-width: 50vw; width: 100%; min-width: 600px"
+      style="
+        max-width: 50vw;
+        width: 100%;
+        min-width: 600px;
+        border-radius: 10px;
+      "
     >
-      <q-list bordered>
+      <q-list class="text2">
         <q-expansion-item
+          default-opened
           icon="looks_one"
           label="Party Details"
           header-class="text-red text-h6"
@@ -69,6 +78,7 @@
 
                     <q-item-section avatar>
                       <q-btn
+                     @click="getInvoiceFile(invoiceDetail.invoiceId)"
                         outline
                         rounded
                         color="primary"
@@ -85,6 +95,7 @@
         <q-separator />
 
         <q-expansion-item
+          default-opened
           icon="looks_two"
           class="q-ma-md"
           label="Invoice Items"
@@ -93,7 +104,7 @@
           <q-card class="q-ma-none">
             <q-card-section>
               <!-- columns -->
-              <q-item class="row justify-between">
+              <q-item class="row justify-between text3">
                 <q-item-section class="col-1 text-weight-bold">
                   S.NO
                 </q-item-section>
@@ -115,6 +126,7 @@
                 </q-item-section>
               </q-item>
 
+              <q-separator />
               <!-- rows -->
               <q-item
                 class="row justify-between"
@@ -147,6 +159,7 @@
 
         <q-separator />
 
+        <!-- 3rd card -->
         <q-expansion-item
           default-opened
           class="q-ma-md"
@@ -321,6 +334,7 @@
                   dense
                   outline
                   rounded
+                  class="q-pa-md"
                   color="primary"
                   label="Add Payment method"
                   @click="vendoPage(invoiceDetail.fromParty?.partyId)"
@@ -410,36 +424,74 @@
                 />
               </div>
 
+              <!-- preview box -->
               <q-dialog v-model="showPreviewandValidateDialog" persistent>
-                <div class="bg-white text-h6">
-                  <div class="q-ma-md">Confirm payment</div>
-                  <q-separator />
-                  <div class="q-ma-md">
-                    <div>Actual amount : {{ amount.actualAmount }}</div>
-                    <div>
-                      already paid amount amount :
-                      {{
-                        invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal
-                      }}
-                    </div>
-                    <div>
-                      currently paying amount : {{ amount.currentAmount }}
-                    </div>
-                  </div>
-                  <q-separator />
-                  <div class="q-ma-md">
-                    <div>
-                      payment method :
-                      {{ selectedPaymentDetails.paymentMethod }}
-                    </div>
-                    <div>
-                      payment mode : {{ selectedPaymentDetails.paymentMode }}
-                    </div>
-                  </div>
-                  <div class="row justify-evenly q-pa-md">
-                    <q-btn label="cancel" color="secondary" v-close-popup />
-                    <q-btn label="Pay" color="primary" @click="submitPayment" />
-                  </div>
+                <div class="bg-white text-h6" style="border-radius: 20px">
+                  <q-card style="width: 500px">
+                    <q-card-section>
+                      <div class="q-ma-md text-center text-primary">Confirm payment</div>
+
+                      <div class="q-ma-md q-gutter-y-md" >
+                        <q-separator />
+                        <div class="row no-wrap justify-between" v-if="amount.currentAmount == 0">
+                          <div>Full Amount :</div>
+                          <div class="text-right">
+                           $ {{ amount.actualAmount }}
+                          </div>
+                        </div>
+
+                        <div v-else class="row no-wrap justify-between">
+                          <div>Partial Amount:</div>
+                          <div class="text-right">
+                           $ {{ amount.currentAmount }}
+                          </div>
+                        </div>
+
+                        <!-- <div class="row no-wrap justify-between">
+                          <div>currently paying amount :</div>
+                          <div class="text-right">
+                            {{ amount.currentAmount }}
+                          </div>
+                        </div> -->
+
+                        <q-separator />
+                        <div>
+                          <div class="text2">Leave a Command:</div>
+                          <q-input v-model="commands" outlined type="text" />
+                        </div>
+                      </div>
+
+                      <!-- <div class="q-ma-md">
+                        <div>
+                          payment method :
+                          {{ selectedPaymentDetails.paymentMethod }}
+                        </div>
+                        <div>
+                          payment mode :
+                          {{ selectedPaymentDetails.paymentMode }}
+                        </div>
+                      </div> -->
+                    </q-card-section>
+
+                    <q-card-actions class="row justify-evenly q-pa-md">
+                      <q-btn
+                        label="cancel"
+
+                        rounded
+                        outline
+                        color="primary"
+                        v-close-popup
+                      />
+                      <q-btn
+                        label="Pay"
+                        :loading="paymentLoading"
+                        style="width: 68px;"
+                        rounded
+                        color="primary"
+                        @click="submitPayment"
+                      />
+                    </q-card-actions>
+                  </q-card>
                 </div>
               </q-dialog>
             </q-card-section>
@@ -450,7 +502,7 @@
 
     <!-- side box -->
     <div class="q-pa-md" style="min-width: 400px">
-      <q-card class="q-pa-md">
+      <q-card class="q-pa-md" style="border-radius: 10px">
         <div class="q-pa-md text-h6">Amount Details:</div>
         <q-separator />
         <div class="row justify-between q-pa-md">
@@ -497,7 +549,7 @@
 <script>
 import { api } from "src/boot/axios";
 import { useAuthStore } from "src/stores/useAuthStore";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, registerRuntimeCompiler } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useQuasar } from "quasar";
 export default {
@@ -515,9 +567,11 @@ export default {
       actualAmount: 0,
       currentAmount: 0,
     });
+    const commands = ref('')
 
     const showPreviewandValidateDialog = ref(false);
 
+    const paymentLoading = ref(false)
     const isPayFullAmount = ref("full");
     const selectedPaymentDetails = ref({
       paymentMethod: "",
@@ -544,13 +598,12 @@ export default {
 
       amount.value.actualAmount =
         invoiceDetail.value.unpaidTotal ?? invoiceDetail.value.invoiceTotal;
-      console.log(amount.value.actualAmount);
     }
 
     function getAccountDetails(id) {
       api({
         method: "GET",
-        url: "PaymentMethods/bankAccountInfoList",
+        url: "paymentMethods/bankAccountInfoList",
         headers: useAuth.authKey,
         params: {
           partyId: id,
@@ -578,7 +631,8 @@ export default {
     }
 
     function selectPaymentMethod(id) {
-      selectedPaymentDetails.value.paymentMethod = id.paymentMethodId;
+      console.log(id);
+      selectedPaymentDetails.value.paymentMethod = id;
     }
 
     function showPreviewandValidate() {
@@ -605,6 +659,7 @@ export default {
     }
 
     function submitPayment() {
+      paymentLoading.value = true
       const params = {};
 
       params["invoiceId"] = route.params.invoiceId;
@@ -615,7 +670,7 @@ export default {
         params["amount"] = amount.value.currentAmount;
       }
 
-      params["comments"] = "demo command";
+      params["comments"] = commands.value;
       params["effectiveDate"] = "2023-06-22";
 
       if (bankTypeSelect.value == "bank") {
@@ -624,11 +679,12 @@ export default {
       } else {
         params["paymentMethodId"] = selectedPaymentDetails.value.paymentMethod;
       }
-      if (isPayFullAmount.value == "full") {
-        console.log("fullamt");
-      } else {
-        console.log("notfull");
-      }
+
+      // if (isPayFullAmount.value == "full") {
+      //   console.log("fullamt");
+      // } else {
+      //   console.log("notfull");
+      // }
 
       console.log(params);
       api({
@@ -639,6 +695,7 @@ export default {
       })
         .then((res) => {
           console.log(res);
+          paymentLoading.value = false
           $q.notify({
             position: "top-right",
             message: `Succesfully payment sent - ${res.data.amount}`,
@@ -654,8 +711,22 @@ export default {
           });
         })
         .catch((err) => {
+          paymentLoading.value = false
           console.log(err);
         });
+    }
+
+    function getInvoiceFile(id) {
+      api({
+        method: "GET",
+        headers: useAuth.authKey,
+        url: "invoices/viewUploadInvoice",
+        params: {
+          invoiceId: id,
+        },
+      }).then((res) => {
+        window.open(res.data.uploadedInvoiceLink, '_blank');
+      });
     }
 
     const isAmountValid = computed(
@@ -676,6 +747,7 @@ export default {
       vendoPage,
       accountDetail,
       isPayFullAmount,
+      getInvoiceFile,
 
       selectedPaymentDetails,
       selectPaymentMethod,
@@ -684,6 +756,8 @@ export default {
       showPreviewandValidateDialog,
       showPreviewandValidate,
       submitPayment,
+      commands,
+      paymentLoading,
     };
   },
 };

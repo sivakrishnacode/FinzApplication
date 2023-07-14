@@ -1,7 +1,7 @@
 <template>
   <div class="q-mx-sm q-my-md q-gutter-y-md q-px-xl">
-    <!-- search and add btn -->
-    <div class="row justify-center q-gutter-x-md no-wrap">
+       <!-- search and add btn -->
+       <div class="row justify-center q-gutter-x-md no-wrap">
       <q-input
         dense
         outlined
@@ -9,6 +9,7 @@
         v-model="searchInput"
         placeholder="Search"
         @update:model-value="getVendors({ pagination })"
+
         :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
       >
         <template #append>
@@ -16,26 +17,29 @@
         </template>
       </q-input>
 
-      <!-- add vendor btn -->
-      <q-btn
-        flat
-        no-wrap
-        no-caps
-        :label="$q.screen.lt.sm ? '' : 'Create Vendor'"
-        icon="add"
-        @click="$router.push({ name: 'createVendor_page' })"
-        :round="$q.screen.lt.sm ? true : false"
-        class="bg-primary text-white"
-        rounded
-      >
-      </q-btn>
+      <!-- upload btn -->
+
+        <!-- add vendor btn -->
+        <q-btn
+          flat
+          no-wrap
+          no-caps
+          :label="$q.screen.lt.sm ? '' : 'Create Vendor'"
+          icon="add"
+          @click="$router.push({ name: 'createVendor_page' })"
+          :round="$q.screen.lt.sm ? true : false"
+          class="bg-primary text-white text3"
+          rounded
+        >
+        </q-btn>
+
     </div>
 
     <!-- <q-separator /> -->
 
     <!-- table Container -->
     <div class="table-container">
-      <div style="border: 2px solid silver; border-radius: 19px">
+      <div style="border: 1px solid #858585; border-radius: 19px">
         <q-table
           ref="tableRef"
           :rows="rows"
@@ -69,9 +73,9 @@
 
           <!-- header -->
           <template v-slot:header="props">
-            <q-tr :props="props" class="text-weight-bold text-primary">
+            <q-tr :props="props">
               <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div style="font-size: larger">
+                <div style="font-size: 14px" class="text-bold text-primary">
                   {{ col.label }}
                 </div>
               </q-th>
@@ -84,11 +88,11 @@
               :props="props"
               class="text-center cursor-pointer"
               @click="vendorInfo(props.row.partyId)"
-              style="border: 2px solid gray"
+              style="border: 2px solid gray; height: 80px"
             >
               <!-- profile -->
               <q-td key="profile">
-                <q-avatar class="bg-primary text-white" size="lg">
+                <q-avatar class="bg-primary text-white" size="xl">
                   <div>
                     {{ firstLetters(props.row.organizationName).toUpperCase() }}
                   </div>
@@ -96,43 +100,43 @@
               </q-td>
 
               <!-- org name -->
-              <q-td key="organizationname">
-                <div style="font-size: 15px">
+              <q-td key="organizationname" class="text-left">
+                <span style="font-size: 16px">
                   {{ props.row.organizationName }}
-                </div>
+                </span>
               </q-td>
 
               <!-- email -->
-              <q-td key="email">
-                <div style="font-size: 15px">
+              <q-td key="email" class="text-left">
+                <span style="font-size: 16px">
                   {{
                     props.row.contactMechs.find(
                       (val) => val.contactMechTypeEnumId == "CmtEmailAddress"
                     )?.infoString
                   }}
-                </div>
+                </span>
               </q-td>
 
               <!-- contact num -->
-              <q-td key="contactNumber">
-                <div style="font-size: 15px">
+              <q-td key="contactNumber" class="text-left">
+                <span style="font-size: 16px">
                   +91
                   {{
                     props.row.contactMechs.find(
                       (val) => val.contactMechTypeEnumId == "CmtTelecomNumber"
                     )?.contactNumber
                   }}
-                </div>
+                </span>
               </q-td>
 
-              <q-td key="location">
-                <div style="font-size: 15px">
+              <q-td key="location" class="text-left">
+                <span style="font-size: 16px">
                   {{
                     props.row.contactMechs.find(
                       (val) => val.contactMechTypeEnumId == "CmtPostalAddress"
                     )?.city
                   }}
-                </div>
+                </span>
               </q-td>
 
               <!-- status -->
@@ -306,7 +310,7 @@ export default {
         required: true,
         field: " ",
         required: true,
-        label: "Profile",
+        label: "PROFILE",
         align: "center",
         style: "color: red",
       },
@@ -315,32 +319,37 @@ export default {
         required: true,
         field: " ",
         required: true,
-        label: "Organization Name",
-        align: "center",
+        label: "ORGANIZATION NAME",
+        align: "left",
       },
-      { name: "email", field: "emailAddress", align: "center", label: "Email" },
+      {
+        name: "email",
+        field: "emailAddress",
+        align: "left",
+        label: "EMAILADDRESS",
+      },
       {
         name: "number",
         field: "contactNumber",
-        label: "Contact No",
-        align: "center",
+        label: "CONTACT NUMBER",
+        align: "left",
       },
       {
         name: "location",
         field: "location",
-        label: "Location",
-        align: "center",
+        label: "LOCATION",
+        align: "left",
       },
       {
         name: "status",
         field: "status",
-        label: "Status",
+        label: "STATUS",
         align: "center",
       },
       {
         name: "more",
         field: "more",
-        label: "More",
+        label: "MORE",
         align: "center",
       },
     ];
@@ -388,6 +397,7 @@ export default {
         url: "vendors",
         headers: useAuth.authKey,
         params: params,
+
       })
         .then((res) => {
           const vendorsList = res.data.documentList;

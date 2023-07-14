@@ -34,29 +34,29 @@
               :key="data"
               clickable
               v-ripple
-              class="bg-secondary text-primary"
+              class="bg-secondary "
               style="border-radius: 5px"
               @click="getAccountingInfo(data.transactionDetail.paymentId)"
             >
               <!-- avator -->
               <q-item-section class="">
-                <q-item-label class="text-bold">
+                <q-item-label class="text-bold text3 ">
                   {{ data.transactionDetail.acctgTransId }}
                 </q-item-label>
-                <q-item-label class="text-bold">
+                <q-item-label class="text-bold text2 ">
                   {{ data.otherParty.organizationName }}
                 </q-item-label>
-                <q-item-label>
+                <q-item-label class="text3 ">
                   {{ data.otherParty.emailAddress }}
                 </q-item-label>
               </q-item-section>
 
               <!-- name -->
               <q-item-section avatar>
-                <q-item-label class="text-bold">
+                <q-item-label class="text-bold text3">
                   $ {{ data.transactionDetail.amount }}
                 </q-item-label>
-                <q-item-label>
+                <q-item-label class="">
                   {{ dateModifer(data.transactionDetail.transactionDate) }}
                 </q-item-label>
               </q-item-section>
@@ -67,7 +67,7 @@
     </div>
 
     <!-- main -->
-    <div class="full-width" v-if="accountingDetails[0]?.acctgTransId">
+    <div class="full-width text2" v-if="accountingDetails[0]?.acctgTransId">
       <!-- title bar -->
       <div class="row justify-center q-px-xl full-width">
         <div style="width: 700px">
@@ -225,7 +225,8 @@
             </div>
           </div>
 
-          <q-separator vertical dark />
+          <q-separator vertical  />
+
           <!-- right -->
           <div class="q-pa-lg" :class="!$q.screen.lt.md ? 'col' : 'col-12'">
             <!-- title -->
@@ -239,7 +240,7 @@
               style="border: 1px solid gray; border-radius: 20px"
             >
               <!-- columns -->
-              <q-item>
+              <q-item class="text1">
                 <q-item-section class="col-4 text-weight-bold text-h6">
                   Name
                 </q-item-section>

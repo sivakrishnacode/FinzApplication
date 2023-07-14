@@ -1,1 +1,49 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,300&display=swap");
 
+input {
+  caret-color: blue;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+  color: #000814;
+  font: normal normal normal 14px/19px Open Sans;
+}
+
+.text-active{
+  color: #B9CDEC ;
+}
+
+.bg-active{
+  background-color:#C2DAFF ;
+}
+
+.text-inActive{
+  color: #C2DAFF ;
+}
+
+.bg-inActive{
+  background-color:#C2DAFF ;
+}
+
+
+/* text sizee */
+
+.text1{
+  font-size: 20px;
+}
+
+.text2{
+  font-size: 18px;
+}
+
+.text3{
+  font-size: 16px;
+}
+
+/* tabel hover */
+
+.cursor-pointer:hover {
+  background-color: #c2daff;
+}

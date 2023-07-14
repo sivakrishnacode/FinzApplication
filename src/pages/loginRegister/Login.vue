@@ -36,7 +36,7 @@
 
       <!-- forgot password btn -->
       <div class="row justify-between no-wrap">
-        <q-checkbox label="Remember me" v-model="keepMeLogin" size="34px" />
+        <q-checkbox disable label="Remember me" v-model="keepMeLogin" size="34px" />
         <q-btn label="Forgot password ?" no-caps flat color="primary" />
       </div>
 
@@ -77,7 +77,7 @@ export default {
   setup() {
     const email = ref("");
     const password = ref("");
-    const keepMeLogin = ref(false);
+    const keepMeLogin = ref(true);
     const showPassword = ref(false);
 
     const $q = useQuasar();

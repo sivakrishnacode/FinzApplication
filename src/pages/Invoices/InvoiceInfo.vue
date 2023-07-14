@@ -1,9 +1,9 @@
 <template>
-  <div class="row no-wrap">
+  <div class="row no-wrap " style="height: calc(100vh - 150px);" >
     <!-- Side list -->
     <div
       class="q-gutter-y-sm q-pa-lg"
-      style="width: 400px"
+      style="width: 416px"
       v-if="!$q.screen.lt.md"
     >
       <!-- upload invoice btn -->
@@ -279,15 +279,19 @@
       <div>
         <q-tabs
           v-model="currentTab"
-          active-color="white bg-primary"
-          class="q-mx-md bg-grey-2"
+          active-color="primary"
+          class="q-mx-md"
           indicator-color="transparent"
           no-caps
           switch-indicator
           :mobile-arrows="false"
           dense
           outside-arrows
-          style="border-radius: 12px; border: 1px solid silver"
+          style="
+            border-radius: 24px;
+            border: 1px solid silver;
+            background-color: #d5d5d5;
+          "
         >
           <q-tab
             v-for="data in enumTabList"
@@ -305,7 +309,11 @@
       <!-- SCROLL area -->
       <div
         class="q-pa-sm scroll"
-        style="border-radius: 10px; height: calc(100vh - 250px)"
+        style="
+          border-radius: 10px;
+          height: calc(100vh - 250px);
+          border: 1px solid #858585;
+        "
         ref="invoiceListScrollRef"
       >
         <!-- List -->
@@ -316,45 +324,49 @@
           >
             No data
           </div>
+
           <q-item
             v-for="data in invoiceList"
             :key="data"
             active-class="text-bold "
             clickable
             v-ripple
-            class="bg-secondary text-primary"
-            style="border-radius: 5px"
+            class="bg-secondary"
+            style="border-radius: 5px; width: auto; height: 96px"
             @click="getInvoiceDetails(data.invoiceDetail.invoiceId)"
             :active="invoiceDetail.invoiceId === data.invoiceId ? true : false"
           >
             <!-- avator -->
-            <q-item-section class="">
-              <q-item-label>
+
+            <q-item-section>
+              <q-item-label style="font-size: 18px">
                 Invoice ID: {{ data.invoiceDetail.invoiceId }}
               </q-item-label>
-              <q-item-label class="text-bold">
+              <q-item-label style="font-size: 16px">
                 {{ data.fromParty.organizationName }}
               </q-item-label>
-              <q-item-label class="text-bold">
+              <q-item-label style="font-size: 14px">
                 {{ data.fromParty.emailAddress }}
               </q-item-label>
             </q-item-section>
 
             <!-- name -->
             <q-item-section avatar class="">
-              <q-item-label class="text-bold">
+              <q-item-label style="font-size: 16px">
                 Total: {{ data.invoiceDetail?.invoiceTotal }}
               </q-item-label>
-              <q-item-label>
+              <q-item-label style="font-size: 16px">
                 Unpaid: {{ data.invoiceDetail?.unpaidTotal }}
               </q-item-label>
-              <q-item-label class="text-bold">
-                <q-badge
-                  rounded
-                  :color="statusColor(data.invoiceDetail.statusId)?.color"
-                  :label="statusColor(data.invoiceDetail.statusId)?.message"
+              <q-item-label style="font-size: 16px">
+                <div
+                  class="text-bold"
+                  :class="
+                    'text-' + statusColor(data.invoiceDetail.statusId)?.color
+                  "
                 >
-                </q-badge>
+                  {{ data.invoiceDetail.statusId }}
+                </div>
               </q-item-label>
             </q-item-section>
           </q-item>
@@ -372,10 +384,11 @@
             style="border-radius: 0 0 70px 70px"
           >
             <div class="text-primary text-h6">
-              {{ invoiceDetail.fromParty?.organization.organizationName }}
-            </div>
-            <div class="text-blue-grey-1">
               {{ invoiceDetail.invoiceId }}
+            </div>
+            <div class="text-primary">
+              {{ invoiceDetail.fromParty?.organization.organizationName }}
+
             </div>
 
             <!-- cancel btn -->
@@ -398,19 +411,18 @@
       </div>
 
       <!-- body -->
-      <div class="row full-width">
+      <div class="row full-width scroll" style="height: 100%;">
         <!-- center body -->
         <div
-          class="row justify-center"
+          class="row justify-center "
           :class="$q.screen.lt.lg ? 'col-12' : 'col-8'"
         >
           <div style="width: 90%" class="full-height">
-            <!-- items -->
-            <div style="border-radius: 13px" class="bg-secondary q-ma-sm">
+            <div style="border-radius: 20px" class="bg-secondary q-ma-sm">
               <!-- body -->
               <div
                 class="row justify-center q-my-md q-pa-lg"
-                style="border-radius: 20px"
+                style="border-radius: 20px; font-size: 20px"
               >
                 <!-- status -->
                 <div class="full-width q-py-md">
@@ -420,15 +432,13 @@
                     </q-item-section>
 
                     <q-item-section avatar>
-                      <q-item-label>
-                        <q-badge
-                          :color="
-                            statusColor(invoiceDetail.status?.statusId)?.color
-                          "
-                          class="text-h6"
-                        >
-                          {{ invoiceDetail.status?.description }}
-                        </q-badge>
+                      <q-item-label
+                        :class="
+                          'text-' +
+                          statusColor(invoiceDetail.status?.statusId)?.color
+                        "
+                      >
+                        {{ invoiceDetail.status?.description }}
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -480,6 +490,7 @@
 
                     <q-item-section avatar>
                       <q-btn
+                        @click="getInvoiceFile(invoiceDetail.invoiceId)"
                         outline
                         rounded
                         color="primary"
@@ -490,9 +501,12 @@
                 </div>
 
                 <!-- items list -->
-                <div class="full-width q-pa-sm" style="border: 1px solid black">
+                <div
+                  class="full-width q-pa-sm q-my-md"
+                  style="border: 1px solid #858585; border-radius: 10px"
+                >
                   <!-- columns -->
-                  <q-item class="row justify-between">
+                  <q-item class="row justify-between " style="font-size: 16px">
                     <q-item-section class="col-1 text-weight-bold">
                       S.NO
                     </q-item-section>
@@ -513,12 +527,15 @@
                       Price
                     </q-item-section>
                   </q-item>
+
                   <q-separator />
+
                   <!-- rows -->
                   <q-item
                     class="row justify-between"
                     v-for="(data, index) in invoiceDetail.items"
                     :key="index"
+                    style="font-size: 17px"
                   >
                     <q-item-section class="col-1 text-weight-bold">
                       {{ index + 1 }}
@@ -544,11 +561,11 @@
               </div>
             </div>
 
-            <!-- transections -->
+            <!-- payment history -->
             <div
               v-if="invoiceDetail?.paymentApplications"
               class="bg-secondary q-pa-lg q-ma-sm"
-              style="border-radius: 13px"
+              style="border-radius: 20px; font-size: 20px"
             >
               <div class="text-h5 q-pa-md" style="text-decoration: underline">
                 Payment History:
@@ -572,7 +589,7 @@
 
                 <q-item-section avatar>
                   <q-item-label>
-                    <q-badge color="green">
+                    <q-badge color="green" class="text3 q-pa-sm">
                       $ {{ data.amountApplied }}
                     </q-badge>
                   </q-item-label>
@@ -580,10 +597,10 @@
               </q-item>
             </div>
 
-            <!-- history -->
+            <!--invoice history -->
             <div
               class="bg-secondary q-pa-lg q-ma-sm"
-              style="border-radius: 13px"
+              style="border-radius: 20px; font-size: 20px"
             >
               <div class="text-h5 q-pa-md" style="text-decoration: underline">
                 Invoice History:
@@ -631,7 +648,10 @@
         >
           <div style="width: 90%" class="q-gutter-y-md">
             <!-- amount -->
-            <div class="bg-secondary q-pa-lg" style="border-radius: 13px">
+            <div
+              class="bg-secondary q-pa-lg"
+              style="border-radius: 20px; font-size: 16px"
+            >
               <!-- total -->
               <q-item class="q-my-sm">
                 <q-item-section>
@@ -639,7 +659,9 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label>{{ invoiceDetail.invoiceTotal }}</q-item-label>
+                  <q-item-label style="font-size: 20px">{{
+                    invoiceDetail.invoiceTotal
+                  }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -650,7 +672,7 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label>
+                  <q-item-label style="font-size: 20px">
                     {{ invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal }}
                   </q-item-label>
                 </q-item-section>
@@ -663,41 +685,20 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label>{{ invoiceDetail.unpaidTotal }}</q-item-label>
+                  <q-item-label style="font-size: 20px">{{
+                    invoiceDetail.unpaidTotal
+                  }}</q-item-label>
                 </q-item-section>
               </q-item>
 
               <q-separator spaced />
 
               <!-- btns -->
-              <div class="q-pa-md row justify-evenly">
-                <!-- <q-btn
-                  label="Refund"
-                  rounded
-                  color="primary"
-                  @click="startRefund()"
-                />
-
-                <div v-if="invoiceDetail.statusId == 'InvoiceIncoming'">
-                  <q-btn
-                    rounded
-                    outline
-                    label="Approve"
-                    color="primary"
-                    @click="changeInvoiceStatus('approve')"
-                  />
-                </div>
-
+              <div class="q-pa-md row justify-evenly q-gutter-x-md no-wrap">
                 <q-btn
                   v-if="invoiceDetail.statusId == 'InvoiceApproved'"
                   rounded
-                  label="Pay"
-                  color="primary"
-                  @click="redirect('invoicePayPage')"
-                /> -->
-                <q-btn
-                  v-if="invoiceDetail.statusId == 'InvoiceApproved'"
-                  rounded
+                  style="width: 84px"
                   label="Pay"
                   color="primary"
                   @click="redirect('invoicePayPage')"
@@ -733,14 +734,15 @@
                     />
                   </div>
 
-                  <div v-else-if="data.description == 'Payment Sent'">
+                  <!-- <div v-else-if="data.description == 'Payment Sent'">
                     <q-btn
                       rounded
                       label="Pay"
+                      style="width: 84px;"
                       color="primary"
                       @click="redirect('invoicePayPage')"
                     />
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -911,7 +913,7 @@ export default {
     };
 
     async function getInvoiceDetails(invoiseId) {
-      invoiceDetail.value = "";
+      invoiceDetail.value = {};
 
       await api({
         method: "GET",
@@ -924,6 +926,19 @@ export default {
       route.params.invoiceId = invoiceDetail.value.invoiceId;
       getInvoiceHistory(invoiceDetail.value.invoiceId);
       getToStatusFlow(invoiceDetail?.value.statusId);
+    }
+
+    function getInvoiceFile(id) {
+      api({
+        method: "GET",
+        headers: useAuth.authKey,
+        url: "invoices/viewUploadInvoice",
+        params: {
+          invoiceId: id,
+        },
+      }).then((res) => {
+        window.open(res.data.uploadedInvoiceLink, "_blank");
+      });
     }
 
     function getInvoiceHistory(id) {
@@ -1290,6 +1305,7 @@ export default {
 
       id,
       vendoPage,
+      getInvoiceFile,
 
       // side list
       invoiceListScrollRef,

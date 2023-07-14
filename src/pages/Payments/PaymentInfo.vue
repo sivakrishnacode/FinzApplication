@@ -22,6 +22,8 @@
           <!-- date filter -->
           <q-btn color="primary" icon="filter_alt" rounded> </q-btn>
         </div>
+
+        <!-- tabs -->
         <div>
           <q-tabs
             v-model="currentTab"
@@ -46,9 +48,11 @@
         <!-- scroll area -->
         <div
           class="scroll"
-          style="border-radius: 10px; height: calc(100vh - 150px)"
+          style=" border-radius: 10px;
+          height: calc(100vh - 210px);
+          border: 1px solid #858585;"
         >
-          <q-list class="q-gutter-sm">
+          <q-list class="q-gutter-sm q-pa-sm">
             <div
               v-if="paymentList.length == 0"
               class="row justify-center q-pa-lg text-bold text-h6 text-primary"
@@ -72,20 +76,20 @@
               active-class="text-bold" -->
               <!-- avator -->
               <q-item-section class="">
-                <q-item-label class="text-bold">
+                <q-item-label class="text-bold text2">
                   {{ data.paymentDetail.paymentId }}
                 </q-item-label>
-                <q-item-label class="text-bold">
+                <q-item-label class="text-bold text3">
                   {{ data.toParty.organizationName }}
                 </q-item-label>
-                <q-item-label>
+                <q-item-label class="text3">
                   {{ data.toParty.emailAddress }}
                 </q-item-label>
               </q-item-section>
 
               <!-- name -->
               <q-item-section avatar>
-                <q-item-label class="text-bold">
+                <q-item-label class="text-bold text2">
                   $ {{ data.paymentDetail.amount }}
                 </q-item-label>
                 <q-item-label>
@@ -108,10 +112,10 @@
             class="bg-secondary text-center q-pa-sm q-gutter-y-sm"
             style="border-radius: 0 0 70px 70px"
           >
-            <div class="text-primary text-h6">
+            <div class="text-primary text1 q-mt-md">
               {{ paymentDetails.paymentId }}
             </div>
-            <div class="text-blue-grey-1">
+            <div class="">
               {{ paymentDetails.toParty?.organization.organizationName }}
             </div>
 
@@ -129,7 +133,7 @@
       </div>
 
       <!-- center body -->
-      <div class="row justify-center">
+      <div class="row justify-center text3">
         <div style="width: 60%" class="full-height">
           <!-- items -->
 
@@ -236,7 +240,7 @@
             <div class="full-width q-py-md">
               <q-item>
                 <q-item-section>
-                  <q-item-label overline>Currency:</q-item-label>
+                  <q-item-label >Currency:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
@@ -251,7 +255,7 @@
             <div class="full-width q-py-md">
               <q-item>
                 <q-item-section>
-                  <q-item-label overline>UTR Number:</q-item-label>
+                  <q-item-label >UTR Number:</q-item-label>
                 </q-item-section>
                 <q-item-section avatar>
                   <q-item-label>
@@ -265,7 +269,7 @@
             <div class="full-width q-py-sm">
               <q-item>
                 <q-item-section>
-                  <q-item-label overline>Payment method:</q-item-label>
+                  <q-item-label >Payment method:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
@@ -282,7 +286,7 @@
             >
               <q-item>
                 <q-item-section>
-                  <q-item-label overline>UPI ID:</q-item-label>
+                  <q-item-label >UPI ID:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
@@ -296,7 +300,7 @@
             <div class="full-width q-py-sm" v-else>
               <q-item>
                 <q-item-section>
-                  <q-item-label overline>Account Name:</q-item-label>
+                  <q-item-label >Account Name:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
@@ -310,7 +314,7 @@
             <div class="full-width q-py-sm">
               <q-item>
                 <q-item-section>
-                  <q-item-label overline>Comments:</q-item-label>
+                  <q-item-label >Comments:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
