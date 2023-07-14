@@ -1,7 +1,7 @@
 <template>
   <div class="q-mx-sm q-my-md q-gutter-y-md q-px-xl">
-       <!-- search and add btn -->
-       <div class="row justify-center q-gutter-x-md no-wrap">
+    <!-- search and add btn -->
+    <div class="row justify-center q-gutter-x-md no-wrap">
       <q-input
         dense
         outlined
@@ -9,7 +9,6 @@
         v-model="searchInput"
         placeholder="Search"
         @update:model-value="getVendors({ pagination })"
-
         :style="$q.screen.lt.sm ? { width: '300px' } : { width: '400px' }"
       >
         <template #append>
@@ -18,11 +17,8 @@
       </q-input>
 
       <!-- upload btn -->
-<<<<<<< HEAD
 
-=======
       <div class="row absolute" style="right: 56px; top: 78px">
->>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
         <!-- add vendor btn -->
         <q-btn
           flat
@@ -32,19 +28,11 @@
           icon="add"
           @click="$router.push({ name: 'createVendor_page' })"
           :round="$q.screen.lt.sm ? true : false"
-<<<<<<< HEAD
           class="bg-primary text-white text3"
           rounded
         >
         </q-btn>
-
-=======
-          class="bg-primary text-white"
-          rounded
-        >
-        </q-btn>
       </div>
->>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
     </div>
 
     <!-- <q-separator /> -->
@@ -409,7 +397,6 @@ export default {
         url: "vendors",
         headers: useAuth.authKey,
         params: params,
-
       })
         .then((res) => {
           const vendorsList = res.data.documentList;

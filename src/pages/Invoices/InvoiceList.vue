@@ -188,22 +188,23 @@
         </div>
       </div>
 
-
       <!-- quick filter -->
       <div class="q-pa-md">
         <q-tabs
           v-model="currentTab"
           active-color="primary"
           class="q-mx-md bg-grey-2 q-pa-sm"
-
           indicator-color="transparent"
           no-caps
           dense
-          style="border-radius: 12px; border: 1px solid silver; background-color: #D5D5D5;"
+          style="
+            border-radius: 12px;
+            border: 1px solid silver;
+            background-color: #d5d5d5;
+          "
           @update:model-value="getInvoiceList()"
         >
           <q-tab
-
             v-for="data in enumTabList"
             :key="data"
             :label="data.description"
@@ -324,11 +325,7 @@
               @click="invoiceRedirect(props.row.invoiceDetail.invoiceId)"
             >
               <q-td key="Invoice_date" class="text-center">
-<<<<<<< HEAD
-                <div style="font-size: 16px; ">
-=======
                 <div style="font-size: 16px; color: #858585">
->>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
                   {{ dateModifer(props.row.invoiceDetail.invoiceDate) }}
                 </div>
               </q-td>
@@ -1012,11 +1009,7 @@ export default {
 </script>
 
 <style>
-<<<<<<< HEAD
-
-=======
 .cursor-pointer:hover {
   background-color: #c2daff;
 }
->>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
 </style>

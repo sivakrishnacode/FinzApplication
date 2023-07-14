@@ -8,20 +8,18 @@ import axios from "axios";
 // for each client)
 const api = axios.create({
   baseURL: "https://1371-14-97-230-6.ngrok-free.app/rest/s1/finzApp",
-  headers : {
-    "ngrok-skip-browser-warning": true
+  headers: {
+    "ngrok-skip-browser-warning": true,
   },
-  timeout:4000000
 });
 
 // const api = axios.create({
 //   baseURL: "https://ce99-14-97-230-6.ngrok-free.app/rest/s1/finzApp",
-  // headers : {
-  //   "ngrok-skip-browser-warning": true
-  // }
+// headers : {
+//   "ngrok-skip-browser-warning": true
+// }
 
 // });
-
 
 // my ip 192.168.0.177
 // arun 192.168.0.229

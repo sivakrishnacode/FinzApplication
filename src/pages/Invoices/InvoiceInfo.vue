@@ -1,5 +1,5 @@
 <template>
-  <div class="row no-wrap " style="height: calc(100vh - 150px);" >
+  <div class="row no-wrap" style="height: calc(100vh - 150px)">
     <!-- Side list -->
     <div
       class="q-gutter-y-sm q-pa-lg"
@@ -384,17 +384,13 @@
             style="border-radius: 0 0 70px 70px"
           >
             <div class="text-primary text-h6">
-<<<<<<< HEAD
-=======
               {{ invoiceDetail.fromParty?.organization.organizationName }}
             </div>
             <div class="text-primary">
->>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
               {{ invoiceDetail.invoiceId }}
             </div>
             <div class="text-primary">
               {{ invoiceDetail.fromParty?.organization.organizationName }}
-
             </div>
 
             <!-- cancel btn -->
@@ -417,10 +413,10 @@
       </div>
 
       <!-- body -->
-      <div class="row full-width scroll" style="height: 100%;">
+      <div class="row full-width scroll" style="height: 100%">
         <!-- center body -->
         <div
-          class="row justify-center "
+          class="row justify-center"
           :class="$q.screen.lt.lg ? 'col-12' : 'col-8'"
         >
           <div style="width: 90%" class="full-height">
@@ -512,7 +508,7 @@
                   style="border: 1px solid #858585; border-radius: 10px"
                 >
                   <!-- columns -->
-                  <q-item class="row justify-between " style="font-size: 16px">
+                  <q-item class="row justify-between" style="font-size: 16px">
                     <q-item-section class="col-1 text-weight-bold">
                       S.NO
                     </q-item-section>
@@ -943,11 +939,7 @@ export default {
           invoiceId: id,
         },
       }).then((res) => {
-<<<<<<< HEAD
         window.open(res.data.uploadedInvoiceLink, "_blank");
-=======
-        window.location.href = res.data.uploadedInvoiceLink;
->>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
       });
     }
 
