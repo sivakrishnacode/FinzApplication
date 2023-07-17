@@ -49,7 +49,7 @@
             clickable
             v-ripple
             class="bg-inActive"
-            style="border-radius: 8px; height: 80px; width:auto;"
+            style="border-radius: 8px; height: 80px; width: auto"
           >
             <!-- avator -->
             <q-item-section avatar>
@@ -62,14 +62,11 @@
 
             <!-- name -->
             <q-item-section>
-              <q-item-label style="font-size: 18px;">
+              <q-item-label style="font-size: 18px">
                 {{ data.organizationName }}
               </q-item-label>
-<<<<<<< HEAD
-              <q-item-label class="text-caption" caption style="font-size: 16px;">
-=======
+
               <q-item-label class="text-caption" caption>
->>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03
                 {{
                   data.contactMechs.find(
                     (val) => val.contactMechTypeEnumId == "CmtEmailAddress"
@@ -91,10 +88,10 @@
           class="bg-secondary text-center"
           style="border-radius: 0 0 70px 70px; height: 80px; width: 600px"
         >
-          <div class="q-mt-md text-primary text-h6" >
+          <div class="q-mt-md text-primary text-h6">
             {{ vendorInfoData.organizationName }}
           </div>
-          <div style="color: #858585;">
+          <div style="color: #858585">
             {{ vendorInfoData.emailAddress }}
           </div>
         </div>
@@ -123,7 +120,12 @@
             label="Invoices"
             icon="receipt_long"
             class="bg-primary text-white text-bold q-pa-md"
-            style="border-radius: 50px; width: 216px; height: 58px; font-size: 18px;"
+            style="
+              border-radius: 50px;
+              width: 216px;
+              height: 58px;
+              font-size: 18px;
+            "
             no-caps
             flat
             @click="
@@ -140,7 +142,14 @@
             label="Payments"
             icon="payments"
             class="bg-primary text-white text-bold q-pa-md"
-            style="border-radius: 50px; width: 216px; height: 58px; font-size: 18px; margin-left: 24px; margin-right: 24px;"
+            style="
+              border-radius: 50px;
+              width: 216px;
+              height: 58px;
+              font-size: 18px;
+              margin-left: 24px;
+              margin-right: 24px;
+            "
             no-caps
             flat
             @click="
@@ -158,7 +167,12 @@
             label="Accounting"
             icon="account_balance"
             class="bg-primary text-white text-bold q-pa-md"
-            style="border-radius: 50px; width: 216px; font-size: 18px; height: 58px;"
+            style="
+              border-radius: 50px;
+              width: 216px;
+              font-size: 18px;
+              height: 58px;
+            "
             no-caps
             flat
           />
@@ -218,7 +232,7 @@
                   <!-- first row -->
                   <div class="row full-width items-center justify-center">
                     <div class="col-5 q-gutter-x-xl">
-                      <div  style="font-size: 19px">
+                      <div style="font-size: 19px">
                         <q-input
                           input-class="text-h6 "
                           :filled="!isVendorEditable"
@@ -232,7 +246,7 @@
                     </div>
 
                     <div class="col-5 q-gutter-x-xl">
-                      <div  style="font-size: 19px">
+                      <div style="font-size: 19px">
                         <q-input
                           input-class="text-h6 "
                           :filled="!isVendorEditable"
@@ -249,7 +263,7 @@
                   <!-- second row -->
                   <div class="row full-width items-center justify-center">
                     <div class="col-5 q-gutter-x-xl">
-                      <div  style="font-size: 19px">
+                      <div style="font-size: 19px">
                         <q-input
                           input-class="text-h6 "
                           :filled="!isVendorEditable"
@@ -263,7 +277,7 @@
                     </div>
 
                     <div class="col-5 q-gutter-x-xl">
-                      <div  style="font-size: 19px">
+                      <div style="font-size: 19px">
                         <q-input
                           input-class="text-h6 "
                           :filled="!isVendorEditable"
@@ -294,7 +308,7 @@
                     </div>
 
                     <div class="col-5 q-gutter-x-xl">
-                      <div  style="font-size: 19px">
+                      <div style="font-size: 19px">
                         <q-input
                           input-class="text-h6 "
                           :filled="!isVendorEditable"
@@ -311,7 +325,7 @@
                   <!-- 4 row -->
                   <div class="row full-width items-center justify-center">
                     <div class="col-5 q-gutter-x-xl">
-                      <div  style="font-size: 19px">
+                      <div style="font-size: 19px">
                         <q-select
                           v-model="vendorInfoData.countryGeoId"
                           :filled="!isVendorEditable"
@@ -333,7 +347,7 @@
                     </div>
 
                     <div class="col-5 q-gutter-x-xl">
-                      <div  style="font-size: 19px">
+                      <div style="font-size: 19px">
                         <q-select
                           :filled="!isVendorEditable"
                           :readonly="isVendorEditable"
@@ -361,7 +375,7 @@
                   <!-- 5th row -->
                   <div class="row full-width items-center justify-center">
                     <div class="col-5 q-gutter-x-xl">
-                      <div  style="font-size: 19px">
+                      <div style="font-size: 19px">
                         <q-input
                           input-class="text-h6 "
                           :filled="!isVendorEditable"
@@ -603,10 +617,6 @@
               </q-card>
             </q-dialog>
 
-
-
-
-
             <!-- card sections .......................................... -->
 
             <!-- Active accounts details -->
@@ -627,11 +637,9 @@
                       size="18px"
                       color="primary"
                     />
-                    <q-item-label class="text-primary"
-                      >
+                    <q-item-label class="text-primary">
                       Bank Account
-                      </q-item-label
-                    >
+                    </q-item-label>
                   </div>
                   <q-badge color="positive" label="Active" />
                 </div>
@@ -639,26 +647,24 @@
                 <q-separator spaced />
 
                 <div class="row justify-between">
-                  <div class="col-5  q-my-auto">
-                    Beneficiary Name
-                  </div>
+                  <div class="col-5 q-my-auto">Beneficiary Name</div>
                   <div class="col-7 q-my-auto">
                     {{ data.companyNameOnAccount }}
                   </div>
                 </div>
 
                 <div class="row justify-between">
-                  <div class="col-5  q-my-auto">Bank Name</div>
+                  <div class="col-5 q-my-auto">Bank Name</div>
                   <div class="col-7 q-my-auto">{{ data.bankName }}</div>
                 </div>
 
                 <div class="row justify-between">
-                  <div class="col-5  q-my-auto">Account No</div>
+                  <div class="col-5 q-my-auto">Account No</div>
                   <div class="col-7 q-my-auto">{{ data.accountNumber }}</div>
                 </div>
 
                 <div class="row justify-between">
-                  <div class="col-4  q-my-auto">IFSC Code</div>
+                  <div class="col-4 q-my-auto">IFSC Code</div>
                   <div class="col-7 q-my-auto">{{ data.routingNumber }}</div>
                 </div>
 
@@ -699,23 +705,21 @@
 
                   <q-separator spaced />
                   <div class="row justify-between">
-                    <div class="col-5  q-my-auto">
-                      Beneficiary Name
-                    </div>
+                    <div class="col-5 q-my-auto">Beneficiary Name</div>
                     <div class="col-7 q-my-auto">
                       {{ data.upiPayment.userName }}
                     </div>
                   </div>
 
                   <div class="row justify-between">
-                    <div class="col-5  q-my-auto">UPI Id</div>
+                    <div class="col-5 q-my-auto">UPI Id</div>
                     <div class="col-7 q-my-auto">
                       {{ data.upiPayment.upiAddress }}
                     </div>
                   </div>
 
                   <div class="row justify-between">
-                    <div class="col-5  q-my-auto">UPI Bank</div>
+                    <div class="col-5 q-my-auto">UPI Bank</div>
                     <div class="col-7 q-my-auto">
                       {{ data.upiPayment.handle }}
                     </div>

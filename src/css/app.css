@@ -10,36 +10,34 @@ body {
   color: #000814;
   font: normal normal normal 14px/19px Open Sans;
 }
-<<<<<<< HEAD
 
-.text-active{
-  color: #B9CDEC ;
+.text-active {
+  color: #b9cdec;
 }
 
-.bg-active{
-  background-color:#C2DAFF ;
+.bg-active {
+  background-color: #c2daff;
 }
 
-.text-inActive{
-  color: #C2DAFF ;
+.text-inActive {
+  color: #c2daff;
 }
 
-.bg-inActive{
-  background-color:#C2DAFF ;
+.bg-inActive {
+  background-color: #c2daff;
 }
-
 
 /* text sizee */
 
-.text1{
+.text1 {
   font-size: 20px;
 }
 
-.text2{
+.text2 {
   font-size: 18px;
 }
 
-.text3{
+.text3 {
   font-size: 16px;
 }
 
@@ -48,5 +46,3 @@ body {
 .cursor-pointer:hover {
   background-color: #c2daff;
 }
-=======
->>>>>>> 8c6275e72ec6b8bf1543a337bf47300f0e36dd03

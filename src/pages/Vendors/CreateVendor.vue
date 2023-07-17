@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-xl row justify-center bg-blue-grey-1">
+  <div class="q-pa-xl row justify-center bg-blue-grey-1" style="height: 90vh">
     <!--  -->
     <q-stepper
       v-model="step"
@@ -9,7 +9,7 @@
       keep-alive
       style="
         width: 1200px;
-        height: 700px;
+
         box-shadow: rgba(71, 67, 67, 0.56) 0px 22px 70px 4px;
         border-radius: 12px;
       "
