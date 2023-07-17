@@ -78,7 +78,7 @@
 
                     <q-item-section avatar>
                       <q-btn
-                     @click="getInvoiceFile(invoiceDetail.invoiceId)"
+                        @click="getInvoiceFile(invoiceDetail.invoiceId)"
                         outline
                         rounded
                         color="primary"
@@ -429,21 +429,26 @@
                 <div class="bg-white text-h6" style="border-radius: 20px">
                   <q-card style="width: 500px">
                     <q-card-section>
-                      <div class="q-ma-md text-center text-primary">Confirm payment</div>
+                      <div class="q-ma-md text-center text-primary">
+                        Confirm payment
+                      </div>
 
-                      <div class="q-ma-md q-gutter-y-md" >
+                      <div class="q-ma-md q-gutter-y-md">
                         <q-separator />
-                        <div class="row no-wrap justify-between" v-if="amount.currentAmount == 0">
+                        <div
+                          class="row no-wrap justify-between"
+                          v-if="amount.currentAmount == 0"
+                        >
                           <div>Full Amount :</div>
                           <div class="text-right">
-                           $ {{ amount.actualAmount }}
+                            $ {{ amount.actualAmount }}
                           </div>
                         </div>
 
                         <div v-else class="row no-wrap justify-between">
                           <div>Partial Amount:</div>
                           <div class="text-right">
-                           $ {{ amount.currentAmount }}
+                            $ {{ amount.currentAmount }}
                           </div>
                         </div>
 
@@ -476,7 +481,6 @@
                     <q-card-actions class="row justify-evenly q-pa-md">
                       <q-btn
                         label="cancel"
-
                         rounded
                         outline
                         color="primary"
@@ -485,7 +489,7 @@
                       <q-btn
                         label="Pay"
                         :loading="paymentLoading"
-                        style="width: 68px;"
+                        style="width: 68px"
                         rounded
                         color="primary"
                         @click="submitPayment"
@@ -502,22 +506,22 @@
 
     <!-- side box -->
     <div class="q-pa-md" style="min-width: 400px">
-      <q-card class="q-pa-md" style="border-radius: 10px">
+      <q-card class="q-pa-md text2" style="border-radius: 10px">
         <div class="q-pa-md text-h6">Amount Details:</div>
         <q-separator />
         <div class="row justify-between q-pa-md">
           <div>Invoice amount</div>
-          <div>$ {{ invoiceDetail.invoiceTotal }}</div>
+          <div class="text2">$ {{ invoiceDetail.invoiceTotal }}</div>
         </div>
         <div class="row justify-between q-pa-md">
           <div>Paid amount</div>
-          <div>
+          <div class="text2">
             $ {{ invoiceDetail.invoiceTotal - invoiceDetail.unpaidTotal }}
           </div>
         </div>
         <div class="row justify-between q-pa-md">
           <div>UnPaid amount</div>
-          <div>$ {{ invoiceDetail.unpaidTotal }}</div>
+          <div class="text2">$ {{ invoiceDetail.unpaidTotal }}</div>
         </div>
 
         <q-separator />
@@ -567,11 +571,11 @@ export default {
       actualAmount: 0,
       currentAmount: 0,
     });
-    const commands = ref('')
+    const commands = ref("");
 
     const showPreviewandValidateDialog = ref(false);
 
-    const paymentLoading = ref(false)
+    const paymentLoading = ref(false);
     const isPayFullAmount = ref("full");
     const selectedPaymentDetails = ref({
       paymentMethod: "",
@@ -659,7 +663,7 @@ export default {
     }
 
     function submitPayment() {
-      paymentLoading.value = true
+      paymentLoading.value = true;
       const params = {};
 
       params["invoiceId"] = route.params.invoiceId;
@@ -695,7 +699,7 @@ export default {
       })
         .then((res) => {
           console.log(res);
-          paymentLoading.value = false
+          paymentLoading.value = false;
           $q.notify({
             position: "top-right",
             message: `Succesfully payment sent - ${res.data.amount}`,
@@ -711,7 +715,7 @@ export default {
           });
         })
         .catch((err) => {
-          paymentLoading.value = false
+          paymentLoading.value = false;
           console.log(err);
         });
     }
@@ -725,7 +729,7 @@ export default {
           invoiceId: id,
         },
       }).then((res) => {
-        window.open(res.data.uploadedInvoiceLink, '_blank');
+        window.open(res.data.uploadedInvoiceLink, "_blank");
       });
     }
 

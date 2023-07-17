@@ -86,7 +86,7 @@
           <template #body="props">
             <q-tr
               :props="props"
-              class="text-center cursor-pointer"
+              class="text-hover text-center cursor-pointer"
               @click="vendorInfo(props.row.partyId)"
               style="border: 2px solid gray; height: 80px"
             >

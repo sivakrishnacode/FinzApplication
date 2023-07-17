@@ -320,7 +320,7 @@
           <template #body="props">
             <q-tr
               :props="props"
-              class="text-center cursor-pointer"
+              class="text-hover text-center cursor-pointer"
               style="height: 80px"
               @click="invoiceRedirect(props.row.invoiceDetail.invoiceId)"
             >

@@ -365,7 +365,11 @@
                     'text-' + statusColor(data.invoiceDetail.statusId)?.color
                   "
                 >
-                  {{ data.invoiceDetail.statusId }}
+                  {{
+                    useInvoices.invoiceStatusProp.find(
+                      (res) => res.statusId == data.invoiceDetail.statusId
+                    )?.description
+                  }}
                 </div>
               </q-item-label>
             </q-item-section>
@@ -388,9 +392,6 @@
             </div>
             <div class="text-primary">
               {{ invoiceDetail.invoiceId }}
-            </div>
-            <div class="text-primary">
-              {{ invoiceDetail.fromParty?.organization.organizationName }}
             </div>
 
             <!-- cancel btn -->
@@ -760,6 +761,7 @@ import { useRouter, useRoute } from "vue-router";
 import { onMounted, ref, nextTick } from "vue";
 import { api } from "src/boot/axios";
 import { useAuthStore } from "src/stores/useAuthStore";
+import { useInvoicesStore } from "src/stores/useInvoiceStore";
 import { useQuasar } from "quasar";
 
 export default {
@@ -768,6 +770,7 @@ export default {
     const router = useRouter();
     const route = useRoute();
     const useAuth = useAuthStore();
+    const useInvoices = useInvoicesStore();
     const $q = useQuasar();
 
     const id = route.params.invoiceId;
@@ -1304,6 +1307,7 @@ export default {
       cancelConfirmDailog,
       previewDialog,
       fileInputRef,
+      useInvoices,
 
       id,
       vendoPage,

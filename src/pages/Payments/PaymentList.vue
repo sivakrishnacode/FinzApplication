@@ -264,7 +264,7 @@
         <template #body="props">
           <q-tr
             :props="props"
-            class="text-center cursor-pointer"
+            class="text-hover text-center cursor-pointer"
             @click="paymentRedirect(props.row.paymentDetail.paymentId)"
             style="height: 80px"
           >

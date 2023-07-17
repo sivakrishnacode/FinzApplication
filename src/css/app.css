@@ -43,6 +43,6 @@ body {
 
 /* tabel hover */
 
-.cursor-pointer:hover {
+.text-hover:hover {
   background-color: #c2daff;
 }

@@ -258,7 +258,7 @@
           <template #body="props">
             <q-tr
               :props="props"
-              class="text-center cursor-pointer"
+              class="text-hover text-center cursor-pointer"
               @click="accountingInfo(props.row.transactionDetail.paymentId)"
               style="height: 80px"
             >
