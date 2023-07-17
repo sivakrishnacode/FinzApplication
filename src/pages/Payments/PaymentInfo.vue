@@ -48,9 +48,11 @@
         <!-- scroll area -->
         <div
           class="scroll"
-          style=" border-radius: 10px;
-          height: calc(100vh - 210px);
-          border: 1px solid #858585;"
+          style="
+            border-radius: 10px;
+            height: calc(100vh - 210px);
+            border: 1px solid #858585;
+          "
         >
           <q-list class="q-gutter-sm q-pa-sm">
             <div
@@ -240,7 +242,7 @@
             <div class="full-width q-py-md">
               <q-item>
                 <q-item-section>
-                  <q-item-label >Currency:</q-item-label>
+                  <q-item-label>Currency:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
@@ -255,7 +257,7 @@
             <div class="full-width q-py-md">
               <q-item>
                 <q-item-section>
-                  <q-item-label >UTR Number:</q-item-label>
+                  <q-item-label>UTR Number:</q-item-label>
                 </q-item-section>
                 <q-item-section avatar>
                   <q-item-label>
@@ -269,7 +271,7 @@
             <div class="full-width q-py-sm">
               <q-item>
                 <q-item-section>
-                  <q-item-label >Payment method:</q-item-label>
+                  <q-item-label>Payment method:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
@@ -286,7 +288,7 @@
             >
               <q-item>
                 <q-item-section>
-                  <q-item-label >UPI ID:</q-item-label>
+                  <q-item-label>UPI ID:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
@@ -300,7 +302,7 @@
             <div class="full-width q-py-sm" v-else>
               <q-item>
                 <q-item-section>
-                  <q-item-label >Account Name:</q-item-label>
+                  <q-item-label>Account Name:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>
@@ -314,7 +316,7 @@
             <div class="full-width q-py-sm">
               <q-item>
                 <q-item-section>
-                  <q-item-label >Comments:</q-item-label>
+                  <q-item-label>Comments:</q-item-label>
                 </q-item-section>
 
                 <q-item-section avatar>

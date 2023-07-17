@@ -34,19 +34,19 @@
               :key="data"
               clickable
               v-ripple
-              class="bg-secondary "
+              class="bg-secondary"
               style="border-radius: 5px"
               @click="getAccountingInfo(data.transactionDetail.paymentId)"
             >
               <!-- avator -->
               <q-item-section class="">
-                <q-item-label class="text-bold text3 ">
+                <q-item-label class="text-bold text3">
                   {{ data.transactionDetail.acctgTransId }}
                 </q-item-label>
-                <q-item-label class="text-bold text2 ">
+                <q-item-label class="text-bold text2">
                   {{ data.otherParty.organizationName }}
                 </q-item-label>
-                <q-item-label class="text3 ">
+                <q-item-label class="text3">
                   {{ data.otherParty.emailAddress }}
                 </q-item-label>
               </q-item-section>
@@ -225,7 +225,7 @@
             </div>
           </div>
 
-          <q-separator vertical  />
+          <q-separator vertical />
 
           <!-- right -->
           <div class="q-pa-lg" :class="!$q.screen.lt.md ? 'col' : 'col-12'">
