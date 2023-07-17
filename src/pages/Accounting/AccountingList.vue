@@ -202,7 +202,8 @@
           :label="vendorFilterSelected.name"
           @remove="
             ((vendorFilterSelected.partyId = ''), (search = '')),
-              getAccountingList({ pagination: pagination })
+              getAccountingList({ pagination: pagination }),
+              router.replace({ name: 'accountingList_page' })
           "
         />
       </div>
@@ -351,13 +352,14 @@
 import { onMounted, ref } from "vue";
 import { useQuasar } from "quasar";
 import { api } from "src/boot/axios";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "src/stores/useAuthStore";
 
 export default {
-  name: "vendorsList_page",
+  name: "accountingList_page",
   setup() {
     const router = useRouter();
+    const route = useRoute();
     const useAuth = useAuthStore();
 
     const tableRef = ref(null);
@@ -556,6 +558,13 @@ export default {
 
     // select vendor
     async function selectVendor(id, name) {
+      await router.replace({
+        name: "accountingList_page",
+        query: {
+          vendorName: name,
+          partyId: id,
+        },
+      });
       search.value = "";
       isVendorFilterActiveForChip.value = true;
       vendorFilterSelected.value.name = name;
@@ -633,8 +642,13 @@ export default {
     // filters fun end ...........................................
 
     onMounted(() => {
-      tableRef.value.requestServerInteraction();
       getDateFilterEnumList();
+
+      if (route.query.partyId) {
+        selectVendor(route.query.partyId, route.query.vendorName);
+      } else {
+        tableRef.value.requestServerInteraction();
+      }
     });
 
     return {
@@ -642,6 +656,7 @@ export default {
       columns,
       tableRef,
       isLoading,
+      router,
 
       model: ref(""),
 

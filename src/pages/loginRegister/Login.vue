@@ -36,7 +36,12 @@
 
       <!-- forgot password btn -->
       <div class="row justify-between no-wrap">
-        <q-checkbox disable label="Remember me" v-model="keepMeLogin" size="34px" />
+        <q-checkbox
+          disable
+          label="Remember me"
+          v-model="keepMeLogin"
+          size="34px"
+        />
         <q-btn label="Forgot password ?" no-caps flat color="primary" />
       </div>
 
@@ -119,7 +124,6 @@ export default {
               color: "green",
               icon: "done",
               position: "top-right",
-              timeout: 3000,
             });
           }
         })
@@ -133,6 +137,7 @@ export default {
             icon: "cancel",
             color: "negative",
             position: "top-right",
+            closeBtn: true,
           });
         });
     }

@@ -221,7 +221,19 @@
                       <q-item-section>Payments</q-item-section>
                     </q-item>
 
-                    <q-item clickable v-ripple>
+                    <q-item
+                      clickable
+                      v-ripple
+                      @click="
+                        router.push({
+                          name: 'accountingList_page',
+                          query: {
+                            vendorName: props.row.organizationName,
+                            partyId: props.row.partyId,
+                          },
+                        })
+                      "
+                    >
                       <q-item-section avatar>
                         <q-icon name="account_balance" />
                       </q-item-section>

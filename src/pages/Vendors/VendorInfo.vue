@@ -175,6 +175,15 @@
             "
             no-caps
             flat
+            @click="
+              router.push({
+                name: 'accountingList_page',
+                query: {
+                  vendorName: vendorInfoData.organizationName,
+                  partyId: vendorInfoData.partyId,
+                },
+              })
+            "
           />
         </q-tabs>
       </div>
