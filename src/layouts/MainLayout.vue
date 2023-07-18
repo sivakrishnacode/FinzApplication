@@ -30,7 +30,7 @@
           >
             <q-card>
               <q-card-section>
-                {{ $q.dark.isActive }}
+                is dark {{ $q.dark.isActive }}
                 <div class="row no-wrap q-pa-md">
                   <div class="column">
                     <div class="text-h6 q-mb-md">Settings</div>
@@ -201,9 +201,9 @@ export default defineComponent({
       alert("closed");
     });
 
-    function themeSwitch() {
-      $q.dark.toggle();
+    async function themeSwitch() {
       const localTheme = isDark.value;
+
       if (localTheme) {
         localStorage.setItem("_is_dark_theme", true);
       } else {
@@ -216,8 +216,9 @@ export default defineComponent({
       const isDarkTheme = localStorage.getItem("_is_dark_theme");
 
       if (isDarkTheme == "true") {
-        $q.dark.toggle();
         //dark theme
+
+        console.log("dark settted");
         isDark.value = true;
         setCssVar("primary", "#0066FF");
         setCssVar("secondary", "#131927");
@@ -225,7 +226,7 @@ export default defineComponent({
         // light theme
 
         isDark.value = false;
-        console.log("LIGHT");
+        console.log("LIGHT settted");
         setCssVar("primary", "#0066FF");
         setCssVar("secondary", "#C2DAFF");
       }
