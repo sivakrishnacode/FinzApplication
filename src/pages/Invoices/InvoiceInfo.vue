@@ -292,15 +292,13 @@
             border: 1px solid silver;
             background-color: #d5d5d5;
           "
+          @update:model-value="getInvoiceList()"
         >
           <q-tab
             v-for="data in enumTabList"
             :key="data"
             :label="data.description"
             :name="data.enumId"
-            @click="
-              (currentTab = data.enumId), getInvoiceList(), clearInvoiceList()
-            "
             style="border-radius: 19px"
           />
         </q-tabs>
@@ -339,26 +337,26 @@
             <!-- avator -->
 
             <q-item-section>
-              <q-item-label style="font-size: 18px">
+              <q-item-label class="text3">
                 Invoice ID: {{ data.invoiceDetail.invoiceId }}
               </q-item-label>
-              <q-item-label style="font-size: 16px">
+              <q-item-label class="text2">
                 {{ data.fromParty.organizationName }}
               </q-item-label>
-              <q-item-label style="font-size: 14px">
+              <q-item-label class="text4">
                 {{ data.fromParty.emailAddress }}
               </q-item-label>
             </q-item-section>
 
             <!-- name -->
-            <q-item-section avatar class="">
-              <q-item-label style="font-size: 16px">
+            <q-item-section avatar>
+              <q-item-label class="text3">
                 Total: {{ data.invoiceDetail?.invoiceTotal }}
               </q-item-label>
-              <q-item-label style="font-size: 16px">
+              <q-item-label class="text3">
                 Unpaid: {{ data.invoiceDetail?.unpaidTotal }}
               </q-item-label>
-              <q-item-label style="font-size: 16px">
+              <q-item-label class="text3">
                 <div
                   class="text-bold"
                   :class="
@@ -834,6 +832,7 @@ export default {
     const tempFileUrl = ref("");
 
     function getInvoiceList() {
+      invoiceList.value = [];
       var params = {};
 
       if (currentTab.value) {
@@ -862,7 +861,7 @@ export default {
         invoiceListScrollRef.value.clientHeight,
         60
       );
-      params["index"] = index.value;
+      params["pageIndex"] = index.value;
 
       // params["pageSize"] = 40;
       // params["index"] = 0;

@@ -84,12 +84,18 @@ module.exports = configure(function (ctx) {
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-framework
     framework: {
-      config: {
-        brand: {
-          primary: "#0066FF",
-          secondary: "#C2DAFF",
-        },
-      },
+      // theme: {
+      // // Enable dark mode
+      // themes: {
+      //   light: {
+      //     primary: "#0066FF", // Replace 'color1' with your desired primary color for light mode
+      //     secondary: "#C2DAFF", // Replace 'color2' with your desired secondary color for light mode
+      //   },
+      //   dark: {
+      //     primary: "#0066YY", // Replace 'color3' with your desired primary color for dark mode
+      //     secondary: "#0071IG", // Replace 'color4' with your desired secondary color for dark mode
+      //   },
+      // },
 
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack

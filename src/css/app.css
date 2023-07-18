@@ -1,14 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,300&display=swap");
 
-input {
-  caret-color: blue;
-}
-
 body {
   font-family: "Open Sans", sans-serif;
   font-weight: 400;
   color: #000814;
   font: normal normal normal 14px/19px Open Sans;
+}
+
+.bg-secondary {
+  background-color: #171d2b;
 }
 
 .text-active {
@@ -39,6 +39,10 @@ body {
 
 .text3 {
   font-size: 16px;
+}
+
+.text4 {
+  font-size: 14px;
 }
 
 /* tabel hover */

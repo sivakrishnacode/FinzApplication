@@ -1,7 +1,7 @@
 <template>
   <div class="row no-wrap">
     <!-- sidelist -->
-    <div style="min-width: 400px" v-if="!$q.screen.lt.md">
+    <div style="width: 400px" v-if="!$q.screen.lt.md">
       <div class="q-pa-md q-gutter-y-md">
         <!-- search and date -->
         <div class="row no-wrap">
@@ -159,9 +159,7 @@
         >
           <!-- left -->
           <div :class="!$q.screen.lt.md ? 'col-3' : 'col-12'">
-            <div
-              class="q-gutter-y-md column justify-center q-pa-md full-height"
-            >
+            <div class="q-gutter-y-md column justify-center q-pa-md">
               <q-item class="full-width">
                 <q-item-section>
                   <q-item-label caption>Organization:</q-item-label>
@@ -220,7 +218,6 @@
                     {{ formateTimeStamp(accountingDetails[0].postedDate).time }}
                   </q-item-label>
                 </q-item-section>
-                <q-item-section avatar> </q-item-section>
               </q-item>
             </div>
           </div>

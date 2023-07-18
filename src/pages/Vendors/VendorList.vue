@@ -16,10 +16,22 @@
         </template>
       </q-input>
 
+      <q-btn
+        flat
+        no-wrap
+        no-caps
+        :label="$q.screen.lt.sm ? '' : 'Create Vendor'"
+        icon="add"
+        @click="$router.push({ name: 'createVendor_page' })"
+        :round="$q.screen.lt.sm ? true : false"
+        class="bg-primary text-white text3"
+        rounded
+      >
+      </q-btn>
       <!-- upload btn -->
 
-      <div class="row absolute" style="right: 56px; top: 78px">
-        <!-- add vendor btn -->
+      <!-- <div class="row absolute" style="right: 56px; top: 78px">
+       add vendor btn
         <q-btn
           flat
           no-wrap
@@ -32,7 +44,7 @@
           rounded
         >
         </q-btn>
-      </div>
+      </div> -->
     </div>
 
     <!-- <q-separator /> -->

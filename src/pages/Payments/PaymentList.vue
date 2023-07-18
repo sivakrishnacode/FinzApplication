@@ -170,8 +170,8 @@
       <div class="q-pa-md">
         <q-tabs
           v-model="currentTab"
-          active-color="white bg-primary"
-          class="q-mx-md bg-grey-2 q-pa-sm"
+          active-class="text-white bg-primary"
+          class="q-mx-md q-pa-sm"
           indicator-color="transparent"
           no-caps
           dense
@@ -183,7 +183,7 @@
             :key="data"
             :label="data.description"
             :name="data.enumId"
-            style="border-radius: 20px"
+            style="border-radius: 20px; font-size: 20px"
           />
         </q-tabs>
       </div>
@@ -287,10 +287,7 @@
               >{{ props.row.paymentDetail.amount }}
             </q-td>
             <q-td key="status" class="text-left" style="font-size: 16px">
-              <div
-                style="font-size: 16px"
-                :class="'text-' + statusColor(props.row.paymentDetail.statusId)"
-              >
+              <div style="font-size: 16px">
                 {{
                   usePayment.paymentStatusProp.find(
                     (data) => data.statusId == props.row.paymentDetail.statusId
@@ -473,14 +470,14 @@ export default {
       rows.value = [];
 
       if (currentTab.value) {
-        params["statusId"] = currentTab.value;
+        params["paymentType"] = currentTab.value;
       }
 
       if (vendorFilterSelected.value.partyId != "") {
         params["partyId"] = vendorFilterSelected.value.partyId;
       }
 
-      params["dateFilterId"] = currentTab.value;
+      //params["dateFilterId"] = currentTab.value;
 
       if (daysFilterValue.value.enumId == "DATE_RANGE") {
         params["dateFilterId"] = "DATE_RANGE";
@@ -610,27 +607,6 @@ export default {
       getPayments(daysFilterValue.value.enumId);
     };
 
-    // Status Color
-    const statusColor = (statusId) => {
-      const colors = [
-        { statusId: "PmntDelivered", color: "light-blue-9" },
-        { statusId: "PmntConfirmed", color: "green-8" },
-        { statusId: "InvoicePmtSent", color: "green-8" },
-        { statusId: "InvoiceCancelled", color: "red-8" },
-        { statusId: "InvoiceApproved", color: "indigo-10" },
-      ];
-
-      const data = colors.find((data) => {
-        if (data.statusId == statusId) {
-          return data;
-        }
-      });
-
-      if (data) {
-        return data.color;
-      }
-    };
-
     // date filter section
     function getDateFilterEnumList() {
       api({
@@ -730,7 +706,7 @@ export default {
 
     return {
       getPayments,
-      statusColor,
+
       searchVendor,
 
       rows,

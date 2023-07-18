@@ -61,41 +61,75 @@
             >
               No data
             </div>
+
             <q-item
               v-for="data in paymentList"
               :key="data"
+              active-class="text-bold "
               clickable
               v-ripple
-              class="bg-secondary text-primary"
-              style="border-radius: 5px"
+              class="bg-secondary"
+              style="border-radius: 5px; width: auto; height: 96px"
               @click="getPaymentInfo(data.paymentDetail.paymentId)"
-            >
-              <!-- :active="
-                data.transactionDetail.paymentId == paymentDetails[0]?.paymentId
+              :active="
+                paymentDetails.paymentId === data.paymentDetail.paymentId
                   ? true
                   : false
               "
-              active-class="text-bold" -->
+            >
               <!-- avator -->
-              <q-item-section class="">
-                <q-item-label class="text-bold text2">
-                  {{ data.paymentDetail.paymentId }}
+
+              <q-item-section>
+                <q-item-label style="font-size: 18px">
+                  Payment ID: {{ data.paymentDetail.paymentId }}
                 </q-item-label>
-                <q-item-label class="text-bold text3">
+                <q-item-label style="font-size: 16px">
                   {{ data.toParty.organizationName }}
                 </q-item-label>
-                <q-item-label class="text3">
+                <q-item-label style="font-size: 14px">
                   {{ data.toParty.emailAddress }}
                 </q-item-label>
               </q-item-section>
 
               <!-- name -->
+              <!-- <q-item-section avatar class="">
+              <q-item-label style="font-size: 16px">
+                Total: {{ data.invoiceDetail?.invoiceTotal }}
+              </q-item-label>
+              <q-item-label style="font-size: 16px">
+                Unpaid: {{ data.invoiceDetail?.unpaidTotal }}
+              </q-item-label>
+              <q-item-label style="font-size: 16px">
+                <div
+                  class="text-bold"
+                  :class="
+                    'text-' + statusColor(data.invoiceDetail.statusId)?.color
+                  "
+                >
+                  {{
+                    useInvoices.invoiceStatusProp.find(
+                      (res) => res.statusId == data.invoiceDetail.statusId
+                    )?.description
+                  }}
+                </div>
+              </q-item-label>
+            </q-item-section> -->
+
               <q-item-section avatar>
-                <q-item-label class="text-bold text2">
+                <q-item-label class="text-bold text3">
                   $ {{ data.paymentDetail.amount }}
                 </q-item-label>
                 <q-item-label>
                   {{ dateModifer(data.paymentDetail.effectiveDate) }}
+                </q-item-label>
+                <q-item-label>
+                  <q-badge>
+                    {{
+                      usePayment.paymentStatusProp.find(
+                        (res) => res.statusId == data.paymentDetail.statusId
+                      ).description
+                    }}
+                  </q-badge>
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -109,7 +143,7 @@
     <div class="full-width scroll">
       <!-- title bar -->
       <div class="row justify-center q-px-xl full-width">
-        <div style="width: 700px">
+        <div style="width: 600px">
           <div
             class="bg-secondary text-center q-pa-sm q-gutter-y-sm"
             style="border-radius: 0 0 70px 70px"
@@ -136,7 +170,7 @@
 
       <!-- center body -->
       <div class="row justify-center text3">
-        <div style="width: 60%" class="full-height">
+        <div style="width: 800px" class="full-height">
           <!-- items -->
 
           <!-- body 1-->
@@ -154,7 +188,11 @@
                 <q-item-section avatar>
                   <q-item-label>
                     <q-badge class="text-h6">
-                      {{ paymentDetails.statusId }}
+                      {{
+                        usePayment.paymentStatusProp.find(
+                          (res) => res.statusId == paymentDetails.statusId
+                        )?.description
+                      }}
                     </q-badge>
                   </q-item-label>
                 </q-item-section>
@@ -357,6 +395,35 @@
             </q-item>
           </div>
 
+          <!--payment history -->
+          <div class="bg-secondary q-pa-lg q-mb-md" style="border-radius: 13px">
+            <div class="text-h5 q-pa-md" style="text-decoration: underline">
+              Payment History:
+            </div>
+            <q-item
+              class="q-my-sm"
+              v-for="data in paymentDetails.applications"
+              :key="data"
+            >
+              <q-item-section>
+                <q-item-label>
+                  {{ data.paymentApplicationId }}
+                </q-item-label>
+                <q-item-label overline>
+                  {{ data.appliedDate }}
+                </q-item-label>
+              </q-item-section>
+
+              <q-item-section avatar>
+                <q-item-label class="text-h6 text-green">
+                  <q-badge class="text-body1">
+                    {{ data.amountApplied }}
+                  </q-badge>
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </div>
+
           <!-- transections -->
           <!-- <div
             v-if="invoiceDetail?.paymentApplications"
@@ -399,6 +466,7 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { api } from "src/boot/axios";
 import { useAuthStore } from "src/stores/useAuthStore";
+import { usePaymentStore } from "src/stores/usePaymentStore";
 
 export default {
   name: "paymentInfo_page",
@@ -406,6 +474,7 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const useAuth = useAuthStore();
+    const usePayment = usePaymentStore();
 
     const paymentList = ref([]);
     const paymentDetails = ref({});
@@ -538,6 +607,7 @@ export default {
       currentTab,
       getPaymentList,
       enumTabList,
+      usePayment,
 
       // sidelist
       searchInput,

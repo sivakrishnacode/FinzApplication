@@ -74,11 +74,7 @@ export const useAuthStore = defineStore("auth", () => {
       .catch((err) => {
         console.log(err);
       });
-    localStorage.removeItem("auth");
-    localStorage.removeItem("sessionKey");
-    localStorage.removeItem("userInfo");
-    localStorage.removeItem("apiKey");
-    localStorage.removeItem("isKeepMeEnable");
+    localStorage.clear();
 
     user.value = {};
     authKey.value = {};

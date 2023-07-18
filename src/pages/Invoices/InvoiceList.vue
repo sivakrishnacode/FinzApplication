@@ -192,16 +192,12 @@
       <div class="q-pa-md">
         <q-tabs
           v-model="currentTab"
-          active-color="primary"
-          class="q-mx-md bg-grey-2 q-pa-sm"
+          active-class="text-white bg-primary"
+          class="q-mx-md q-pa-sm"
           indicator-color="transparent"
           no-caps
           dense
-          style="
-            border-radius: 12px;
-            border: 1px solid silver;
-            background-color: #d5d5d5;
-          "
+          style="border-radius: 12px; border: 1px solid silver"
           @update:model-value="getInvoiceList()"
         >
           <q-tab

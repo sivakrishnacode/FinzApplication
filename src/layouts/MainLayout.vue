@@ -30,6 +30,7 @@
           >
             <q-card>
               <q-card-section>
+                {{ $q.dark.isActive }}
                 <div class="row no-wrap q-pa-md">
                   <div class="column">
                     <div class="text-h6 q-mb-md">Settings</div>
@@ -39,7 +40,7 @@
                       label="Theme"
                       checked-icon="dark_mode"
                       unchecked-icon="light_mode"
-                      @update:model-value="$q.dark.toggle()"
+                      @update:model-value="themeSwitch()"
                     />
                   </div>
 
@@ -171,9 +172,10 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "src/stores/useAuthStore";
+import { useQuasar, setCssVar } from "quasar";
 
 export default defineComponent({
   name: "MainLayout",
@@ -182,6 +184,7 @@ export default defineComponent({
     const router = useRouter();
     const useAuth = useAuthStore();
 
+    const $q = useQuasar();
     const toggleLeftDrawer = ref(false);
     const drawer = ref(false);
     const theme = ref(false);
@@ -198,6 +201,39 @@ export default defineComponent({
       alert("closed");
     });
 
+    function themeSwitch() {
+      $q.dark.toggle();
+
+      const localTheme = $q.dark.isActive;
+      if (localTheme) {
+        localStorage.setItem("_is_dark_theme", true);
+      } else {
+        localStorage.setItem("_is_dark_theme", false);
+      }
+      checkTheme();
+    }
+
+    function checkTheme() {
+      const isDarkTheme = localStorage.getItem("_is_dark_theme");
+      theme.value = isDarkTheme ? true : false;
+
+      if (isDarkTheme) {
+        //dark theme
+        console.log("DARK");
+        setCssVar("primary", "#0066FF");
+        setCssVar("secondary", "#131927");
+      } else {
+        // light theme
+        console.log("LIGHT");
+        setCssVar("primary", "#0066FF");
+        setCssVar("secondary", "#C2DAFF");
+      }
+    }
+
+    onMounted(() => {
+      checkTheme();
+    });
+
     return {
       toggleLeftDrawer,
       logout,
@@ -206,6 +242,8 @@ export default defineComponent({
       theme,
       profilePopup,
       useAuth,
+      checkTheme,
+      themeSwitch,
     };
   },
 });
