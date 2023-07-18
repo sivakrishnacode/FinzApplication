@@ -22,7 +22,7 @@
       </div>
 
       <!-- info cards -->
-      <div class="row justify-start full-width q-gutter-md bg-green">
+      <div class="row justify-start full-width q-gutter-md bg-green q-ma-md">
         <q-card
           v-for="n in 4"
           :key="n"
@@ -35,7 +35,7 @@
             );
           "
         >
-          <q-card-section class="q-gutter-y-md">
+          <q-card-section class="q-gutter-y-sm">
             <div class="row content-center justify-between">
               <div class="row content-center">Total Amount</div>
               <div>
