@@ -35,7 +35,7 @@
                   <div class="column">
                     <div class="text-h6 q-mb-md">Settings</div>
                     <q-toggle
-                      v-model="theme"
+                      v-model="isDark"
                       color="primary"
                       label="Theme"
                       checked-icon="dark_mode"
@@ -187,7 +187,7 @@ export default defineComponent({
     const $q = useQuasar();
     const toggleLeftDrawer = ref(false);
     const drawer = ref(false);
-    const theme = ref(false);
+    const isDark = ref(false);
     const profilePopup = ref(true);
 
     const miniState = ref(true);
@@ -203,8 +203,7 @@ export default defineComponent({
 
     function themeSwitch() {
       $q.dark.toggle();
-
-      const localTheme = $q.dark.isActive;
+      const localTheme = isDark.value;
       if (localTheme) {
         localStorage.setItem("_is_dark_theme", true);
       } else {
@@ -215,15 +214,17 @@ export default defineComponent({
 
     function checkTheme() {
       const isDarkTheme = localStorage.getItem("_is_dark_theme");
-      theme.value = isDarkTheme ? true : false;
 
-      if (isDarkTheme) {
+      if (isDarkTheme == "true") {
+        $q.dark.toggle();
         //dark theme
-        console.log("DARK");
+        isDark.value = true;
         setCssVar("primary", "#0066FF");
         setCssVar("secondary", "#131927");
       } else {
         // light theme
+
+        isDark.value = false;
         console.log("LIGHT");
         setCssVar("primary", "#0066FF");
         setCssVar("secondary", "#C2DAFF");
@@ -239,7 +240,7 @@ export default defineComponent({
       logout,
       miniState,
       drawer,
-      theme,
+      isDark,
       profilePopup,
       useAuth,
       checkTheme,
