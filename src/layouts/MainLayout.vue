@@ -172,7 +172,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "src/stores/useAuthStore";
 import { useQuasar, setCssVar } from "quasar";
@@ -196,35 +196,28 @@ export default defineComponent({
       useAuth.logout();
     }
 
-    window.addEventListener("beforeunload", (e) => {
-      e.preventDefault();
-      alert("closed");
-    });
-
-    async function themeSwitch() {
-      const localTheme = isDark.value;
-
-      if (localTheme) {
+    watch(isDark, (currentValue, oldValue) => {
+      if (currentValue) {
         localStorage.setItem("_is_dark_theme", true);
       } else {
         localStorage.setItem("_is_dark_theme", false);
       }
       checkTheme();
-    }
+    });
 
-    function checkTheme() {
+    async function checkTheme() {
       const isDarkTheme = localStorage.getItem("_is_dark_theme");
 
       if (isDarkTheme == "true") {
         //dark theme
+        $q.dark.set(true);
 
-        console.log("dark settted");
         isDark.value = true;
         setCssVar("primary", "#0066FF");
         setCssVar("secondary", "#131927");
       } else {
         // light theme
-
+        $q.dark.set(false);
         isDark.value = false;
         console.log("LIGHT settted");
         setCssVar("primary", "#0066FF");
@@ -245,7 +238,6 @@ export default defineComponent({
       profilePopup,
       useAuth,
       checkTheme,
-      themeSwitch,
     };
   },
 });

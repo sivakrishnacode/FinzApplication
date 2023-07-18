@@ -1,11 +1,11 @@
 <template>
   <div
-    class="scroll row justify-center wrap bg-secondary"
+    class="scroll row justify-center wrap"
     style="height: calc(100vh - 80px)"
   >
     <!-- main -->
     <div
-      class="q-ma-md bg-white"
+      class="q-ma-md bg-secondary"
       style="
         max-width: 50vw;
         width: 100%;
@@ -21,7 +21,7 @@
           header-class="text-red text-h6"
           class="q-ma-md"
         >
-          <q-card>
+          <q-card class="bg-secondary">
             <q-card-section>
               <div>
                 <!-- vendor -->
@@ -101,7 +101,7 @@
           label="Invoice Items"
           header-class="text-green text-h6"
         >
-          <q-card class="q-ma-none">
+          <q-card class="q-ma-none bg-secondary">
             <q-card-section>
               <!-- columns -->
               <q-item class="row justify-between text3">
@@ -167,9 +167,9 @@
           label="Payment Method"
           header-class="text-blue text-h6"
         >
-          <q-card>
+          <q-card class="bg-secondary">
             <!-- banks options -->
-            <q-card-section class="">
+            <q-card-section>
               <!-- upi -->
               <div v-if="accountDetail.upiDetails.length != 0">
                 <div class="q-ma-sm">
@@ -506,7 +506,7 @@
 
     <!-- side box -->
     <div class="q-pa-md" style="min-width: 400px">
-      <q-card class="q-pa-md text2" style="border-radius: 10px">
+      <q-card class="q-pa-md text2 bg-secondary" style="border-radius: 10px">
         <div class="q-pa-md text-h6">Amount Details:</div>
         <q-separator />
         <div class="row justify-between q-pa-md">
