@@ -321,7 +321,8 @@
               @click="invoiceRedirect(props.row.invoiceDetail.invoiceId)"
             >
               <q-td key="Invoice_date" class="text-center">
-                <div style="font-size: 16px; color: #858585">
+                <!-- color: #858585 -->
+                <div style="font-size: 16px">
                   {{ dateModifer(props.row.invoiceDetail.invoiceDate) }}
                 </div>
               </q-td>

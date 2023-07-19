@@ -30,12 +30,13 @@
           >
             <q-card>
               <q-card-section>
-                is dark {{ $q.dark.isActive }}
                 <div class="row no-wrap q-pa-md">
                   <div class="column">
                     <div class="text-h6 q-mb-md">Settings</div>
                     <q-toggle
                       v-model="isDark"
+                      style="border-radius: 15px"
+                      class="q-pa-sm"
                       color="primary"
                       label="Theme"
                       checked-icon="dark_mode"
