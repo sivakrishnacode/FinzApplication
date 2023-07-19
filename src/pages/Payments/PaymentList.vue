@@ -233,10 +233,7 @@
     <!-- filter preview chip -->
 
     <!-- Table -->
-    <div
-      class="table-container"
-      style="border: 1px solid #858585; border-radius: 19px"
-    >
+    <div class="table-container">
       <q-table
         :rows="rows"
         ref="tableRef"
@@ -247,7 +244,7 @@
         :pagination="pagination"
         flat
         hide-bottom
-        style="border-radius: 20px"
+        style="border: 1px solid #858585; border-radius: 19px"
       >
         <!-- header -->
         <template v-slot:header="props">

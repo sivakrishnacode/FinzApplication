@@ -383,14 +383,15 @@
             style="border-radius: 0 0 70px 70px"
           >
             <div class="text-primary text-h6 q-my-sm">
-              {{ invoiceDetail.invoiceId }}
+              Invoice ID: {{ invoiceDetail.invoiceId }}
             </div>
-            <div class="text-primary text3">
+            <!-- <div class="text-primary text3">
               {{
                 formateTimeStamp(invoiceDetail.invoiceDate).formattedTimestamp
               }}
-              - {{ formateTimeStamp(invoiceDetail.invoiceDate).time }}
-            </div>
+              -
+              {{ formateTimeStamp(invoiceDetail.invoiceDate).time }}
+            </div> -->
 
             <!-- cancel btn -->
             <div class="row absolute" style="top: 50px; right: 70px">
@@ -627,14 +628,10 @@
                     Payment ID: {{ data.paymentId }}
                   </q-item-label>
 
-                  <q-item-label>
+                  <q-item-label class="text4">
                     Date :
-                    {{
-                      formateTimeStamp(data.appliedDate).formattedTimestamp
-                    }}</q-item-label
-                  >
-                  <q-item-label class="text3">
-                    Time :
+                    {{ formateTimeStamp(data.appliedDate).formattedTimestamp }}
+                    -
                     {{ formateTimeStamp(data.appliedDate).time }}</q-item-label
                   >
                 </q-item-section>
@@ -669,7 +666,7 @@
                       formateTimeStamp(data.changedDate).formattedTimestamp
                     }}</q-item-label
                   >
-                  <q-item-label overline>
+                  <q-item-label class="text4">
                     Time :{{
                       formateTimeStamp(data.changedDate).time
                     }}</q-item-label

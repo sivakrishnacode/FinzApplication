@@ -450,8 +450,8 @@
             </div>
 
             <!-- illustration -->
-            <div v-if="isBankAccountDetailsEmpty">
-              <div class="column items-center q-py-md">
+            <div v-if="isBankAccountDetailsEmpty" class="bg-transparent">
+              <div class="column items-center q-py-md q-gutter-y-md">
                 <q-img
                   height="400px"
                   width="400px"

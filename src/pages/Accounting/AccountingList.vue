@@ -182,7 +182,7 @@
               ((daysFilterSelected = ''),
               (daysFilterValue = ''),
               (daysFilterValue = '')),
-              getAccountingList({ pagination: pagination })
+              getAccountingList()
           "
         />
 
@@ -202,7 +202,7 @@
           :label="vendorFilterSelected.name"
           @remove="
             ((vendorFilterSelected.partyId = ''), (search = '')),
-              getAccountingList({ pagination: pagination }),
+              getAccountingList(),
               router.replace({ name: 'accountingList_page' })
           "
         />
@@ -215,7 +215,7 @@
         <q-table
           ref="tableRef"
           :pagination="pagination"
-          @request="(props) => getAccountingList(props)"
+          @request="(props) => getAccountingList()"
           :rows="rows"
           :columns="columns"
           row-key="name"
@@ -332,12 +332,7 @@
         active-color="blue-8"
         active-text-color="white"
         :boundary-numbers="false"
-        @update:model-value="
-          (val) =>
-            getAccountingList({
-              pagination: { page: val, rowsPerPage: pagination.rowsPerPage },
-            })
-        "
+        @update:model-value="(val) => getAccountingList()"
       />
       <div class="row absolute" style="right: 56px">
         <div class="row justify-center items-center q-pr-md">
@@ -468,16 +463,10 @@ export default {
     });
 
     // get vendor
-    function getAccountingList(props) {
-      const params = {};
+    async function getAccountingList() {
+      var params = {};
       rows.value = [];
       isLoading.value = true;
-
-      const { page, rowsPerPage } = props.pagination;
-
-      params["pageIndex"] = page - 1;
-      params["pageSize"] = rowsPerPage;
-      params["pageNoLimit"] = false;
 
       if (vendorFilterSelected.value.partyId != "") {
         params["partyId"] = vendorFilterSelected.value.partyId;
@@ -497,18 +486,20 @@ export default {
         params["thruDate"] = correctDateRange.value.thruDate;
       }
 
+      params["pageSize"] = pagination.value.rowsPerPage;
+      params["pageIndex"] = pagination.value.page - 1;
       console.log(params);
-      api({
+      await api({
         method: "GET",
         url: "/accounting",
         headers: useAuth.authKey,
         params: params,
       })
         .then((res) => {
-          console.log(res.data);
           pagination.value.rowsNumber = res.data.acctgTransAndEntryListCount;
-          pagination.value.page = page;
-          pagination.value.rowsPerPage = rowsPerPage;
+          pagination.value.page = pagination.value.page;
+
+          pagination.value.rowsPerPage = pagination.value.rowsPerPage;
 
           rows.value.push(...res.data.transactionInfoList);
           isLoading.value = false;
@@ -586,7 +577,7 @@ export default {
       vendorFilterSelected.value.name = name;
       vendorFilterSelected.value.partyId = id;
 
-      getAccountingList({ pagination: pagination.value });
+      getAccountingList();
     }
 
     // date filter section
@@ -620,7 +611,7 @@ export default {
       } else {
         isDateRangeFilterActive.value = false;
 
-        getAccountingList({ pagination: pagination.value });
+        getAccountingList();
 
         isfilterPopActive.value.hide();
       }
@@ -638,7 +629,7 @@ export default {
       correctDateRange.value.fromDate = reverseDate(dateRange.value.fromDate);
       correctDateRange.value.thruDate = reverseDate(dateRange.value.thruDate);
 
-      getAccountingList({ pagination: pagination.value });
+      getAccountingList();
       isfilterPopActive.value.hide();
     }
     // remove filters
@@ -651,7 +642,7 @@ export default {
         isDateFilterActiveForChip.value = false;
         daysFilterValue.value = "";
         isDateRangeFilterActive.value = false;
-        getAccountingList({ pagination: pagination.value });
+        getAccountingList();
       }
     }
 
