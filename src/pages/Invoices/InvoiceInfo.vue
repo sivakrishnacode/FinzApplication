@@ -280,6 +280,7 @@
         <q-tabs
           v-model="currentTab"
           active-color="primary"
+          active-class="text-white bg-primary"
           class="q-mx-md"
           indicator-color="transparent"
           no-caps
@@ -287,11 +288,7 @@
           :mobile-arrows="false"
           dense
           outside-arrows
-          style="
-            border-radius: 24px;
-            border: 1px solid silver;
-            background-color: #d5d5d5;
-          "
+          style="border-radius: 24px; border: 1px solid silver"
           @update:model-value="getInvoiceList()"
         >
           <q-tab
@@ -1364,8 +1361,4 @@ export default {
 };
 </script>
 
-<style>
-::-webkit-scrollbar {
-  display: none;
-}
-</style>
+<style></style>

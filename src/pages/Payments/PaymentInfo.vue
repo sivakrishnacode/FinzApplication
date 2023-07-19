@@ -27,8 +27,8 @@
         <div>
           <q-tabs
             v-model="currentTab"
-            active-color="white bg-primary"
-            class="q-mx-md bg-grey-2 q-pa-sm"
+            class="q-mx-md q-pa-sm"
+            active-class="text-white bg-primary"
             indicator-color="transparent"
             no-caps
             dense
@@ -398,7 +398,7 @@
           <!--payment history -->
           <div class="bg-secondary q-pa-lg q-mb-md" style="border-radius: 13px">
             <div class="text-h5 q-pa-md" style="text-decoration: underline">
-              Payment History:
+              Accounting History(pending):
             </div>
             <q-item
               class="q-my-sm"
