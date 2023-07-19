@@ -124,6 +124,7 @@ export default {
               color: "green",
               icon: "done",
               position: "top-right",
+              timeout: 1000,
             });
           }
         })

@@ -45,10 +45,10 @@
             :key="data"
             @click="vendorInfo(data.partyId), (tab = 'userDetails')"
             :active="$route.params.vendorId === data.partyId ? true : false"
-            active-class="text-bold bg-active"
+            active-class="text-bold"
             clickable
             v-ripple
-            class="bg-inActive"
+            class="bg-secondary"
             style="border-radius: 8px; height: 80px; width: auto"
           >
             <!-- avator -->
@@ -193,8 +193,8 @@
         <q-tabs
           v-model="tab"
           dense
-          class="text-black q-pa-sm"
-          active-color=" bg-secondary text-primary"
+          class="q-pa-sm"
+          active-class="text-white bg-primary "
           indicator-color="transparent"
           style="
             border: 2px solid silver;
@@ -220,7 +220,7 @@
       <!-- tab panels -->
       <div class="row justify-center">
         <!-- Two panels -->
-        <q-tab-panels v-model="tab">
+        <q-tab-panels v-model="tab" class="bg-transparent">
           <!-- profile Details -->
           <q-tab-panel name="userDetails">
             <div
@@ -244,7 +244,6 @@
                         :filled="!isVendorEditable"
                         :readonly="isVendorEditable"
                         label="Vendor Name"
-                        label-color="dark"
                         borderless
                         v-model="vendorInfoData.organizationName"
                       />
@@ -258,7 +257,6 @@
                         :filled="!isVendorEditable"
                         :readonly="isVendorEditable"
                         label="Email ID"
-                        label-color="dark"
                         borderless
                         v-model="vendorInfoData.emailAddress"
                       />
@@ -275,7 +273,6 @@
                         :filled="!isVendorEditable"
                         :readonly="isVendorEditable"
                         label="Contact Number"
-                        label-color="dark"
                         borderless
                         v-model="vendorInfoData.contactNumber"
                       />
@@ -289,7 +286,6 @@
                         :filled="!isVendorEditable"
                         :readonly="isVendorEditable"
                         label="Address 1"
-                        label-color="dark"
                         borderless
                         v-model="vendorInfoData.address1"
                       />
@@ -306,7 +302,6 @@
                         :filled="!isVendorEditable"
                         :readonly="isVendorEditable"
                         label="Address 2"
-                        label-color="dark"
                         borderless
                         v-model="vendorInfoData.address2"
                       />
@@ -320,7 +315,6 @@
                         :filled="!isVendorEditable"
                         :readonly="isVendorEditable"
                         label="City"
-                        label-color="dark"
                         borderless
                         v-model="vendorInfoData.city"
                       />
@@ -339,7 +333,6 @@
                         borderless
                         type="text"
                         label="Country"
-                        label-color="dark"
                         @update:model-value="
                           useGeos.getStateList(
                             vendorInfoData.countryGeoId.geoId
@@ -360,7 +353,6 @@
                         borderless
                         option-label="geoName"
                         option-value="geoId"
-                        label-color="dark"
                         type="text"
                         label="State"
                         :options="useGeos.stateList"
@@ -387,7 +379,6 @@
                         :filled="!isVendorEditable"
                         :readonly="isVendorEditable"
                         label="Pincode"
-                        label-color="dark"
                         borderless
                         v-model="vendorInfoData.postalCode"
                       />
@@ -434,7 +425,7 @@
           <!-- bank details -->
           <q-tab-panel
             name="accountDetails"
-            class="bg-white row justify-evenly q-gutter-y-md"
+            class="bg-transparent row justify-evenly q-gutter-y-md"
           >
             <!-- Head -->
             <div

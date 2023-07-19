@@ -40,7 +40,6 @@
                       label="Theme"
                       checked-icon="dark_mode"
                       unchecked-icon="light_mode"
-                      @update:model-value="themeSwitch()"
                     />
                   </div>
 
@@ -49,15 +48,15 @@
                   <div class="column items-center">
                     <q-avatar size="72px" class="bg-primary">
                       <div>
-                        {{ JSON.parse(useAuth.user).firstName.charAt(0) }}
+                        {{ JSON.parse(useAuth?.user)?.firstName.charAt(0) }}
                       </div>
                     </q-avatar>
 
                     <div class="text-h6 q-mt-md q-mb-xs">
-                      {{ JSON.parse(useAuth.user).firstName }}
+                      {{ JSON.parse(useAuth?.user)?.firstName }}
                     </div>
                     <span class="q-mb-md q-mb-xs">{{
-                      JSON.parse(useAuth.user).emailAddress
+                      JSON.parse(useAuth?.user)?.emailAddress
                     }}</span>
 
                     <q-btn
@@ -219,7 +218,6 @@ export default defineComponent({
         // light theme
         $q.dark.set(false);
         isDark.value = false;
-        console.log("LIGHT settted");
         setCssVar("primary", "#0066FF");
         setCssVar("secondary", "#C2DAFF");
       }

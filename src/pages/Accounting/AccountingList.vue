@@ -269,6 +269,14 @@
                 </div>
               </q-td>
 
+              <!-- vendor  -->
+              <q-td key="vendor">
+                <div style="font-size: 16px" class="text-left">
+                  {{ props.row.otherParty.organizationName }}<br />
+                  {{ props.row.otherParty.emailAddress }}
+                </div>
+              </q-td>
+
               <!-- trans id -->
               <q-td key="transectionId">
                 <div style="font-size: 16px">
@@ -412,6 +420,14 @@ export default {
         field: " date",
         label: "Date",
         align: "center",
+      },
+      {
+        name: "vendor",
+        required: true,
+        field: "vendor",
+        required: true,
+        label: "Vendor",
+        align: "left",
       },
       {
         name: "transectionId",

@@ -16,5 +16,5 @@ import {Notify,Meta} from 'quasar'
 
 
 
-export default { config: {},plugins: {Notify,Meta} }
+export default { config: {"brand":{"dark":"#070914"}},plugins: {Notify,Meta} }
 

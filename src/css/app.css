@@ -49,6 +49,7 @@ body {
 
 .text-hover:hover {
   background-color: #c2daff;
+  color: #000814;
 }
 
 ::-webkit-scrollbar {

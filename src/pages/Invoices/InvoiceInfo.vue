@@ -338,10 +338,10 @@
                 Invoice ID: {{ data.invoiceDetail.invoiceId }}
               </q-item-label>
               <q-item-label class="text2">
-                {{ data.fromParty.organizationName }}
+                {{ truncateText(data.fromParty.organizationName, 22) }}
               </q-item-label>
               <q-item-label class="text4">
-                {{ data.fromParty.emailAddress }}
+                {{ truncateText(data.fromParty.emailAddress, 22) }}
               </q-item-label>
             </q-item-section>
 
@@ -447,9 +447,21 @@
                   <q-item>
                     <q-item-section>
                       <q-item-label overline>Vendor Name:</q-item-label>
-                      <q-item-label>{{
-                        invoiceDetail.fromParty?.organization.organizationName
-                      }}</q-item-label>
+                      <q-item-label>
+                        {{
+                          invoiceDetail.fromParty?.organization.organizationName
+                        }}
+                        <!-- <br />
+                        <span class="text2">
+                          {{
+                            invoiceList.find(
+                              (data) =>
+                                data.fromParty.partyId ==
+                                invoiceDetail.fromParty?.partyId
+                            )?.fromParty.emailAddress
+                          }}
+                        </span> -->
+                      </q-item-label>
                     </q-item-section>
 
                     <q-item-section avatar>
@@ -504,57 +516,120 @@
                   style="border: 1px solid #858585; border-radius: 10px"
                 >
                   <!-- columns -->
-                  <q-item class="row justify-between" style="font-size: 16px">
-                    <q-item-section class="col-1 text-weight-bold">
-                      S.NO
-                    </q-item-section>
-                    <q-item-section class="col-3 text-weight-bold">
-                      Product Name
-                    </q-item-section>
-                    <q-item-section class="col-3 text-weight-bold">
-                      Unit price
-                    </q-item-section>
-                    <q-item-section
-                      class="col-2 text-weight-bold row content-center"
-                    >
-                      Quantity
-                    </q-item-section>
-                    <q-item-section
-                      class="col-2 text-weight-bold row content-center"
-                    >
-                      Price
-                    </q-item-section>
-                  </q-item>
+                  <q-table
+                    :rows="invoiceDetail.items"
+                    :columns="invoiceItemsColumn"
+                    hide-bottom
+                    flat
+                    class="bg-secondary"
+                  >
+                    <!-- header -->
+                    <template v-slot:header="props">
+                      <q-tr :props="props">
+                        <q-th
+                          v-for="col in props.cols"
+                          :key="col.name"
+                          :props="props"
+                        >
+                          <div
+                            style="font-size: 14px"
+                            class="text-bold text-primary"
+                          >
+                            {{ col.label }}
+                          </div>
+                        </q-th>
+                      </q-tr>
+                    </template>
+                    <template #body="props">
+                      <q-tr
+                        :props="props"
+                        class="text-center"
+                        style="height: 80px"
+                        v-if="props.row.itemTypeEnumId == 'ItemExpTaxesLic'"
+                      >
+                        <q-td key="index">
+                          <div>Tax :</div>
+                        </q-td>
 
-                  <q-separator />
+                        <q-td key="productName">
+                          <div>{{ props.row.description }}</div>
+                        </q-td>
+
+                        <q-td key="unitPrice"> </q-td>
+
+                        <q-td key="quantity">
+                          <div>{{ props.row.quantity }}</div>
+                        </q-td>
+
+                        <q-td key="price">
+                          <div>{{ props.row.amount }}</div>
+                        </q-td>
+                      </q-tr>
+
+                      <q-tr
+                        v-else
+                        :props="props"
+                        class="text-center"
+                        style="height: 80px"
+                      >
+                        <q-td key="index">
+                          <div>{{ props.row.invoiceItemSeqId }}</div>
+                        </q-td>
+
+                        <q-td key="productName">
+                          <div>{{ props.row.description }}</div>
+                        </q-td>
+
+                        <q-td key="unitPrice">
+                          <div>{{ props.row.amount }}</div>
+                        </q-td>
+
+                        <q-td key="quantity">
+                          <div>{{ props.row.quantity }}</div>
+                        </q-td>
+
+                        <q-td key="price">
+                          <div>{{ props.row.amount * props.row.quantity }}</div>
+                        </q-td>
+                      </q-tr>
+                    </template>
+                  </q-table>
 
                   <!-- rows -->
-                  <q-item
+                  <!-- <q-item
                     class="row justify-between"
                     v-for="(data, index) in invoiceDetail.items"
                     :key="index"
                     style="font-size: 17px"
                   >
-                    <q-item-section class="col-1 text-weight-bold">
-                      {{ index + 1 }}
-                    </q-item-section>
-                    <q-item-section class="col-3 text-weight-bold">
-                      {{ data.description }}
-                    </q-item-section>
-                    <q-item-section class="col-3 text-weight-bold">
-                      {{ data.amount }}
-                    </q-item-section>
                     <q-item-section
-                      class="col-2 text-weight-bold row content-center"
+                      v-if="data.itemTypeEnumId == 'ItemExpTaxesLic'"
                     >
-                      {{ data.quantity }}
+                      nodata
                     </q-item-section>
-                    <q-item-section
-                      class="col-2 text-weight-bold row content-center"
-                    >
-                      {{ data.amount * data.quantity }}
+                    <q-item-section v-else class="bg-red">
+                      <q-item-label class="col-1 text-weight-bold">
+                        {{ index + 1 }}
+                      </q-item-label>
+
+                      <q-item-label class="col-3 text-weight-bold">
+                        {{ data.description }}
+                      </q-item-label>
+                      <q-item-label class="col-3 text-weight-bold">
+                        {{ data.amount }}
+                      </q-item-label>
+                      <q-item-label
+                        class="col-2 text-weight-bold row content-center"
+                      >
+                        {{ data.quantity }}
+                      </q-item-label>
+                      <q-item-label
+                        class="col-2 text-weight-bold row content-center"
+                      >
+                        {{ data.amount * data.quantity }}
+                      </q-item-label>
                     </q-item-section>
-                  </q-item>
+                  </q-item> -->
                 </div>
               </div>
             </div>
@@ -811,6 +886,48 @@ export default {
 
     // invoice info items
     const invoiceDetail = ref({});
+    const invoiceItemsColumn = ref([
+      {
+        name: "index",
+        required: true,
+        field: "index",
+        required: true,
+        label: "S.No",
+        align: "center",
+      },
+      {
+        name: "productName",
+        required: true,
+        field: "productName",
+        required: true,
+        label: "Product Name",
+        align: "center",
+      },
+      {
+        name: "unitPrice",
+        required: true,
+        field: "unitPrice",
+        required: true,
+        label: "Unit Price",
+        align: "center",
+      },
+      {
+        name: "quantity",
+        required: true,
+        field: "quantity",
+        required: true,
+        label: "Quantity",
+        align: "center",
+      },
+      {
+        name: "price",
+        required: true,
+        field: "price",
+        required: true,
+        label: "Price",
+        align: "center",
+      },
+    ]);
     const toStatusFlow = ref([]);
 
     // file upload
@@ -854,14 +971,14 @@ export default {
         params["thruDate"] = correctDateRange.value.thruDate;
       }
 
-      params["pageSize"] = calcPageSizeLimit(
-        invoiceListScrollRef.value.clientHeight,
-        60
-      );
-      params["pageIndex"] = index.value;
+      // params["pageSize"] = calcPageSizeLimit(
+      //   invoiceListScrollRef.value.clientHeight,
+      //   60
+      // );
+      // params["pageIndex"] = index.value;
 
-      // params["pageSize"] = 40;
-      // params["index"] = 0;
+      params["pageSize"] = 40;
+      params["pageIndex"] = 0;
 
       if (hasMoreDataToLoad.value) {
         api({
@@ -1197,6 +1314,18 @@ export default {
       return { formattedTimestamp, time };
     };
 
+    function truncateText(text, num) {
+      if (typeof text !== "string") {
+        throw new Error("Input must be a string.");
+      }
+
+      if (text.length <= num) {
+        return text;
+      } else {
+        return text.substring(0, num) + "...";
+      }
+    }
+
     //  file upload
     function invoiceFileUpload() {
       invoiceFileType.value = invoiceFile.value.type;
@@ -1289,7 +1418,7 @@ export default {
       clearInvoiceList();
       getInvoiceList();
 
-      invoiceListScrollRef.value.addEventListener("scroll", scrollHandler);
+      //invoiceListScrollRef.value.addEventListener("scroll", scrollHandler);
     });
 
     return {
@@ -1312,6 +1441,7 @@ export default {
       // side list
       invoiceListScrollRef,
       clearInvoiceList,
+      truncateText,
 
       invoiceList,
       enumTabList,
@@ -1356,6 +1486,7 @@ export default {
       formateTimeStamp,
       paymentPage,
       startRefund,
+      invoiceItemsColumn,
     };
   },
 };
