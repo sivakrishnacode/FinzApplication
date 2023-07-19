@@ -633,9 +633,7 @@
                       size="18px"
                       color="primary"
                     />
-                    <q-item-label class="text-primary">
-                      Bank Account
-                    </q-item-label>
+                    <q-item-label class=""> Bank Account </q-item-label>
                   </div>
                   <q-badge color="positive" label="Active" />
                 </div>
@@ -738,7 +736,10 @@
             </div>
 
             <!-- In active accounts Details -->
-            <span v-if="isShowActiveBankAccount" class="row justify-start">
+            <span
+              v-if="isShowActiveBankAccount"
+              class="row justify-start q-gutter-x-md"
+            >
               <div
                 v-for="data in vendorsInActiveBankDetails"
                 :key="data.paymentMethodId"
@@ -766,26 +767,24 @@
                   <q-separator spaced />
 
                   <div class="row justify-between">
-                    <div class="col-5 text-grey-12 q-my-auto">
-                      Beneficiary Name
-                    </div>
+                    <div class="col-5 q-my-auto">Beneficiary Name</div>
                     <div class="col-7 q-my-auto">
                       {{ data.companyNameOnAccount }}
                     </div>
                   </div>
 
                   <div class="row justify-between">
-                    <div class="col-5 text-grey-12 q-my-auto">Bank Name</div>
+                    <div class="col-5 q-my-auto">Bank Name</div>
                     <div class="col-7 q-my-auto">{{ data.bankName }}</div>
                   </div>
 
                   <div class="row justify-between">
-                    <div class="col-5 text-grey-12 q-my-auto">Account No</div>
+                    <div class="col-5 q-my-auto">Account No</div>
                     <div class="col-7 q-my-auto">{{ data.accountNumber }}</div>
                   </div>
 
                   <div class="row justify-between">
-                    <div class="col-4 text-grey-12 q-my-auto">IFSC Code</div>
+                    <div class="col-4 q-my-auto">IFSC Code</div>
                     <div class="col-7 q-my-auto">{{ data.routingNumber }}</div>
                   </div>
 
@@ -826,23 +825,21 @@
                   <q-separator spaced />
 
                   <div class="row justify-between">
-                    <div class="col-5 text-grey-12 q-my-auto">
-                      Beneficiary Name
-                    </div>
+                    <div class="col-5 q-my-auto">Beneficiary Name</div>
                     <div class="col-7 q-my-auto">
                       {{ data.upiPayment.userName }}
                     </div>
                   </div>
 
                   <div class="row justify-between">
-                    <div class="col-5 text-grey-12 q-my-auto">UPI Id</div>
+                    <div class="col-5 q-my-auto">UPI Id</div>
                     <div class="col-7 q-my-auto">
                       {{ data.upiPayment.upiAddress }}
                     </div>
                   </div>
 
                   <div class="row justify-between">
-                    <div class="col-5 text-grey-12 q-my-auto">UPI Bank</div>
+                    <div class="col-5 q-my-auto">UPI Bank</div>
                     <div class="col-7 q-my-auto">
                       {{ data.upiPayment.handle }}
                     </div>

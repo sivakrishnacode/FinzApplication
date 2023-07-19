@@ -379,14 +379,17 @@
       <div class="row justify-center q-px-xl full-width">
         <div style="width: 700px">
           <div
-            class="bg-secondary text-center q-pa-sm q-gutter-y-sm"
+            class="bg-secondary text-center q-pa-sm"
             style="border-radius: 0 0 70px 70px"
           >
-            <div class="text-primary text-h6">
-              {{ invoiceDetail.fromParty?.organization.organizationName }}
-            </div>
-            <div class="text-primary">
+            <div class="text-primary text-h6 q-my-sm">
               {{ invoiceDetail.invoiceId }}
+            </div>
+            <div class="text-primary text3">
+              {{
+                formateTimeStamp(invoiceDetail.invoiceDate).formattedTimestamp
+              }}
+              - {{ formateTimeStamp(invoiceDetail.invoiceDate).time }}
             </div>
 
             <!-- cancel btn -->
@@ -540,6 +543,7 @@
                         </q-th>
                       </q-tr>
                     </template>
+
                     <template #body="props">
                       <q-tr
                         :props="props"
@@ -548,21 +552,21 @@
                         v-if="props.row.itemTypeEnumId == 'ItemExpTaxesLic'"
                       >
                         <q-td key="index">
-                          <div>Tax :</div>
+                          <div class="text2">Tax :</div>
                         </q-td>
 
                         <q-td key="productName">
-                          <div>{{ props.row.description }}</div>
+                          <div class="text2">{{ props.row.description }}</div>
                         </q-td>
 
                         <q-td key="unitPrice"> </q-td>
 
                         <q-td key="quantity">
-                          <div>{{ props.row.quantity }}</div>
+                          <div class="text2">{{ props.row.quantity }}</div>
                         </q-td>
 
                         <q-td key="price">
-                          <div>{{ props.row.amount }}</div>
+                          <div class="text2">{{ props.row.amount }}</div>
                         </q-td>
                       </q-tr>
 
@@ -573,63 +577,31 @@
                         style="height: 80px"
                       >
                         <q-td key="index">
-                          <div>{{ props.row.invoiceItemSeqId }}</div>
+                          <div class="text2">
+                            {{ props.row.invoiceItemSeqId }}
+                          </div>
                         </q-td>
 
                         <q-td key="productName">
-                          <div>{{ props.row.description }}</div>
+                          <div class="text2">{{ props.row.description }}</div>
                         </q-td>
 
                         <q-td key="unitPrice">
-                          <div>{{ props.row.amount }}</div>
+                          <div class="text2">{{ props.row.amount }}</div>
                         </q-td>
 
                         <q-td key="quantity">
-                          <div>{{ props.row.quantity }}</div>
+                          <div class="text2">{{ props.row.quantity }}</div>
                         </q-td>
 
                         <q-td key="price">
-                          <div>{{ props.row.amount * props.row.quantity }}</div>
+                          <div class="text2">
+                            {{ props.row.amount * props.row.quantity }}
+                          </div>
                         </q-td>
                       </q-tr>
                     </template>
                   </q-table>
-
-                  <!-- rows -->
-                  <!-- <q-item
-                    class="row justify-between"
-                    v-for="(data, index) in invoiceDetail.items"
-                    :key="index"
-                    style="font-size: 17px"
-                  >
-                    <q-item-section
-                      v-if="data.itemTypeEnumId == 'ItemExpTaxesLic'"
-                    >
-                      nodata
-                    </q-item-section>
-                    <q-item-section v-else class="bg-red">
-                      <q-item-label class="col-1 text-weight-bold">
-                        {{ index + 1 }}
-                      </q-item-label>
-
-                      <q-item-label class="col-3 text-weight-bold">
-                        {{ data.description }}
-                      </q-item-label>
-                      <q-item-label class="col-3 text-weight-bold">
-                        {{ data.amount }}
-                      </q-item-label>
-                      <q-item-label
-                        class="col-2 text-weight-bold row content-center"
-                      >
-                        {{ data.quantity }}
-                      </q-item-label>
-                      <q-item-label
-                        class="col-2 text-weight-bold row content-center"
-                      >
-                        {{ data.amount * data.quantity }}
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item> -->
                 </div>
               </div>
             </div>
@@ -654,10 +626,17 @@
                   <q-item-label>
                     Payment ID: {{ data.paymentId }}
                   </q-item-label>
-                  <q-item-label overline>
-                    Applied date :
-                    {{ formateTimeStamp(data.appliedDate).formattedTimestamp }}
-                  </q-item-label>
+
+                  <q-item-label>
+                    Date :
+                    {{
+                      formateTimeStamp(data.appliedDate).formattedTimestamp
+                    }}</q-item-label
+                  >
+                  <q-item-label class="text3">
+                    Time :
+                    {{ formateTimeStamp(data.appliedDate).time }}</q-item-label
+                  >
                 </q-item-section>
 
                 <q-item-section avatar>
