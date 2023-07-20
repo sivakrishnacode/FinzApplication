@@ -91,7 +91,7 @@
           <div class="q-mt-md text-primary text-h6">
             {{ vendorInfoData.organizationName }}
           </div>
-          <div style="color: #858585">
+          <div class="text-caption" caption>
             {{ vendorInfoData.emailAddress }}
           </div>
         </div>
@@ -469,7 +469,7 @@
             </div>
 
             <!-- add bank account dailog box -->
-            <q-dialog v-model="addBank_dialogBox">
+            <q-dialog v-model="addBank_dialogBox" persistent>
               <q-card style="width: 600px; border-radius: 12px">
                 <q-card-section>
                   <div

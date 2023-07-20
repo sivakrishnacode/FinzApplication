@@ -275,7 +275,7 @@
             </q-td>
 
             <q-td key="PaymentId" class="text-left" style="font-size: 16px">
-              {{ props.row.paymentDetail.paymentId }}
+              #{{ props.row.paymentDetail.paymentId }}
             </q-td>
 
             <q-td key="invoiceId" class="text-left" style="font-size: 16px">
@@ -293,23 +293,6 @@
                   ).description
                 }}
               </div>
-              <!-- <div>
-                <q-chip>
-                  <q-badge
-                    rounded
-                    :color="statusColor(props.row.paymentDetail.statusId).color"
-                    class="q-mr-sm"
-                  />
-                  <div style="font-size: 15px">
-                    {{
-                      usePayment.paymentStatusProp.find(
-                        (data) =>
-                          data.statusId == props.row.paymentDetail.statusId
-                      ).description
-                    }}
-                  </div>
-                </q-chip>
-              </div> -->
             </q-td>
           </q-tr>
         </template>
@@ -422,7 +405,7 @@ export default {
       {
         name: "vendorName",
         field: "vendorName",
-        label: "Vendor Name",
+        label: "VENDOR NAME",
         align: "left",
       },
       {
@@ -430,7 +413,7 @@ export default {
         required: true,
         field: " PaymentId",
         required: true,
-        label: "Payment ID",
+        label: "PAYMENT ID",
         align: "left",
       },
       {
@@ -438,20 +421,20 @@ export default {
         required: true,
         field: " invoiceId",
         required: true,
-        label: "Invoice Id",
+        label: "INVOICE ID",
         align: "left",
       },
 
       {
         name: "amount",
         field: "amount",
-        label: "Amount",
+        label: "AMOUNT",
         align: "left",
       },
       {
         name: "status",
         field: " status",
-        label: "Status",
+        label: "STATUS",
         align: "left",
       },
     ]);

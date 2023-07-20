@@ -65,7 +65,6 @@
             <q-item
               v-for="data in paymentList"
               :key="data"
-              active-class="text-bold "
               clickable
               v-ripple
               class="bg-secondary"
@@ -84,36 +83,12 @@
                   Payment ID: {{ data.paymentDetail.paymentId }}
                 </q-item-label>
                 <q-item-label style="font-size: 16px">
-                  {{ data.toParty.organizationName }}
+                  {{ truncateText(data.toParty.organizationName, 25) }}
                 </q-item-label>
                 <q-item-label style="font-size: 14px">
-                  {{ data.toParty.emailAddress }}
+                  {{ truncateText(data.toParty.emailAddress, 23) }}
                 </q-item-label>
               </q-item-section>
-
-              <!-- name -->
-              <!-- <q-item-section avatar class="">
-              <q-item-label style="font-size: 16px">
-                Total: {{ data.invoiceDetail?.invoiceTotal }}
-              </q-item-label>
-              <q-item-label style="font-size: 16px">
-                Unpaid: {{ data.invoiceDetail?.unpaidTotal }}
-              </q-item-label>
-              <q-item-label style="font-size: 16px">
-                <div
-                  class="text-bold"
-                  :class="
-                    'text-' + statusColor(data.invoiceDetail.statusId)?.color
-                  "
-                >
-                  {{
-                    useInvoices.invoiceStatusProp.find(
-                      (res) => res.statusId == data.invoiceDetail.statusId
-                    )?.description
-                  }}
-                </div>
-              </q-item-label>
-            </q-item-section> -->
 
               <q-item-section avatar>
                 <q-item-label class="text-bold text3">
@@ -572,6 +547,18 @@ export default {
       return { formattedTimestamp, time };
     };
 
+    function truncateText(text, num) {
+      if (typeof text !== "string") {
+        throw new Error("Input must be a string.");
+      }
+
+      if (text.length <= num) {
+        return text;
+      } else {
+        return text.substring(0, num) + "...";
+      }
+    }
+
     function vendoPage(id) {
       router.push({
         name: "vendorInfo_page",
@@ -612,6 +599,7 @@ export default {
       // sidelist
       searchInput,
       paymentList,
+      truncateText,
     };
   },
 };

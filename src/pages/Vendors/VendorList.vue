@@ -343,7 +343,7 @@ export default {
         required: true,
         field: " ",
         required: true,
-        label: "ORGANIZATION NAME",
+        label: "VENDOR NAME",
         align: "left",
       },
       {

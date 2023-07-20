@@ -280,7 +280,7 @@
               <!-- trans id -->
               <q-td key="transectionId">
                 <div style="font-size: 16px">
-                  {{ props.row.transactionDetail.acctgTransId }}
+                  #{{ props.row.transactionDetail.acctgTransId }}
                 </div>
               </q-td>
 
@@ -301,7 +301,7 @@
               <!-- contact num -->
               <q-td key="amount">
                 <div style="font-size: 16px">
-                  {{ props.row.transactionDetail.amount }}
+                  $ {{ props.row.transactionDetail.amount }}
                 </div>
               </q-td>
             </q-tr>
@@ -413,7 +413,7 @@ export default {
       {
         name: "date",
         field: " date",
-        label: "Date",
+        label: "DATE",
         align: "center",
       },
       {
@@ -421,7 +421,7 @@ export default {
         required: true,
         field: "vendor",
         required: true,
-        label: "Vendor",
+        label: "VENDOR",
         align: "left",
       },
       {
@@ -429,7 +429,7 @@ export default {
         required: true,
         field: "transectionId",
         required: true,
-        label: "Transection ID",
+        label: "TRANSECTION ID",
         align: "center",
       },
       {
@@ -437,19 +437,19 @@ export default {
         required: true,
         field: " paymentId",
         required: true,
-        label: "Payment ID",
+        label: "PAYMENT ID",
         align: "center",
       },
       {
         name: "invoiceId",
         field: "invoiceId",
-        label: "Invoice ID",
+        label: "INVOICE ID",
         align: "center",
       },
       {
         name: "amount",
         field: " amount",
-        label: "Amount",
+        label: "AMOUNT",
         align: "center",
       },
     ];

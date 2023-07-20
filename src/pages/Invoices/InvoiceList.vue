@@ -327,14 +327,8 @@
                 </div>
               </q-td>
 
-              <q-td key="invoiceID" class="text-left">
-                <div style="font-size: 18px">
-                  {{ props.row.invoiceDetail.invoiceId }}
-                </div>
-              </q-td>
-
               <q-td key="Vendor" class="text-left">
-                <div class="q-pl-xl">
+                <div>
                   <span style="font-size: 18px">
                     {{ props.row.fromParty.organizationName }}
                   </span>
@@ -342,6 +336,12 @@
                   <span style="font-size: 16px">
                     {{ props.row.fromParty.emailAddress }}
                   </span>
+                </div>
+              </q-td>
+
+              <q-td key="invoiceID" class="text-left">
+                <div style="font-size: 18px">
+                  #{{ props.row.invoiceDetail.invoiceId }}
                 </div>
               </q-td>
 
@@ -394,25 +394,6 @@
                     )?.description
                   }}
                 </div>
-                <!-- <q-chip
-                  :class="
-                    'text-' + statusColor(props.row.invoiceDetail.statusId)
-                  "
-                >
-                  <q-badge
-                    rounded
-                    :color="statusColor(props.row.invoiceDetail.statusId).color"
-                    class="q-mr-sm"
-                  />
-                  <div style="font-size: 18px">
-                    {{
-                      useInvoices.invoiceStatusProp.find(
-                        (data) =>
-                          data.statusId == props.row.invoiceDetail.statusId
-                      )?.description
-                    }}
-                  </div>
-                </q-chip> -->
               </q-td>
             </q-tr>
           </template>
@@ -536,8 +517,16 @@ export default {
         required: true,
         field: " Invoice_date",
         required: true,
-        label: "INVOICE DATE",
+        label: "DATE",
         align: "center",
+      },
+      {
+        name: "Vendor",
+        required: true,
+        field: " Vendor",
+        required: true,
+        label: "VENDOR",
+        align: "left",
       },
       {
         name: "invoiceID",
@@ -547,20 +536,7 @@ export default {
         label: "INVOICE ID",
         align: "left",
       },
-      {
-        name: "Vendor",
-        required: true,
-        field: " Vendor",
-        required: true,
-        label: "VENDOR",
-        align: "center",
-      },
-      // {
-      //   name: "Email",
-      //   field: "Email",
-      //   label: "Email Address",
-      //   align: "center",
-      // },
+
       {
         name: "Amount",
         field: " Amount",
