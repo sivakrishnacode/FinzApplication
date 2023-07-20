@@ -136,7 +136,13 @@
                 class="bg-secondary"
                 style="border-radius: 0 0 70px 70px; height: 50px"
               >
-                <q-btn size="15px" icon="close" color="primary" flat />
+                <q-btn
+                  size="15px"
+                  icon="close"
+                  color="primary"
+                  flat
+                  @click="router.back()"
+                />
               </div>
             </div>
           </div>
@@ -600,6 +606,7 @@ export default {
       searchInput,
       paymentList,
       truncateText,
+      router,
     };
   },
 };

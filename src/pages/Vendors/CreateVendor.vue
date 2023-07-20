@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-xl row justify-center bg-blue-grey-1" style="height: 90vh">
+  <div class="q-pa-xl row justify-center" style="height: 90vh">
     <!--  -->
     <q-stepper
       v-model="step"

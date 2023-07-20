@@ -34,16 +34,23 @@
               :key="data"
               clickable
               v-ripple
+              active-class="text-primary"
               class="bg-secondary"
               style="border-radius: 5px"
               @click="getAccountingInfo(data.transactionDetail.paymentId)"
+              :active="
+                data.transactionDetail.paymentId ==
+                accountingDetails[0].paymentId
+                  ? true
+                  : false
+              "
             >
               <!-- avator -->
               <q-item-section class="">
-                <q-item-label class="text-bold text3">
+                <q-item-label class="text3">
                   {{ data.transactionDetail.acctgTransId }}
                 </q-item-label>
-                <q-item-label class="text-bold text2">
+                <q-item-label class="text2">
                   {{ data.otherParty.organizationName }}
                 </q-item-label>
                 <q-item-label class="text3">
@@ -53,7 +60,7 @@
 
               <!-- name -->
               <q-item-section avatar>
-                <q-item-label class="text-bold text3">
+                <q-item-label class="text3">
                   $ {{ data.transactionDetail.amount }}
                 </q-item-label>
                 <q-item-label class="">
