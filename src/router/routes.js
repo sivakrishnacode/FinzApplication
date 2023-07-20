@@ -32,6 +32,11 @@ const routes = [
             name: "payment",
             component: () => import("src/pages/Invoices/PayPage.vue"),
           },
+          {
+            path: ":invoiceId/refund_page",
+            name: "refund",
+            component: () => import("src/pages/Invoices/RefundPage.vue"),
+          },
         ],
       },
       {

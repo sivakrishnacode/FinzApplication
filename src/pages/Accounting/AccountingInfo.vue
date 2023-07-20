@@ -25,8 +25,8 @@
 
         <!-- scroll area -->
         <div
-          class="scroll"
-          style="border-radius: 10px; height: calc(100vh - 150px)"
+          class="scroll q-pa-sm full-width"
+          style="border-radius: 10px; height: 82vh; border: 1px solid #858585"
         >
           <q-list class="q-gutter-sm">
             <q-item
@@ -34,36 +34,28 @@
               :key="data"
               clickable
               v-ripple
-              active-class="text-primary"
               class="bg-secondary"
-              style="border-radius: 5px"
+              style="border-radius: 5px; height: 96px"
               @click="getAccountingInfo(data.transactionDetail.paymentId)"
-              :active="
-                data.transactionDetail.paymentId ==
-                accountingDetails[0].paymentId
-                  ? true
-                  : false
-              "
             >
-              <!-- avator -->
-              <q-item-section class="">
-                <q-item-label class="text3">
-                  {{ data.transactionDetail.acctgTransId }}
+              <!-- ssssssssssssssssssssssss -->
+              <q-item-section>
+                <q-item-label style="font-size: 18px">
+                  Acc ID: {{ data.transactionDetail.acctgTransId }}
                 </q-item-label>
-                <q-item-label class="text2">
-                  {{ data.otherParty.organizationName }}
+                <q-item-label style="font-size: 16px">
+                  {{ truncateText(data.otherParty.organizationName, 25) }}
                 </q-item-label>
-                <q-item-label class="text3">
-                  {{ data.otherParty.emailAddress }}
+                <q-item-label style="font-size: 14px">
+                  {{ truncateText(data.otherParty.emailAddress, 23) }}
                 </q-item-label>
               </q-item-section>
 
-              <!-- name -->
               <q-item-section avatar>
-                <q-item-label class="text3">
+                <q-item-label class="text-bold text3">
                   $ {{ data.transactionDetail.amount }}
                 </q-item-label>
-                <q-item-label class="">
+                <q-item-label>
                   {{ dateModifer(data.transactionDetail.transactionDate) }}
                 </q-item-label>
               </q-item-section>
@@ -74,7 +66,7 @@
     </div>
 
     <!-- main -->
-    <div class="full-width text2" v-if="accountingDetails[0]?.acctgTransId">
+    <div class="col text2" v-if="accountingDetails[0]?.acctgTransId">
       <!-- title bar -->
       <div class="row justify-center q-px-xl full-width">
         <div style="width: 700px">
@@ -82,11 +74,11 @@
             class="bg-secondary text-center q-pa-sm q-gutter-y-sm"
             style="border-radius: 0 0 70px 70px"
           >
-            <div class="text-primary text-h6">
-              {{ accountingDetails[0].otherPartyName }}
+            <div class="text-h6">
+              Payment ID: {{ accountingDetails[0].paymentId }}
             </div>
-            <div class="text-blue-grey-1">
-              {{ accountingDetails[0].paymentId }}
+            <div class="text-primary">
+              {{ accountingDetails[0].otherPartyName }}
             </div>
 
             <!-- cancel btn -->
@@ -429,6 +421,18 @@ export default {
       return { formattedTimestamp, time };
     };
 
+    function truncateText(text, num) {
+      if (typeof text !== "string") {
+        throw new Error("Input must be a string.");
+      }
+
+      if (text.length <= num) {
+        return text;
+      } else {
+        return text.substring(0, num) + "...";
+      }
+    }
+
     function vendoPage(id) {
       router.push({
         name: "vendorInfo_page",
@@ -465,6 +469,7 @@ export default {
       // sidelist
       searchInput,
       accountingList,
+      truncateText,
     };
   },
 };

@@ -760,7 +760,7 @@
                   label="Refund"
                   rounded
                   color="primary"
-                  @click="startRefund()"
+                  @click="startRefund(invoiceDetail.invoiceId)"
                 />
 
                 <div v-for="data in toStatusFlow" :key="data">
@@ -1198,19 +1198,12 @@ export default {
       });
     }
 
-    function startRefund() {
-      const params = {
-        invoiceId: invoiceDetail.value.invoiceId,
-        refundAmount: 300,
-        comments: "commandss",
-        updateInvoice: "{false}",
-      };
-
-      api({
-        method: "POST",
-        url: "payments/refundPayment",
-        headers: useAuth.authKey,
-        params: params,
+    function startRefund(id) {
+      router.push({
+        name: "refund",
+        params: {
+          invoiceId: id,
+        },
       });
     }
 

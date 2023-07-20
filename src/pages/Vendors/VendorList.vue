@@ -172,7 +172,6 @@
                 <q-btn
                   round
                   flat
-                  class="text-dark"
                   icon="more_vert"
                   @click="
                     (e) => {
