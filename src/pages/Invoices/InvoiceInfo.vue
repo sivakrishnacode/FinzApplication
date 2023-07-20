@@ -383,13 +383,13 @@
             <div class="text-primary text-h6 q-my-sm">
               Invoice ID: {{ invoiceDetail.invoiceId }}
             </div>
-            <!-- <div class="text-primary text3">
+            <div class="text3">
               {{
                 formateTimeStamp(invoiceDetail.invoiceDate).formattedTimestamp
               }}
               -
               {{ formateTimeStamp(invoiceDetail.invoiceDate).time }}
-            </div> -->
+            </div>
 
             <!-- cancel btn -->
             <div class="row absolute" style="top: 50px; right: 70px">
@@ -1010,6 +1010,12 @@ export default {
 
     async function getInvoiceDetails(invoiseId) {
       invoiceDetail.value = {};
+
+      router.replace({
+        params: {
+          invoiceId: invoiseId,
+        },
+      });
 
       await api({
         method: "GET",
