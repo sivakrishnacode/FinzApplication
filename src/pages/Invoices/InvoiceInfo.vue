@@ -354,18 +354,16 @@
                 Unpaid: {{ data.invoiceDetail?.unpaidTotal }}
               </q-item-label>
               <q-item-label class="text3">
-                <div
-                  class="text-bold"
-                  :class="
-                    'text-' + statusColor(data.invoiceDetail.statusId)?.color
-                  "
+                <q-badge
+                  class="text4"
+                  :color="statusColor(data.invoiceDetail.statusId)?.color"
                 >
                   {{
                     useInvoices.invoiceStatusProp.find(
                       (res) => res.statusId == data.invoiceDetail.statusId
                     )?.description
                   }}
-                </div>
+                </q-badge>
               </q-item-label>
             </q-item-section>
           </q-item>
@@ -434,13 +432,15 @@
                     </q-item-section>
 
                     <q-item-section avatar>
-                      <q-item-label
-                        :class="
-                          'text-' +
-                          statusColor(invoiceDetail.status?.statusId)?.color
-                        "
-                      >
-                        {{ invoiceDetail.status?.description }}
+                      <q-item-label>
+                        <q-badge
+                          :color="
+                            statusColor(invoiceDetail.status?.statusId)?.color
+                          "
+                          class="text1 q-pa-sm"
+                        >
+                          {{ invoiceDetail.status?.description }}
+                        </q-badge>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -519,7 +519,7 @@
                   class="full-width q-pa-sm q-my-md"
                   style="border: 1px solid #858585; border-radius: 10px"
                 >
-                  <!-- columns -->
+                  <!-- tabel -->
                   <q-table
                     :rows="invoiceDetail.items"
                     :columns="invoiceItemsColumn"
@@ -553,17 +553,19 @@
                         v-if="props.row.itemTypeEnumId == 'ItemExpTaxesLic'"
                       >
                         <q-td key="index">
-                          <div class="text2">Tax :</div>
+                          <div class="text2 text-right">
+                            {{ props.row.description }}
+                          </div>
                         </q-td>
 
                         <q-td key="productName">
-                          <div class="text2">{{ props.row.description }}</div>
+                          <div class="text2"></div>
                         </q-td>
 
                         <q-td key="unitPrice"> </q-td>
 
                         <q-td key="quantity">
-                          <div class="text2">{{ props.row.quantity }}</div>
+                          <div class="text2"></div>
                         </q-td>
 
                         <q-td key="price">

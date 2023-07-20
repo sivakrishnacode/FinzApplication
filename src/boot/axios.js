@@ -7,7 +7,7 @@ import axios from "axios";
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({
-  baseURL: "http://192.168.0.153:8080/rest/s1/finzApp",
+  baseURL: "http://localhost:8080/rest/s1/finzApp",
 });
 
 // const api = axios.create({
@@ -18,6 +18,7 @@ const api = axios.create({
 
 // });
 
+// 192.168.0.153 ranjith
 // my ip 192.168.0.177
 // arun 192.168.0.229
 

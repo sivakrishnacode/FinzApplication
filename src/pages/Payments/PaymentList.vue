@@ -269,6 +269,11 @@
               {{ dateModifer(props.row.paymentDetail.effectiveDate) }}
             </q-td>
 
+            <q-td key="vendorName" class="text-left" style="font-size: 16px">
+              {{ props.row.toParty.organizationName }} <br />
+              {{ props.row.toParty.emailAddress }}
+            </q-td>
+
             <q-td key="PaymentId" class="text-left" style="font-size: 16px">
               {{ props.row.paymentDetail.paymentId }}
             </q-td>
@@ -277,9 +282,6 @@
               {{ props.row.toParty.partyId }}
             </q-td>
 
-            <q-td key="vendorName" class="text-left" style="font-size: 16px">
-              {{ props.row.toParty.organizationName }}
-            </q-td>
             <q-td key="amount" class="text-left" style="font-size: 16px"
               >{{ props.row.paymentDetail.amount }}
             </q-td>
@@ -418,6 +420,12 @@ export default {
         align: "center",
       },
       {
+        name: "vendorName",
+        field: "vendorName",
+        label: "Vendor Name",
+        align: "left",
+      },
+      {
         name: "PaymentId",
         required: true,
         field: " PaymentId",
@@ -433,12 +441,7 @@ export default {
         label: "Invoice Id",
         align: "left",
       },
-      {
-        name: "vendorName",
-        field: "vendorName",
-        label: "Vendor Name",
-        align: "left",
-      },
+
       {
         name: "amount",
         field: "amount",
