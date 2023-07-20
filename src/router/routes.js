@@ -10,7 +10,7 @@ const routes = [
       {
         path: "dashboard",
         name: "dashboard_page",
-        component: () => import("pages/DashBoard.vue"),
+        component: () => import("pages/Dashboard/DashBoard.vue"),
       },
       {
         path: "invoice",
