@@ -27,11 +27,38 @@ export const usePaymentStore = defineStore("payment", () => {
       });
   }
 
+  // payment type
+  const paymentTypeProp = (statusId) => {
+    const colors = [
+      {
+        statusId: "PtRefund",
+        color: "orange-9",
+        message: "Refunded",
+      },
+      {
+        statusId: "PtInvoicePayment",
+        color: "green-10",
+        message: "Invoice Payment",
+      },
+    ];
+
+    const data = colors.find((data) => {
+      if (data.statusId == statusId) {
+        return data;
+      }
+    });
+
+    if (data) {
+      return data;
+    }
+  };
+
   onMounted(() => {
     getStatusProp();
   });
 
   return {
     paymentStatusProp,
+    paymentTypeProp,
   };
 });

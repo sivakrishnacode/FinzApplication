@@ -37,6 +37,12 @@
               class="bg-secondary"
               style="border-radius: 5px; height: 96px"
               @click="getAccountingInfo(data.transactionDetail.paymentId)"
+              :active="
+                data.transactionDetail.paymentId ==
+                accountingDetails[0].paymentId
+                  ? true
+                  : false
+              "
             >
               <!-- ssssssssssssssssssssssss -->
               <q-item-section>
@@ -74,11 +80,16 @@
             class="bg-secondary text-center q-pa-sm q-gutter-y-sm"
             style="border-radius: 0 0 70px 70px"
           >
-            <div class="text-h6">
+            <div class="text-h6 text-primary">
               Payment ID: {{ accountingDetails[0].paymentId }}
             </div>
-            <div class="text-primary">
-              {{ accountingDetails[0].otherPartyName }}
+            <div>
+              {{
+                formateTimeStamp(accountingDetails[0].postedDate)
+                  .formattedTimestamp
+              }}
+              -
+              {{ formateTimeStamp(accountingDetails[0].postedDate).time }}
             </div>
 
             <!-- cancel btn -->
@@ -101,7 +112,7 @@
       </div>
 
       <!-- ids row -->
-      <div class="row justify-center q-my-lg">
+      <div class="row justify-center q-ma-md">
         <div
           class="row bg-secondary q-pa-md"
           style="width: 80%; border-radius: 15px"
@@ -157,8 +168,11 @@
           style="width: 80%; height: 68vh; border-radius: 20px"
         >
           <!-- left -->
-          <div :class="!$q.screen.lt.md ? 'col-3' : 'col-12'">
-            <div class="q-gutter-y-md column justify-center q-pa-md">
+          <div :class="!$q.screen.lt.lg ? 'col-4' : 'col-12'">
+            <div
+              class="column justify-evenly full-height q-pa-md"
+              style="min-height: 350px"
+            >
               <q-item class="full-width">
                 <q-item-section>
                   <q-item-label caption>Organization:</q-item-label>
@@ -221,10 +235,10 @@
             </div>
           </div>
 
-          <q-separator vertical />
+          <q-separator size="2px" :vertical="!$q.screen.lt.lg ? true : false" />
 
           <!-- right -->
-          <div class="q-pa-lg" :class="!$q.screen.lt.md ? 'col' : 'col-12'">
+          <div class="q-pa-lg" :class="!$q.screen.lt.lg ? 'col' : 'col-12'">
             <!-- title -->
             <div class="text-h6 full-width">
               General Ledger account transection details

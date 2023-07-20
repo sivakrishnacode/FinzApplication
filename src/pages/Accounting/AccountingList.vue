@@ -3,7 +3,7 @@
     <!-- search section  -->
     <div class="column items-center">
       <!-- search and days filter -->
-      <div class="row">
+      <div class="row no-wrap">
         <q-select
           dense
           outlined

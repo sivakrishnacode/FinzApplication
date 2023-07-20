@@ -1,7 +1,7 @@
 <template>
   <div class="row no-wrap">
     <!-- sidelist -->
-    <div style="width: 400px" v-if="!$q.screen.lt.md" class="fixed">
+    <div style="width: 400px" v-if="!$q.screen.lt.md">
       <div class="q-pa-md q-gutter-y-md">
         <!-- search and date -->
         <div class="row no-wrap">
@@ -48,11 +48,7 @@
         <!-- scroll area -->
         <div
           class="scroll"
-          style="
-            border-radius: 10px;
-            height: calc(100vh - 210px);
-            border: 1px solid #858585;
-          "
+          style="border-radius: 10px; height: 75vh; border: 1px solid #858585"
         >
           <q-list class="q-gutter-sm q-pa-sm">
             <div
@@ -112,12 +108,11 @@
         </div>
       </div>
     </div>
-    <div style="width: 400px" v-if="!$q.screen.lt.md"></div>
 
     <!-- main -->
-    <div class="full-width scroll">
+    <div class="col full-width scroll" style="height: 92vh">
       <!-- title bar -->
-      <div class="row justify-center q-px-xl full-width">
+      <div class="row justify-center full-width">
         <div style="width: 600px">
           <div
             class="bg-secondary text-center q-pa-sm q-gutter-y-sm"
@@ -134,7 +129,11 @@
             <div class="row absolute" style="top: 50px; right: 70px">
               <div
                 class="bg-secondary"
-                style="border-radius: 0 0 70px 70px; height: 50px"
+                style="
+                  border-radius: 0 0 70px 70px;
+                  height: 50px;
+                  border: 1px solid var(primary);
+                "
               >
                 <q-btn
                   size="15px"
@@ -150,8 +149,8 @@
       </div>
 
       <!-- center body -->
-      <div class="row justify-center text3">
-        <div style="width: 800px" class="full-height">
+      <div class="row justify-center text3 q-pa-md">
+        <div style="width: 800px">
           <!-- items -->
 
           <!-- body 1-->
@@ -252,7 +251,7 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-item-label> ${{ paymentDetails.amount }} </q-item-label>
+                  <q-item-label> $ {{ paymentDetails.amount }} </q-item-label>
                 </q-item-section>
               </q-item>
             </div>
@@ -359,17 +358,18 @@
             >
               <q-item-section>
                 <q-item-label>
-                  {{ data.paymentApplicationId }}
+                  Payment ID: {{ data.paymentApplicationId }}
                 </q-item-label>
                 <q-item-label overline>
-                  {{ data.appliedDate }}
+                  {{ formateTimeStamp(data.appliedDate).formattedTimestamp }}
+                  - {{ formateTimeStamp(data.appliedDate).time }}
                 </q-item-label>
               </q-item-section>
 
               <q-item-section avatar>
                 <q-item-label class="text-h6 text-green">
                   <q-badge class="text-body1">
-                    {{ data.amountApplied }}
+                    $ {{ data.amountApplied }}
                   </q-badge>
                 </q-item-label>
               </q-item-section>
@@ -404,38 +404,6 @@
               </q-item-section>
             </q-item>
           </div>
-
-          <!-- transections -->
-          <!-- <div
-            v-if="invoiceDetail?.paymentApplications"
-            class="bg-secondary q-pa-lg q-ma-sm"
-            style="border-radius: 13px"
-          >
-            <div class="text-h5 q-pa-md" style="text-decoration: underline">
-              Payment History:
-            </div>
-            <q-item
-              class="q-my-sm q-pa-md"
-              v-for="data in invoiceDetail.paymentApplications"
-              :key="data"
-              clickable
-              @click="paymentPage(data.paymentId)"
-            >
-              <q-item-section>
-                <q-item-label> Payment ID: {{ data.paymentId }} </q-item-label>
-                <q-item-label overline>
-                  Applied date :
-                  {{ formateTimeStamp(data.appliedDate).formattedTimestamp }}
-                </q-item-label>
-              </q-item-section>
-
-              <q-item-section avatar>
-                <q-item-label>
-                  <q-badge color="green"> $ {{ data.amountApplied }} </q-badge>
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-          </div> -->
         </div>
       </div>
     </div>

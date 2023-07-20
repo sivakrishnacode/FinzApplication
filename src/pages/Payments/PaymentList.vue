@@ -282,10 +282,27 @@
               {{ props.row.toParty.partyId }}
             </q-td>
 
-            <q-td key="amount" class="text-left" style="font-size: 16px"
-              >{{ props.row.paymentDetail.amount }}
+            <q-td key="amount" class="text-left" style="font-size: 16px">
+              {{ props.row.paymentDetail.amount }}
             </q-td>
-            <q-td key="status" class="text-left" style="font-size: 16px">
+
+            <q-td key="paymentType" class="text-center" style="font-size: 16px">
+              <div
+                :class="
+                  'text-' +
+                  usePayment.paymentTypeProp(
+                    props.row.paymentDetail.paymentTypeEnumId
+                  ).color
+                "
+              >
+                {{
+                  usePayment.paymentTypeProp(
+                    props.row.paymentDetail.paymentTypeEnumId
+                  ).message
+                }}
+              </div>
+            </q-td>
+            <q-td key="status" class="text-center" style="font-size: 16px">
               <div style="font-size: 16px">
                 {{
                   usePayment.paymentStatusProp.find(
@@ -432,10 +449,16 @@ export default {
         align: "left",
       },
       {
+        name: "paymentType",
+        field: "paymentType",
+        label: "PAYMENT TYPE",
+        align: "center",
+      },
+      {
         name: "status",
         field: " status",
         label: "STATUS",
-        align: "left",
+        align: "center",
       },
     ]);
     const tableRef = ref(null);
