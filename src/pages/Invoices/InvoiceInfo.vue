@@ -599,7 +599,9 @@
 
                         <q-td key="price">
                           <div class="text2">
-                            {{ props.row.amount * props.row.quantity }}
+                            {{
+                              (props.row.amount * props.row.quantity).toFixed(2)
+                            }}
                           </div>
                         </q-td>
                       </q-tr>
