@@ -294,7 +294,7 @@
               <!-- email -->
               <q-td key="invoiceId">
                 <div style="font-size: 16px">
-                  {{ props.row.transactionDetail.invoiceId }}
+                  {{ props.row.invoiceId }}
                 </div>
               </q-td>
 

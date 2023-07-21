@@ -7,7 +7,7 @@ import axios from "axios";
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({
-  baseURL: "http://localhost:8080/rest/s1/finzApp",
+  baseURL: "https://7b02-14-97-230-6.ngrok-free.app/rest/s1/finzApp",
 });
 
 // const api = axios.create({

@@ -212,7 +212,10 @@
                 <q-item-section>
                   <q-item-label overline>To Party Name:</q-item-label>
                   <q-item-label>
-                    {{ paymentDetails.toParty?.organization.organizationName }}
+                    {{ vendorDetails?.organizationName }}
+                  </q-item-label>
+                  <q-item-label>
+                    {{ vendorDetails?.emailAddress }}
                   </q-item-label>
                 </q-item-section>
 
@@ -429,6 +432,7 @@ import { useRoute, useRouter } from "vue-router";
 import { api } from "src/boot/axios";
 import { useAuthStore } from "src/stores/useAuthStore";
 import { usePaymentStore } from "src/stores/usePaymentStore";
+import { useVendorStore } from "src/stores/useVendorStore";
 
 export default {
   name: "paymentInfo_page",
@@ -437,9 +441,11 @@ export default {
     const router = useRouter();
     const useAuth = useAuthStore();
     const usePayment = usePaymentStore();
+    const useVendor = useVendorStore();
 
     const paymentList = ref([]);
     const paymentDetails = ref({});
+    const vendorDetails = ref("");
 
     const currentTab = ref("allPayment");
     const enumTabList = ref([]);
@@ -471,6 +477,7 @@ export default {
     }
 
     function getPaymentInfo(id) {
+      vendorDetails.value = "";
       api({
         method: "GET",
         headers: useAuth.authKey,
@@ -479,7 +486,8 @@ export default {
         .then((res) => {
           console.log(res);
           paymentDetails.value = res.data;
-          console.log(paymentDetails.value);
+          useVendor.getVendorDetails(paymentDetails.value.toPartyId);
+          vendorDetails.value = useVendor.vendorDetails;
         })
         .catch((err) => {
           console.log(err);
@@ -575,6 +583,7 @@ export default {
       dateModifer,
       getPaymentInfo,
       paymentDetails,
+      vendorDetails,
 
       vendoPage,
       invoicePage,

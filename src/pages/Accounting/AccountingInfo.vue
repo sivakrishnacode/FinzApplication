@@ -39,7 +39,7 @@
               @click="getAccountingInfo(data.transactionDetail.paymentId)"
               :active="
                 data.transactionDetail.paymentId ==
-                accountingDetails[0].paymentId
+                accountingDetails[0]?.paymentId
                   ? true
                   : false
               "
@@ -153,7 +153,7 @@
                   Invoice ID
                 </q-item-label>
                 <q-item-label class="row justify-center text-h6">
-                  {{ accountingDetails[2].invoiceId }}
+                  {{ accountingDetails[2]?.invoiceId }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -186,12 +186,15 @@
                 <q-item-section>
                   <q-item-label caption>Vendor:</q-item-label>
                   <q-item-label>
-                    {{ accountingDetails[0].otherPartyName }}
+                    {{ vendorDetails?.organizationName }}
+                  </q-item-label>
+                  <q-item-label>
+                    {{ vendorDetails?.emailAddress.substring(0, 20) + "..." }}
                   </q-item-label>
                 </q-item-section>
                 <q-item-section avatar>
                   <q-btn
-                    @click="vendoPage(accountingDetails[0].otherPartyId)"
+                    @click="vendoPage(vendorDetails?.partyId)"
                     outline
                     rounded
                     no-caps
@@ -342,6 +345,7 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { api } from "src/boot/axios";
 import { useAuthStore } from "src/stores/useAuthStore";
+import { useVendorStore } from "src/stores/useVendorStore";
 
 export default {
   name: "accountingInfo_page",
@@ -350,9 +354,11 @@ export default {
 
     const router = useRouter();
     const useAuth = useAuthStore();
+    const useVendor = useVendorStore();
 
     const accountingList = ref([]);
     const accountingDetails = ref([]);
+    const vendorDetails = ref(null);
 
     // side list
     const searchInput = ref("");
@@ -379,6 +385,7 @@ export default {
 
     function getAccountingInfo(id) {
       accountingDetails.value = [];
+      vendorDetails.value = null;
       api({
         method: "GET",
         headers: useAuth.authKey,
@@ -395,10 +402,14 @@ export default {
             invoiceTotal: res.data.transactionList[0].invoiceTotal,
             paymentDate: res.data.transactionList[0].paymentDate,
           });
-          console.log(accountingDetails.value);
         })
+
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          useVendor.getVendorDetails(accountingDetails.value[0].otherPartyId);
+          vendorDetails.value = useVendor.vendorDetails;
         });
     }
 
@@ -475,6 +486,7 @@ export default {
       dateModifer,
       getAccountingInfo,
       accountingDetails,
+      vendorDetails,
 
       vendoPage,
       invoicePage,
