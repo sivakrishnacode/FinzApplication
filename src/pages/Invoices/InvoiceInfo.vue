@@ -380,10 +380,10 @@
             class="bg-secondary text-center q-pa-sm"
             style="border-radius: 0 0 70px 70px"
           >
-            <div class="text-primary text-h6 q-my-sm">
+            <div class="text1 q-my-sm" style="font-size: 22px">
               Invoice ID: {{ invoiceDetail.invoiceId }}
             </div>
-            <div class="text3">
+            <div class="text4">
               {{
                 formateTimeStamp(invoiceDetail.invoiceDate).formattedTimestamp
               }}

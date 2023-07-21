@@ -124,7 +124,7 @@
             class="bg-secondary text-center q-pa-sm q-gutter-y-sm"
             style="border-radius: 0 0 70px 70px"
           >
-            <div class="text-primary text1 q-mt-md">
+            <div class="text-primary text-bold text1 q-mt-md">
               {{ paymentDetails.paymentId }}
             </div>
             <div class="">
