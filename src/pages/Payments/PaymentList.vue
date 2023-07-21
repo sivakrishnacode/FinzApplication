@@ -303,7 +303,15 @@
               </div>
             </q-td>
             <q-td key="status" class="text-center" style="font-size: 16px">
-              <div style="font-size: 16px">
+              <div
+                style="font-size: 16px"
+                :class="
+                  'text-' +
+                  usePayment.paymentStatusProp.find(
+                    (data) => data.statusId == props.row.paymentDetail.statusId
+                  ).color
+                "
+              >
                 {{
                   usePayment.paymentStatusProp.find(
                     (data) => data.statusId == props.row.paymentDetail.statusId
@@ -339,7 +347,7 @@
         />
         <div class="row absolute" style="right: 56px">
           <div class="row justify-center items-center q-pr-md">
-            Rows per page of {{ pagination.rowsNumber }} :
+            Rows per page:
           </div>
           <q-select
             dense

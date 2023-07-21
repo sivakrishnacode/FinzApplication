@@ -290,7 +290,7 @@
         />
         <div class="row absolute" style="right: 56px">
           <div class="row justify-center items-center q-pr-md">
-            Rows per page of {{ pagination.rowsNumber }} :
+            Rows per page:
           </div>
           <q-select
             dense

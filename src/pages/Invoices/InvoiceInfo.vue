@@ -387,7 +387,7 @@
               {{
                 formateTimeStamp(invoiceDetail.invoiceDate).formattedTimestamp
               }}
-              -
+
               {{ formateTimeStamp(invoiceDetail.invoiceDate).time }}
             </div>
 
@@ -586,7 +586,9 @@
                         </q-td>
 
                         <q-td key="productName">
-                          <div class="text2">{{ props.row.description }}</div>
+                          <div class="text2 text-left">
+                            {{ props.row.description }}
+                          </div>
                         </q-td>
 
                         <q-td key="unitPrice">
@@ -881,7 +883,7 @@ export default {
         field: "productName",
         required: true,
         label: "Product Name",
-        align: "center",
+        align: "left",
       },
       {
         name: "unitPrice",
@@ -1283,7 +1285,6 @@ export default {
       const day = String(date.getDate()).padStart(2, "0");
       const hours = String(date.getHours()).padStart(2, "0");
       const minutes = String(date.getMinutes()).padStart(2, "0");
-      const seconds = String(date.getSeconds()).padStart(2, "0");
 
       const formattedTimestamp = `${day}-${month}-${year}`;
 

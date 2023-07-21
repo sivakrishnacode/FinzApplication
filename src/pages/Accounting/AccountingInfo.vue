@@ -88,7 +88,7 @@
                 formateTimeStamp(accountingDetails[0].postedDate)
                   .formattedTimestamp
               }}
-              -
+
               {{ formateTimeStamp(accountingDetails[0].postedDate).time }}
             </div>
 

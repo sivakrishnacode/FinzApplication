@@ -94,7 +94,13 @@
                   {{ dateModifer(data.paymentDetail.effectiveDate) }}
                 </q-item-label>
                 <q-item-label>
-                  <q-badge>
+                  <q-badge
+                    :color="
+                      usePayment.paymentStatusProp.find(
+                        (res) => res.statusId == data.paymentDetail.statusId
+                      ).color
+                    "
+                  >
                     {{
                       usePayment.paymentStatusProp.find(
                         (res) => res.statusId == data.paymentDetail.statusId
@@ -167,7 +173,14 @@
 
                 <q-item-section avatar>
                   <q-item-label>
-                    <q-badge class="text-h6">
+                    <q-badge
+                      class="text-h6"
+                      :color="
+                        usePayment.paymentStatusProp.find(
+                          (res) => res.statusId == paymentDetails.statusId
+                        )?.color
+                      "
+                    >
                       {{
                         usePayment.paymentStatusProp.find(
                           (res) => res.statusId == paymentDetails.statusId

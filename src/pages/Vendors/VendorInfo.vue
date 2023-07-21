@@ -120,12 +120,6 @@
             label="Invoices"
             icon="receipt_long"
             class="bg-primary text-white text-bold q-pa-md"
-            style="
-              border-radius: 50px;
-              width: 216px;
-              height: 58px;
-              font-size: 18px;
-            "
             no-caps
             flat
             @click="
@@ -138,20 +132,22 @@
               })
             "
           />
-          <q-btn
-            label="Payments"
-            icon="payments"
-            class="bg-primary text-white text-bold q-pa-md"
-            style="
+
+          <!-- style="
               border-radius: 50px;
               width: 216px;
               height: 58px;
               font-size: 18px;
               margin-left: 24px;
               margin-right: 24px;
-            "
+            " -->
+          <q-btn
+            label="Payments"
+            icon="payments"
+            class="bg-primary text-white text-bold q-pa-md"
             no-caps
             flat
+            style="border-radius: 30px"
             @click="
               router.push({
                 name: 'paymentList_page',
@@ -167,12 +163,6 @@
             label="Accounting"
             icon="account_balance"
             class="bg-primary text-white text-bold q-pa-md"
-            style="
-              border-radius: 50px;
-              width: 216px;
-              font-size: 18px;
-              height: 58px;
-            "
             no-caps
             flat
             @click="

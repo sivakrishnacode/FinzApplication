@@ -1,8 +1,8 @@
 <template>
-  <div style="background-color: rgb(241, 243, 244)">
+  <div>
     <div class="row full-width q-pa-lg">
       <!-- head -->
-      <div class="row justify-between q-mx-md q-pa-md full-width bg-red">
+      <div class="row justify-between q-mx-md q-pa-md full-width">
         <q-item class="">
           <q-item-section>
             <q-item-label
@@ -22,7 +22,7 @@
       </div>
 
       <!-- info cards -->
-      <div class="row justify-start full-width q-gutter-md bg-green q-ma-md">
+      <div class="row justify-start full-width q-gutter-md q-ma-md">
         <q-card
           v-for="n in 4"
           :key="n"

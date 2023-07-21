@@ -103,56 +103,102 @@
         >
           <q-card class="q-ma-none bg-secondary">
             <q-card-section>
-              <!-- columns -->
-              <q-item class="row justify-between text3">
-                <q-item-section class="col-1 text-weight-bold">
-                  S.NO
-                </q-item-section>
-                <q-item-section class="col-3 text-weight-bold">
-                  Product Name
-                </q-item-section>
-                <q-item-section class="col-3 text-weight-bold">
-                  Unit price
-                </q-item-section>
-                <q-item-section
-                  class="col-2 text-weight-bold row content-center"
-                >
-                  Quantity
-                </q-item-section>
-                <q-item-section
-                  class="col-2 text-weight-bold row content-center"
-                >
-                  Price
-                </q-item-section>
-              </q-item>
-
-              <q-separator />
-              <!-- rows -->
-              <q-item
-                class="row justify-between"
-                v-for="(data, index) in invoiceDetail.items"
-                :key="index"
+              <!-- items list -->
+              <div
+                class="full-width q-pa-sm"
+                style="border: 1px solid #858585; border-radius: 10px"
               >
-                <q-item-section class="col-1 text-weight-bold">
-                  {{ index + 1 }}
-                </q-item-section>
-                <q-item-section class="col-3 text-weight-bold">
-                  {{ data.description }}
-                </q-item-section>
-                <q-item-section class="col-3 text-weight-bold">
-                  {{ data.amount }}
-                </q-item-section>
-                <q-item-section
-                  class="col-2 text-weight-bold row content-center"
+                <!-- tabel -->
+                <q-table
+                  :rows="invoiceDetail.items"
+                  :columns="invoiceItemsColumn"
+                  hide-bottom
+                  flat
+                  class="bg-secondary"
                 >
-                  {{ data.quantity }}
-                </q-item-section>
-                <q-item-section
-                  class="col-2 text-weight-bold row content-center"
-                >
-                  {{ data.amount * data.quantity }}
-                </q-item-section>
-              </q-item>
+                  <!-- header -->
+                  <template v-slot:header="props">
+                    <q-tr :props="props">
+                      <q-th
+                        v-for="col in props.cols"
+                        :key="col.name"
+                        :props="props"
+                      >
+                        <div
+                          style="font-size: 14px"
+                          class="text-bold text-primary"
+                        >
+                          {{ col.label }}
+                        </div>
+                      </q-th>
+                    </q-tr>
+                  </template>
+
+                  <template #body="props">
+                    <q-tr
+                      :props="props"
+                      class="text-center"
+                      style="height: 80px"
+                      v-if="props.row.itemTypeEnumId == 'ItemExpTaxesLic'"
+                    >
+                      <q-td key="index">
+                        <div class="text2 text-right">
+                          {{ props.row.description }}
+                        </div>
+                      </q-td>
+
+                      <q-td key="productName">
+                        <div class="text2"></div>
+                      </q-td>
+
+                      <q-td key="unitPrice"> </q-td>
+
+                      <q-td key="quantity">
+                        <div class="text2"></div>
+                      </q-td>
+
+                      <q-td key="price">
+                        <div class="text2">{{ props.row.amount }}</div>
+                      </q-td>
+                    </q-tr>
+
+                    <q-tr
+                      v-else
+                      :props="props"
+                      class="text-center"
+                      style="height: 80px"
+                    >
+                      <q-td key="index">
+                        <div class="text2">
+                          {{ props.row.invoiceItemSeqId }}
+                        </div>
+                      </q-td>
+
+                      <q-td key="productName">
+                        <div class="text2 text-left">
+                          {{ props.row.description }}
+                        </div>
+                      </q-td>
+
+                      <q-td key="unitPrice">
+                        <div class="text2">{{ props.row.amount }}</div>
+                      </q-td>
+
+                      <q-td key="quantity">
+                        <div class="text2">{{ props.row.quantity }}</div>
+                      </q-td>
+
+                      <q-td key="price">
+                        <div class="text2">
+                          {{
+                            (props.row.amount * props.row.quantity).toFixed(2)
+                          }}
+                        </div>
+                      </q-td>
+                    </q-tr>
+                  </template>
+                </q-table>
+              </div>
             </q-card-section>
           </q-card>
         </q-expansion-item>
@@ -587,6 +633,48 @@ export default {
       bankDetails: [],
       upiDetails: [],
     });
+    const invoiceItemsColumn = ref([
+      {
+        name: "index",
+        required: true,
+        field: "index",
+        required: true,
+        label: "S.No",
+        align: "center",
+      },
+      {
+        name: "productName",
+        required: true,
+        field: "productName",
+        required: true,
+        label: "Product Name",
+        align: "left",
+      },
+      {
+        name: "unitPrice",
+        required: true,
+        field: "unitPrice",
+        required: true,
+        label: "Unit Price",
+        align: "center",
+      },
+      {
+        name: "quantity",
+        required: true,
+        field: "quantity",
+        required: true,
+        label: "Quantity",
+        align: "center",
+      },
+      {
+        name: "price",
+        required: true,
+        field: "price",
+        required: true,
+        label: "Price",
+        align: "center",
+      },
+    ]);
 
     async function getInvoiceDetails(invoiseId) {
       invoiceDetail.value = "";
@@ -752,6 +840,7 @@ export default {
       accountDetail,
       isPayFullAmount,
       getInvoiceFile,
+      invoiceItemsColumn,
 
       selectedPaymentDetails,
       selectPaymentMethod,
