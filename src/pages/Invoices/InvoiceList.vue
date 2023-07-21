@@ -822,7 +822,7 @@ export default {
         { statusId: "InvoiceCancelled", color: "red-8", message: "Cancelled" },
         {
           statusId: "InvoiceApproved",
-          color: "indigo-10",
+          color: "cyan-6",
           message: "Approved",
         },
         {
