@@ -177,7 +177,7 @@
                 <q-item-section>
                   <q-item-label caption>Organization:</q-item-label>
                   <q-item-label>
-                    {{ accountingDetails[0].organizationName }}
+                    {{ accountingDetails[2]?.fromParty.organizationName }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -186,10 +186,15 @@
                 <q-item-section>
                   <q-item-label caption>Vendor:</q-item-label>
                   <q-item-label>
-                    {{ vendorDetails?.organizationName }}
+                    {{ accountingDetails[2]?.toParty.organizationName }}
                   </q-item-label>
                   <q-item-label>
-                    {{ vendorDetails?.emailAddress.substring(0, 20) + "..." }}
+                    {{
+                      accountingDetails[2]?.toParty.emailAddress.substring(
+                        0,
+                        20
+                      ) + "..."
+                    }}
                   </q-item-label>
                 </q-item-section>
                 <q-item-section avatar>
@@ -345,7 +350,6 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { api } from "src/boot/axios";
 import { useAuthStore } from "src/stores/useAuthStore";
-import { useVendorStore } from "src/stores/useVendorStore";
 
 export default {
   name: "accountingInfo_page",
@@ -354,7 +358,6 @@ export default {
 
     const router = useRouter();
     const useAuth = useAuthStore();
-    const useVendor = useVendorStore();
 
     const accountingList = ref([]);
     const accountingDetails = ref([]);
@@ -401,15 +404,15 @@ export default {
             invoiceId: res.data.transactionList[0].invoiceId,
             invoiceTotal: res.data.transactionList[0].invoiceTotal,
             paymentDate: res.data.transactionList[0].paymentDate,
+            toParty: res.data.transactionList[0].otherParty,
+            fromParty: res.data.transactionList[0].fromParty,
           });
+
+          console.log(accountingDetails.value);
         })
 
         .catch((err) => {
           console.log(err);
-        })
-        .finally(() => {
-          useVendor.getVendorDetails(accountingDetails.value[0].otherPartyId);
-          vendorDetails.value = useVendor.vendorDetails;
         });
     }
 
